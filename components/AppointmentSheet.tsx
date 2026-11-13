@@ -13,6 +13,7 @@ import {
   PhoneForwarded, 
   ShieldCheck,
   Send,
+  Trash2,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -24,6 +25,7 @@ interface AppointmentSheetProps {
   onConfirm: (eventId: string) => void;
   onReschedule: (eventId: string, newDateText: string) => void;
   onDispatchReminder: (eventId: string) => void;
+  onDeleteEvent?: (eventId: string) => void;
 }
 
 export function AppointmentSheet({
@@ -34,6 +36,7 @@ export function AppointmentSheet({
   onConfirm,
   onReschedule,
   onDispatchReminder,
+  onDeleteEvent,
 }: AppointmentSheetProps) {
   const [showReschedulePicker, setShowReschedulePicker] = useState(false);
   const [selectedRescheduleDate, setSelectedRescheduleDate] = useState('Next Thursday, Nov 21');
@@ -284,6 +287,23 @@ export function AppointmentSheet({
             <Send className="h-4 w-4 text-teal-800" />
             <span>Dispatch Reminder SMS Now</span>
           </button>
+
+          {/* Delete Visit Record */}
+          {onDeleteEvent && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm(`Are you sure you want to delete this clinical record: "${event.title}"?`)) {
+                  onDeleteEvent(event.id);
+                  onClose();
+                }
+              }}
+              className="btn-tactile flex items-center justify-center gap-2 rounded-xl border-2 border-red-200 bg-red-50 hover:bg-red-100 py-2.5 px-4 font-bold text-xs sm:text-sm text-red-700 transition-colors"
+            >
+              <Trash2 className="h-4 w-4 text-red-600" />
+              <span>Delete Visit Record</span>
+            </button>
+          )}
         </div>
       </div>
     </div>

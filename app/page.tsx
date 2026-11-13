@@ -254,6 +254,7 @@ export default function CarePathApp() {
               onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
               onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
               onDeletePatient={store.deletePatient}
+              onDeleteEvent={store.deleteAppointment}
             />
           </div>
         )}
@@ -268,6 +269,7 @@ export default function CarePathApp() {
               onReschedule={store.requestReschedule}
               onDispatchReminder={store.dispatchManualReminder}
               onMarkCompleted={store.markAdministeredAndCompleted}
+              onDeleteEvent={store.deleteAppointment}
               onSelectPatient={(id) => {
                 store.handleSelectPatient(id);
                 setActiveTab('patient');
@@ -377,6 +379,10 @@ export default function CarePathApp() {
           }}
           onDispatchReminder={(eventId) => {
             store.dispatchManualReminder(eventId);
+          }}
+          onDeleteEvent={(eventId) => {
+            store.deleteAppointment(eventId);
+            store.setSelectedEventForSheet(null);
           }}
         />
       )}

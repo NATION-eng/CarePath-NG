@@ -41,6 +41,7 @@ interface PatientCareViewProps {
   onOpenNewPatientModal: () => void;
   onOpenNewAppointmentModal: () => void;
   onDeletePatient: (patientId: string) => void;
+  onDeleteEvent?: (eventId: string) => void;
 }
 
 export function PatientCareView({
@@ -57,6 +58,7 @@ export function PatientCareView({
   onOpenNewPatientModal,
   onOpenNewAppointmentModal,
   onDeletePatient,
+  onDeleteEvent,
 }: PatientCareViewProps) {
   const [selectedTimelineFilter, setSelectedTimelineFilter] = useState<'all' | 'upcoming'>('all');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -180,6 +182,7 @@ export function PatientCareView({
             >
               <Trash2 className="h-4 w-4 text-red-700" />
               <span className="hidden sm:inline">Delete Record</span>
+              <span className="sm:hidden">Delete</span>
             </button>
           </div>
         </div>
@@ -212,7 +215,7 @@ export function PatientCareView({
                 }}
                 className="btn-tactile flex-1 py-2.5 rounded-xl bg-red-700 hover:bg-red-800 text-white text-xs sm:text-sm font-black shadow-xs"
               >
-                Yes, Purge Record
+                Yes, Delete Record
               </button>
             </div>
           </div>
@@ -474,9 +477,26 @@ export function PatientCareView({
 
                       <div className="flex items-center justify-between text-xs sm:text-sm text-surface-dark/70 pt-2.5 border-t border-surface-border font-bold">
                         <span>{ev.date} • {ev.time}</span>
-                        <span className="text-teal-800 font-extrabold flex items-center gap-0.5">
-                          View Details <ChevronRight className="h-4 w-4" />
-                        </span>
+                        <div className="flex items-center gap-2">
+                          {onDeleteEvent && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (window.confirm(`Are you sure you want to delete this clinical record: "${ev.title}"?`)) {
+                                  onDeleteEvent(ev.id);
+                                }
+                              }}
+                              title="Delete this visit record"
+                              className="text-red-600 hover:text-red-800 p-1 rounded-lg hover:bg-red-50 transition-colors"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                          <span className="text-teal-800 font-extrabold flex items-center gap-0.5">
+                            View <ChevronRight className="h-4 w-4" />
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );

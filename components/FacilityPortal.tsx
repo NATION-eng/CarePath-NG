@@ -11,7 +11,8 @@ import {
   Search, 
   CalendarPlus,
   Download,
-  Check
+  Check,
+  Trash2,
 } from 'lucide-react';
 
 interface FacilityPortalProps {
@@ -25,6 +26,7 @@ interface FacilityPortalProps {
   onOpenNewPatientModal: () => void;
   onOpenNewAppointmentModal: () => void;
   onExportData: () => void;
+  onDeleteEvent?: (eventId: string) => void;
 }
 
 export function FacilityPortal({
@@ -38,6 +40,7 @@ export function FacilityPortal({
   onOpenNewPatientModal,
   onOpenNewAppointmentModal,
   onExportData,
+  onDeleteEvent,
 }: FacilityPortalProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -251,6 +254,22 @@ export function FacilityPortal({
                   >
                     Reschedule
                   </button>
+
+                  {onDeleteEvent && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (window.confirm(`Are you sure you want to delete this clinical record: "${ev.title}"?`)) {
+                          onDeleteEvent(ev.id);
+                        }
+                      }}
+                      title="Delete this visit record"
+                      className="btn-tactile rounded-xl border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 px-2.5 py-1.5 text-xs sm:text-sm font-bold flex items-center gap-1 transition-colors"
+                    >
+                      <Trash2 className="h-3.5 w-3.5 text-red-600" />
+                      <span className="hidden sm:inline">Delete</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>

@@ -96,6 +96,21 @@ async function runAllTests() {
     assert(data.events.some((e) => e.id === createdEventId), 'Appointment must be persisted in DB');
   });
 
+  // 5b. Test DELETE /api/appointments (Delete Visit Record)
+  await testEndpoint('DELETE /api/appointments (Delete Specific Visit Record)', async () => {
+    const res = await fetch(`${BASE_URL}/api/appointments?id=${createdEventId}`, {
+      method: 'DELETE',
+    });
+    assert.strictEqual(res.status, 200);
+    const data = await res.json();
+    assert.strictEqual(data.success, true);
+
+    // Verify appointment was removed
+    const checkRes = await fetch(`${BASE_URL}/api/appointments?patientId=${createdPatientId}`);
+    const checkData = await checkRes.json();
+    assert(!checkData.events.some((e) => e.id === createdEventId), 'Appointment must be permanently deleted');
+  });
+
   // 6. Test DELETE /api/patients (Cascading Purge)
   await testEndpoint('DELETE /api/patients (Cascading Patient & Records Deletion)', async () => {
     const res = await fetch(`${BASE_URL}/api/patients?id=${createdPatientId}`, {

@@ -259,6 +259,20 @@ export const serverDb = {
       if (!existing) return false;
 
       db.events = (db.events || []).filter((e) => e.id !== id);
+
+      const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WAT';
+      db.audit = [
+        {
+          id: `aud-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+          timestamp: timeNow,
+          action: 'APPOINTMENT_DELETED',
+          details: `Visit record purged: ${existing.title} for ${existing.date}`,
+          actor: 'Clinical Records Officer',
+          status: 'warning',
+        },
+        ...(db.audit || []),
+      ];
+
       saveDb(db);
       return true;
     },

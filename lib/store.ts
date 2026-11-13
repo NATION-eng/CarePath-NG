@@ -59,47 +59,26 @@ export function useCarePathStore() {
         const patData = await patRes.json();
         const serverPatients: PatientProfile[] = patData.patients || [];
         
-        setPatients((prev) => {
-          // If server returned patients, use them. If server returned empty but local has items, preserve local!
-          if (serverPatients.length > 0) {
-            persistLocally(serverPatients);
-            return serverPatients;
-          }
-          if (prev.length > 0) {
-            // Re-sync local patients to server in case server restarted
-            prev.forEach((pat) => {
-              fetch('/api/patients', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(pat),
-              }).catch(() => {});
-            });
-            return prev;
-          }
-          persistLocally([]);
-          return [];
-        });
+        setPatients(serverPatients);
+        persistLocally(serverPatients);
 
-        if (serverPatients.length > 0) {
-          setActivePatientId((prev) => {
-            const stillExists = serverPatients.some((p: PatientProfile) => p.id === prev);
-            const chosenId = stillExists && prev ? prev : serverPatients[0].id;
-            persistLocally(undefined, undefined, undefined, undefined, chosenId);
-            return chosenId;
-          });
-        }
+        setActivePatientId((prev) => {
+          if (serverPatients.length === 0) {
+            persistLocally(undefined, undefined, undefined, undefined, '');
+            return '';
+          }
+          const stillExists = serverPatients.some((p: PatientProfile) => p.id === prev);
+          const chosenId = stillExists && prev ? prev : serverPatients[0].id;
+          persistLocally(undefined, undefined, undefined, undefined, chosenId);
+          return chosenId;
+        });
       }
 
       if (aptRes.ok) {
         const aptData = await aptRes.json();
         const serverEvents: CareEvent[] = aptData.events || [];
-        setEvents((prev) => {
-          if (serverEvents.length > 0) {
-            persistLocally(undefined, serverEvents);
-            return serverEvents;
-          }
-          return prev;
-        });
+        setEvents(serverEvents);
+        persistLocally(undefined, serverEvents);
       }
 
       if (smsRes.ok) {
@@ -136,12 +115,16 @@ export function useCarePathStore() {
 
         if (localPat) {
           const parsed = JSON.parse(localPat);
-          if (Array.isArray(parsed) && parsed.length > 0) {
+          if (Array.isArray(parsed)) {
             setPatients(parsed);
-            if (localActiveId) {
-              setActivePatientId(localActiveId);
+            if (parsed.length > 0) {
+              if (localActiveId && parsed.some((p: PatientProfile) => p.id === localActiveId)) {
+                setActivePatientId(localActiveId);
+              } else {
+                setActivePatientId(parsed[0].id);
+              }
             } else {
-              setActivePatientId(parsed[0].id);
+              setActivePatientId('');
             }
           }
         }
@@ -246,6 +229,8 @@ export function useCarePathStore() {
 
   // 2. DELETE PATIENT & THEIR RECORDS (CASCADING PURGE)
   const deletePatient = async (patientId: string) => {
+    if (!patientId) return;
+
     const patientToDelete = patients.find((p) => p.id === patientId);
 
     // Optimistically remove from client state and storage immediately
@@ -263,12 +248,39 @@ export function useCarePathStore() {
     persistLocally(remainingPatients, remainingEvents, remainingSms, undefined, nextActiveId);
 
     try {
-      await fetch(`/api/patients?id=${encodeURIComponent(patientId)}`, {
+      const res = await fetch(`/api/patients?id=${encodeURIComponent(patientId)}`, {
         method: 'DELETE',
       });
-      notifySync();
+      if (res.ok) {
+        refreshFromBackend();
+        notifySync();
+      }
     } catch (err) {
       console.error('Failed to delete patient on backend:', err);
+    }
+  };
+
+  // 3. DELETE INDIVIDUAL VISIT / APPOINTMENT RECORD
+  const deleteAppointment = async (eventId: string) => {
+    if (!eventId) return;
+
+    // Optimistically remove from client state and storage immediately
+    const remainingEvents = events.filter((e) => e.id !== eventId);
+    setEvents(remainingEvents);
+    persistLocally(undefined, remainingEvents);
+
+    setSelectedEventForSheet((current) => (current?.id === eventId ? null : current));
+
+    try {
+      const res = await fetch(`/api/appointments?id=${encodeURIComponent(eventId)}`, {
+        method: 'DELETE',
+      });
+      if (res.ok) {
+        refreshFromBackend();
+        notifySync();
+      }
+    } catch (err) {
+      console.error('Failed to delete appointment on backend:', err);
     }
   };
 
@@ -453,6 +465,7 @@ export function useCarePathStore() {
     handleUpdateJudgePhone,
     registerRealPatient,
     deletePatient,
+    deleteAppointment,
     scheduleRealAppointment,
     confirmAppointment,
     requestReschedule,
