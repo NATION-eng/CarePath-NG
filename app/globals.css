@@ -4,6 +4,13 @@
 
 :root {
   --font-inter: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    font-size: 16.5px;
+  }
 }
 
 body {
@@ -13,6 +20,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overscroll-behavior-y: none;
+  font-weight: 500; /* Bolder baseline text for enhanced presence and legibility */
 }
 
 /* Custom subtle scrollbar */
@@ -26,12 +34,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #C5D1CE;
+  background: #B0C4BF;
   border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #A0B2AD;
+  background: #8FAEA7;
 }
 
 /* App-like tactile press effect */
@@ -46,8 +54,8 @@ body {
 /* Card tactile border */
 .card-clinical {
   background: #FFFFFF;
-  border: 1px solid #E2E7E2;
-  box-shadow: 0 1px 3px 0 rgba(23, 76, 69, 0.04);
+  border: 1.5px solid #DCE3DC;
+  box-shadow: 0 1px 3px 0 rgba(23, 76, 69, 0.05);
 }
 
 /* Safe area for mobile devices */
