@@ -7,12 +7,15 @@ import { AppointmentSheet } from '@/components/AppointmentSheet';
 import { SmsSimulator } from '@/components/SmsSimulator';
 import { FacilityPortal } from '@/components/FacilityPortal';
 import { LiveEventLog } from '@/components/LiveEventLog';
+import { NewPatientModal } from '@/components/NewPatientModal';
+import { NewAppointmentModal } from '@/components/NewAppointmentModal';
 import { 
   Building2, 
-  RotateCcw, 
   Activity, 
   Smartphone,
-  HeartHandshake
+  HeartHandshake,
+  UserPlus,
+  Download
 } from 'lucide-react';
 import { playChime } from '@/lib/audioVoice';
 
@@ -51,7 +54,7 @@ export default function CarePathPrototypeApp() {
 
   return (
     <div className="flex flex-col min-h-screen w-full bg-surface-base">
-      {/* 1. RESPONSIVE TOP APP / DASHBOARD HEADER */}
+      {/* 1. PRODUCTION-READY RESPONSIVE HEADER */}
       <header className="sticky top-0 z-40 bg-teal-950 text-white px-4 sm:px-6 py-2.5 border-b-2 border-teal-900 shadow-subtle">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           
@@ -66,7 +69,7 @@ export default function CarePathPrototypeApp() {
                   CarePath NG
                 </span>
                 <span className="hidden sm:inline-block text-[10px] font-black tracking-wider uppercase px-2 py-0.5 rounded-md bg-teal-800 text-teal-200 border border-teal-700 shrink-0">
-                  Prototype
+                  Release v1.0
                 </span>
               </div>
               <p className="hidden md:block text-[11px] text-teal-300 font-bold leading-none mt-0.5 truncate">
@@ -113,7 +116,7 @@ export default function CarePathPrototypeApp() {
               }`}
             >
               <Smartphone className="h-4 w-4" />
-              <span>SMS Gateway Simulator</span>
+              <span>SMS Gateway Feed</span>
             </button>
 
             <button
@@ -130,24 +133,29 @@ export default function CarePathPrototypeApp() {
             </button>
           </nav>
 
-          {/* Real-time Status Badge & Demo Reset */}
+          {/* Action Header Buttons: Register Patient & Export Records */}
           <div className="flex items-center gap-2 shrink-0">
-            <div className="hidden lg:flex items-center gap-2 text-xs text-emerald-400 bg-teal-900/80 px-2.5 py-1 rounded-lg border border-teal-800 font-bold">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span className="font-mono text-xs">Sync: Active</span>
-            </div>
-
             <button
               type="button"
               onClick={() => {
                 playChime('reminder');
-                store.resetDemoData();
+                store.setIsNewPatientModalOpen(true);
               }}
-              title="Reset to fresh competition demo state"
-              className="btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-900 hover:bg-teal-800 text-teal-200 text-xs sm:text-sm font-black border border-teal-800 transition-colors shadow-xs"
+              className="btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cream-200 hover:bg-cream-300 text-teal-950 text-xs sm:text-sm font-black shadow-xs transition-colors"
             >
-              <RotateCcw className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Reset Demo</span>
+              <UserPlus className="h-4 w-4 text-teal-950" />
+              <span className="hidden sm:inline">+ Register Patient</span>
+              <span className="sm:hidden">+ Patient</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={store.exportDataToJson}
+              title="Export all clinical records to JSON backup"
+              className="btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-900 hover:bg-teal-800 text-teal-200 text-xs sm:text-sm font-black border border-teal-800 transition-colors shadow-xs"
+            >
+              <Download className="h-4 w-4" />
+              <span className="hidden lg:inline">Export</span>
             </button>
           </div>
 
@@ -166,7 +174,7 @@ export default function CarePathPrototypeApp() {
                 customPhone={store.customJudgePhone}
                 onUpdatePhone={store.handleUpdateJudgePhone}
                 onReplySms={handleSmsReply}
-                onReset={store.resetDemoData}
+                onReset={() => {}}
               />
             </div>
           ) : mobileInnerTab === 'portal' ? (
@@ -177,11 +185,14 @@ export default function CarePathPrototypeApp() {
                 onConfirm={(id) => store.confirmAppointment(id, 'app')}
                 onReschedule={store.requestReschedule}
                 onDispatchReminder={store.dispatchManualReminder}
-                onRegisterChild={store.registerNewChildPatient}
+                onMarkCompleted={store.markAdministeredAndCompleted}
                 onSelectPatient={(id) => {
                   store.handleSelectPatient(id);
                   setMobileInnerTab('home');
                 }}
+                onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
+                onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
+                onExportData={store.exportDataToJson}
               />
             </div>
           ) : (
@@ -198,6 +209,8 @@ export default function CarePathPrototypeApp() {
               onRescheduleEvent={store.requestReschedule}
               onReplySms={handleSmsReply}
               onDispatchReminder={store.dispatchManualReminder}
+              onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
+              onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
             />
           )}
         </div>
@@ -218,6 +231,8 @@ export default function CarePathPrototypeApp() {
               onRescheduleEvent={store.requestReschedule}
               onReplySms={handleSmsReply}
               onDispatchReminder={store.dispatchManualReminder}
+              onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
+              onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
             />
           )}
 
@@ -229,11 +244,14 @@ export default function CarePathPrototypeApp() {
                 onConfirm={(id) => store.confirmAppointment(id, 'app')}
                 onReschedule={store.requestReschedule}
                 onDispatchReminder={store.dispatchManualReminder}
-                onRegisterChild={store.registerNewChildPatient}
+                onMarkCompleted={store.markAdministeredAndCompleted}
                 onSelectPatient={(id) => {
                   store.handleSelectPatient(id);
                   setActiveDesktopTab('patient');
                 }}
+                onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
+                onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
+                onExportData={store.exportDataToJson}
               />
             </div>
           )}
@@ -245,7 +263,7 @@ export default function CarePathPrototypeApp() {
                 customPhone={store.customJudgePhone}
                 onUpdatePhone={store.handleUpdateJudgePhone}
                 onReplySms={handleSmsReply}
-                onReset={store.resetDemoData}
+                onReset={() => {}}
               />
             </div>
           )}
@@ -279,6 +297,22 @@ export default function CarePathPrototypeApp() {
           }}
         />
       )}
+
+      {/* 4. REAL PATIENT REGISTRATION MODAL */}
+      <NewPatientModal
+        isOpen={store.isNewPatientModalOpen}
+        onClose={() => store.setIsNewPatientModalOpen(false)}
+        onRegisterPatient={store.registerRealPatient}
+      />
+
+      {/* 5. REAL APPOINTMENT BOOKING MODAL */}
+      <NewAppointmentModal
+        isOpen={store.isNewAppointmentModalOpen}
+        onClose={() => store.setIsNewAppointmentModalOpen(false)}
+        patients={store.patients}
+        activePatientId={store.activePatientId}
+        onScheduleAppointment={store.scheduleRealAppointment}
+      />
     </div>
   );
 }

@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { PatientProfile, CareEvent, SmsMessage } from '@/lib/types';
 import { 
   Calendar, 
-  Clock, 
   MapPin, 
   CheckCircle2, 
   ShieldCheck, 
@@ -16,7 +15,9 @@ import {
   Smartphone, 
   Building2,
   Radio,
-  CheckCheck
+  CheckCheck,
+  UserPlus,
+  CalendarPlus
 } from 'lucide-react';
 import { AudioVoicePlayer } from './AudioVoicePlayer';
 import { playChime } from '@/lib/audioVoice';
@@ -34,6 +35,8 @@ interface PatientCareViewProps {
   onRescheduleEvent: (eventId: string, newDate: string) => void;
   onReplySms: (replyText: string) => void;
   onDispatchReminder: (eventId: string) => void;
+  onOpenNewPatientModal: () => void;
+  onOpenNewAppointmentModal: () => void;
 }
 
 export function PatientCareView({
@@ -47,6 +50,8 @@ export function PatientCareView({
   onOpenEventSheet,
   onConfirmEvent,
   onReplySms,
+  onOpenNewPatientModal,
+  onOpenNewAppointmentModal,
 }: PatientCareViewProps) {
   const [selectedTimelineFilter, setSelectedTimelineFilter] = useState<'all' | 'upcoming'>('all');
 
@@ -61,33 +66,33 @@ export function PatientCareView({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-800 text-cream-200 text-sm font-black shrink-0 shadow-xs">
-              {activePatient.avatarInitials}
+              {activePatient?.avatarInitials || 'CP'}
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-xl sm:text-2xl font-black text-teal-950 tracking-tight leading-tight truncate">
-                  {activePatient.name}
+                  {activePatient?.name || 'Care Registry'}
                 </h1>
                 <span className="text-xs font-black tracking-wider uppercase text-teal-900 bg-teal-100 px-2 py-0.5 rounded border border-teal-200 shrink-0">
-                  {activePatient.categoryLabel}
+                  {activePatient?.categoryLabel || 'Primary Care'}
                 </span>
                 <span className="text-xs text-surface-dark/60 font-mono font-bold shrink-0">
-                  ID: {activePatient.code}
+                  ID: {activePatient?.code || 'CP-NEW'}
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-surface-dark/75 font-semibold truncate mt-0.5">
-                Stage: <strong className="text-teal-900 font-bold">{activePatient.stageInfo}</strong> • Garki Primary Health Centre (Ward FCT-04)
+                Stage: <strong className="text-teal-900 font-bold">{activePatient?.stageInfo || 'Active Care'}</strong> • Garki Primary Health Centre (Ward FCT-04)
               </p>
             </div>
           </div>
 
-          {/* Profile Switcher Pills */}
+          {/* Profile Switcher Pills & Add Button */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0 pt-1 md:pt-0">
             <span className="text-xs font-black text-surface-dark/60 uppercase tracking-wider hidden xl:inline-block mr-1">
-              Switch:
+              Active Patient:
             </span>
             {patients.map((pat) => {
-              const isSelected = pat.id === activePatient.id;
+              const isSelected = pat.id === activePatient?.id;
               return (
                 <button
                   key={pat.id}
@@ -118,6 +123,16 @@ export function PatientCareView({
                 </button>
               );
             })}
+
+            {/* "+ Add New Patient / Dependent" Button */}
+            <button
+              type="button"
+              onClick={onOpenNewPatientModal}
+              className="btn-tactile flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-black bg-cream-200 hover:bg-cream-300 text-teal-950 border-2 border-teal-800/20 shadow-xs"
+            >
+              <UserPlus className="h-4 w-4" />
+              <span>+ Register Patient</span>
+            </button>
           </div>
         </div>
       </div>
@@ -129,7 +144,7 @@ export function PatientCareView({
         <div className="lg:col-span-8 space-y-5">
           
           {/* HERO CARD: NEXT SCHEDULED CLINIC EVENT */}
-          {nextEvent && (
+          {nextEvent ? (
             <div className="rounded-3xl bg-teal-900 text-white p-5 sm:p-6 shadow-float border-2 border-teal-700/80 relative overflow-hidden">
               {/* Top Status & Milestone Header */}
               <div className="flex flex-wrap items-center justify-between gap-2.5 mb-3">
@@ -155,7 +170,7 @@ export function PatientCareView({
                 {nextEvent.subtitle}
               </p>
 
-              {/* 3 DISTINCT TILES GRID (Zero text overlap, fully constrained with min-w-0) */}
+              {/* 3 DISTINCT TILES GRID */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-teal-950/80 p-3 rounded-2xl border border-teal-700/60 mb-4">
                 
                 {/* Tile 1: Date & Time */}
@@ -232,7 +247,7 @@ export function PatientCareView({
                     className="btn-tactile flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-xl bg-cream-200 hover:bg-cream-300 text-teal-950 py-3 px-5 font-black text-sm shadow-card transition-colors"
                   >
                     <CheckCircle2 className="h-5 w-5 text-teal-900" />
-                    <span>Confirm Attendance (I Will Go)</span>
+                    <span>Confirm Attendance</span>
                   </button>
                 ) : (
                   <button
@@ -253,7 +268,31 @@ export function PatientCareView({
                   <span>Full Instructions & Reschedule</span>
                   <ChevronRight className="h-4 w-4" />
                 </button>
+
+                <button
+                  type="button"
+                  onClick={onOpenNewAppointmentModal}
+                  className="btn-tactile flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-xl bg-teal-950 hover:bg-black text-cream-200 py-3 px-4 font-black text-sm border border-teal-700 transition-colors"
+                >
+                  <CalendarPlus className="h-4 w-4" />
+                  <span>+ Book Visit</span>
+                </button>
               </div>
+            </div>
+          ) : (
+            <div className="rounded-3xl bg-white p-8 border-2 border-surface-border text-center">
+              <CalendarPlus className="h-12 w-12 text-teal-800 mx-auto mb-3" />
+              <h3 className="text-xl font-black text-teal-950">No Appointments Scheduled</h3>
+              <p className="text-sm text-surface-dark/70 font-semibold mb-4">
+                Schedule a clinical follow-up or immunisation session for this patient.
+              </p>
+              <button
+                type="button"
+                onClick={onOpenNewAppointmentModal}
+                className="btn-tactile px-5 py-3 rounded-2xl bg-teal-800 text-white font-black text-sm hover:bg-teal-900"
+              >
+                + Schedule First Clinic Visit
+              </button>
             </div>
           )}
 
@@ -262,36 +301,45 @@ export function PatientCareView({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div>
                 <h3 className="text-base sm:text-lg font-black text-teal-950">
-                  {activePatient.category === 'immunisation' ? 'National Immunisation Schedule (NPHCDA 2024)' : 'Federal Maternal ANC Pathway'}
+                  {activePatient?.category === 'immunisation' ? 'National Immunisation Schedule (NPHCDA 2024)' : 'Federal Maternal ANC Pathway'}
                 </h3>
                 <p className="text-xs sm:text-sm text-surface-dark/70 font-bold">
                   Sequential clinical milestones with interval protection
                 </p>
               </div>
 
-              <div className="flex items-center gap-1.5 bg-surface-base p-1 rounded-xl border border-surface-border text-xs sm:text-sm font-bold">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setSelectedTimelineFilter('all')}
-                  className={`px-3 py-1 rounded-lg transition-colors ${
-                    selectedTimelineFilter === 'all'
-                      ? 'bg-teal-800 text-white font-extrabold shadow-xs'
-                      : 'text-surface-dark/70 hover:text-teal-950'
-                  }`}
+                  onClick={onOpenNewAppointmentModal}
+                  className="btn-tactile text-xs font-black bg-cream-200 text-teal-950 px-3 py-1.5 rounded-lg border border-teal-800/20"
                 >
-                  All Milestones
+                  + Add Event
                 </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedTimelineFilter('upcoming')}
-                  className={`px-3 py-1 rounded-lg transition-colors ${
-                    selectedTimelineFilter === 'upcoming'
-                      ? 'bg-teal-800 text-white font-extrabold shadow-xs'
-                      : 'text-surface-dark/70 hover:text-teal-950'
-                  }`}
-                >
-                  Upcoming Only
-                </button>
+                <div className="flex items-center gap-1.5 bg-surface-base p-1 rounded-xl border border-surface-border text-xs sm:text-sm font-bold">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTimelineFilter('all')}
+                    className={`px-3 py-1 rounded-lg transition-colors ${
+                      selectedTimelineFilter === 'all'
+                        ? 'bg-teal-800 text-white font-extrabold shadow-xs'
+                        : 'text-surface-dark/70 hover:text-teal-950'
+                    }`}
+                  >
+                    All
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTimelineFilter('upcoming')}
+                    className={`px-3 py-1 rounded-lg transition-colors ${
+                      selectedTimelineFilter === 'upcoming'
+                        ? 'bg-teal-800 text-white font-extrabold shadow-xs'
+                        : 'text-surface-dark/70 hover:text-teal-950'
+                    }`}
+                  >
+                    Upcoming
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -364,7 +412,7 @@ export function PatientCareView({
               <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-teal-800" />
                 <h3 className="text-base font-black text-teal-950">
-                  {activePatient.category === 'immunisation' ? 'Digital Child Yellow Card' : 'Official Maternal ANC Card'}
+                  {activePatient?.category === 'immunisation' ? 'Digital Child Yellow Card' : 'Official Maternal ANC Card'}
                 </h3>
               </div>
               <span className="text-xs font-black bg-cream-200 text-teal-950 px-2 py-0.5 rounded border border-teal-900/10">
@@ -375,11 +423,11 @@ export function PatientCareView({
             <div className="bg-surface-base rounded-xl p-3 border border-surface-border text-xs sm:text-sm space-y-2 mb-3">
               <div className="flex justify-between border-b border-surface-border pb-1.5">
                 <span className="text-surface-dark/70 font-semibold">Registered Name:</span>
-                <span className="font-black text-teal-950">{activePatient.name}</span>
+                <span className="font-black text-teal-950">{activePatient?.name}</span>
               </div>
               <div className="flex justify-between border-b border-surface-border pb-1.5">
                 <span className="text-surface-dark/70 font-semibold">National Record #:</span>
-                <span className="font-mono font-black text-teal-900">{activePatient.code}</span>
+                <span className="font-mono font-black text-teal-900">{activePatient?.code}</span>
               </div>
               <div className="flex justify-between border-b border-surface-border pb-1.5">
                 <span className="text-surface-dark/70 font-semibold">Primary Centre:</span>
@@ -387,7 +435,7 @@ export function PatientCareView({
               </div>
               <div className="flex justify-between">
                 <span className="text-surface-dark/70 font-semibold">Proxy Guardian:</span>
-                <span className="font-extrabold text-teal-800 truncate max-w-[150px]">{activePatient.notificationContact.name}</span>
+                <span className="font-extrabold text-teal-800 truncate max-w-[150px]">{activePatient?.notificationContact.name}</span>
               </div>
             </div>
 
@@ -408,7 +456,7 @@ export function PatientCareView({
             </div>
 
             <div className="p-3 bg-surface-base space-y-2.5 max-h-[260px] overflow-y-auto">
-              {smsLog.slice(0, 2).map((sms) => (
+              {smsLog.slice(0, 3).map((sms) => (
                 <div key={sms.id} className="rounded-xl bg-white border border-surface-border p-2.5 shadow-xs">
                   <div className="flex items-center justify-between text-xs text-surface-dark/60 mb-1 font-bold">
                     <span className="font-black text-teal-900">{sms.sender}</span>
@@ -424,7 +472,7 @@ export function PatientCareView({
             {/* Quick SMS interactive buttons on desktop */}
             <div className="p-3 bg-white border-t border-surface-border">
               <div className="text-xs font-black text-surface-dark/70 uppercase tracking-wider mb-1.5">
-                Quick Stage Test:
+                Simulated Handset Reply Test:
               </div>
               <div className="flex gap-2">
                 <button
@@ -457,9 +505,8 @@ export function PatientCareView({
               In Nigerian care journeys, account owners frequently coordinate for multiple dependents without phones.
             </p>
             <div className="bg-teal-900/70 p-2.5 rounded-xl border border-teal-800 text-xs font-semibold space-y-1">
-              <p>• <strong>Patient</strong>: {activePatient.name} (Phone-less profile)</p>
-              <p>• <strong>Account Owner</strong>: Ada Eze (Signed in)</p>
-              <p>• <strong>SMS Recipient</strong>: {activePatient.notificationContact.name}</p>
+              <p>• <strong>Patient</strong>: {activePatient?.name} (Phone-less profile)</p>
+              <p>• <strong>SMS Recipient</strong>: {activePatient?.notificationContact.name} ({activePatient?.notificationContact.phone})</p>
             </div>
           </div>
 
