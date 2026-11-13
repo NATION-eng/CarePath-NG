@@ -105,7 +105,7 @@ export function AppointmentSheet({
         </div>
 
         {/* Date, Time & Facility Info */}
-        <div className="grid grid-cols-2 gap-3 mb-5 text-xs sm:text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 mb-5 text-xs sm:text-sm">
           <div className="rounded-2xl border-2 border-surface-border bg-surface-base p-3.5">
             <div className="flex items-center gap-2 text-teal-900 font-extrabold mb-1">
               <Calendar className="h-4 w-4" />
@@ -244,7 +244,7 @@ export function AppointmentSheet({
 
         {/* Primary Action Buttons */}
         <div className="flex flex-col gap-2.5 pt-2 border-t border-surface-border">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
             {!isConfirmed ? (
               <button
                 type="button"

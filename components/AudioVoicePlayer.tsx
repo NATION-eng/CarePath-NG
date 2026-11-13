@@ -46,13 +46,13 @@ export function AudioVoicePlayer({
   };
 
   return (
-    <div className="rounded-xl border border-teal-800/15 bg-cream-100 p-4 transition-all shadow-subtle">
-      <div className="flex items-center justify-between gap-3 mb-2.5">
-        <div className="flex items-center gap-2 font-black text-teal-950 text-sm sm:text-base">
-          <Volume2 className="h-5 w-5 text-teal-800 animate-pulse" />
+    <div className="rounded-xl border border-teal-800/15 bg-cream-100 p-3.5 sm:p-4 transition-all shadow-subtle">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
+        <div className="flex items-center gap-2 font-black text-teal-950 text-xs sm:text-base flex-wrap">
+          <Volume2 className="h-5 w-5 text-teal-800 animate-pulse shrink-0" />
           <span>{label}</span>
-          <span className="text-xs font-bold px-2 py-0.5 rounded bg-cream-200 text-teal-900 border border-teal-800/10">
-            {selectedLanguage === 'pidgin' ? 'Nigerian Pidgin' : 'English'}
+          <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded bg-cream-200 text-teal-900 border border-teal-800/10">
+            {selectedLanguage === 'pidgin' ? 'Pidgin' : 'English'}
           </span>
         </div>
 
@@ -89,7 +89,7 @@ export function AudioVoicePlayer({
       </p>
 
       {/* Audio controls */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-2">
         <button
           type="button"
           onClick={handlePlayToggle}

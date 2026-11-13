@@ -16,7 +16,7 @@ import {
   HeartHandshake,
   UserPlus,
   Download,
-  Database
+  Calendar
 } from 'lucide-react';
 import { playChime } from '@/lib/audioVoice';
 
@@ -27,15 +27,18 @@ export default function CarePathPrototypeApp() {
 
   if (!store.isClient || store.isLoadingBackend) {
     return (
-      <div className="flex h-screen items-center justify-center bg-surface-base">
-        <div className="flex flex-col items-center gap-3">
+      <div className="flex h-screen w-full items-center justify-center bg-surface-base px-4">
+        <div className="flex flex-col items-center gap-3 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-800 text-cream-200 font-black text-lg border-2 border-teal-700 animate-pulse shadow-card">
             CP
           </div>
-          <div className="flex items-center gap-2 text-teal-950 font-black text-sm">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+          <div className="flex items-center gap-2 text-teal-950 font-black text-sm sm:text-base">
+            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping" />
             <span>Connecting to CarePath Clinical Database...</span>
           </div>
+          <p className="text-xs text-surface-dark/60 font-semibold">
+            Initializing national continuity schedules & SMS engine
+          </p>
         </div>
       </div>
     );
@@ -59,18 +62,18 @@ export default function CarePathPrototypeApp() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen w-full bg-surface-base">
-      {/* 1. PRODUCTION-READY RESPONSIVE HEADER */}
-      <header className="sticky top-0 z-40 bg-teal-950 text-white px-4 sm:px-6 py-2.5 border-b-2 border-teal-900 shadow-subtle">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+    <div className="flex flex-col min-h-screen w-full bg-surface-base antialiased">
+      {/* 1. UNIVERSAL RESPONSIVE NAVIGATION BAR */}
+      <header className="sticky top-0 z-40 bg-teal-950 text-white px-3 sm:px-6 py-2.5 border-b-2 border-teal-900 shadow-subtle">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Brand Identity */}
-          <div className="flex items-center gap-3 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-800 text-cream-200 font-black text-sm border-2 border-teal-700 shadow-xs shrink-0">
               CP
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 sm:gap-2">
                 <span className="font-black tracking-tight text-base sm:text-lg text-white truncate">
                   CarePath NG
                 </span>
@@ -78,78 +81,82 @@ export default function CarePathPrototypeApp() {
                   Clinical v1.0
                 </span>
               </div>
-              <p className="hidden md:block text-[11px] text-teal-300 font-bold leading-none mt-0.5 truncate">
+              <p className="hidden xl:block text-[11px] text-teal-300 font-bold leading-none mt-0.5 truncate">
                 Maternal & Child Healthcare Continuity Platform • Nigeria
               </p>
             </div>
           </div>
 
-          {/* Desktop Navigation Tabs */}
-          <nav className="hidden md:flex items-center bg-teal-900 rounded-xl p-1 border border-teal-800 text-xs sm:text-sm">
+          {/* Desktop & Tablet Navigation Tabs */}
+          <nav className="hidden md:flex items-center bg-teal-900/90 rounded-xl p-1 border border-teal-800 text-xs lg:text-sm">
             <button
               type="button"
               onClick={() => setActiveDesktopTab('patient')}
-              className={`btn-tactile flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-black transition-all ${
+              className={`btn-tactile flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-3.5 py-1.5 rounded-lg font-black transition-all ${
                 activeDesktopTab === 'patient'
                   ? 'bg-cream-200 text-teal-950 shadow-xs'
                   : 'text-teal-200 hover:text-white'
               }`}
             >
-              <HeartHandshake className="h-4 w-4" />
-              <span>Family Care Hub</span>
+              <HeartHandshake className="h-4 w-4 shrink-0" />
+              <span className="hidden lg:inline">Family Care Hub</span>
+              <span className="lg:hidden">Care Hub</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveDesktopTab('portal')}
-              className={`btn-tactile flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-black transition-all ${
+              className={`btn-tactile flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-3.5 py-1.5 rounded-lg font-black transition-all ${
                 activeDesktopTab === 'portal'
                   ? 'bg-cream-200 text-teal-950 shadow-xs'
                   : 'text-teal-200 hover:text-white'
               }`}
             >
-              <Building2 className="h-4 w-4" />
-              <span>PHC Nurse Portal</span>
+              <Building2 className="h-4 w-4 shrink-0" />
+              <span className="hidden lg:inline">PHC Nurse Portal</span>
+              <span className="lg:hidden">PHC Portal</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveDesktopTab('sms')}
-              className={`btn-tactile flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-black transition-all ${
+              className={`btn-tactile flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-3.5 py-1.5 rounded-lg font-black transition-all ${
                 activeDesktopTab === 'sms'
                   ? 'bg-cream-200 text-teal-950 shadow-xs'
                   : 'text-teal-200 hover:text-white'
               }`}
             >
-              <Smartphone className="h-4 w-4" />
-              <span>SMS Gateway Feed</span>
+              <Smartphone className="h-4 w-4 shrink-0" />
+              <span className="hidden lg:inline">SMS Gateway Feed</span>
+              <span className="lg:hidden">SMS Feed</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveDesktopTab('logs')}
-              className={`btn-tactile flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-black transition-all ${
+              className={`btn-tactile flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-3.5 py-1.5 rounded-lg font-black transition-all ${
                 activeDesktopTab === 'logs'
                   ? 'bg-cream-200 text-teal-950 shadow-xs'
                   : 'text-teal-200 hover:text-white'
               }`}
             >
-              <Activity className="h-4 w-4" />
-              <span>Database Audit Log</span>
+              <Activity className="h-4 w-4 shrink-0" />
+              <span className="hidden lg:inline">Audit Engine</span>
+              <span className="lg:hidden">Audit</span>
             </button>
           </nav>
 
           {/* Action Header Buttons */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               type="button"
               onClick={() => {
                 playChime('reminder');
                 store.setIsNewPatientModalOpen(true);
               }}
-              className="btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cream-200 hover:bg-cream-300 text-teal-950 text-xs sm:text-sm font-black shadow-xs transition-colors"
+              className="btn-tactile flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-cream-200 hover:bg-cream-300 text-teal-950 text-xs sm:text-sm font-black shadow-xs transition-colors shrink-0"
             >
-              <UserPlus className="h-4 w-4 text-teal-950" />
+              <UserPlus className="h-4 w-4 text-teal-950 shrink-0" />
               <span className="hidden sm:inline">+ Register Patient</span>
               <span className="sm:hidden">+ Patient</span>
             </button>
@@ -158,10 +165,10 @@ export default function CarePathPrototypeApp() {
               type="button"
               onClick={store.exportDataToJson}
               title="Export all clinical records from database"
-              className="btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-900 hover:bg-teal-800 text-teal-200 text-xs sm:text-sm font-black border border-teal-800 transition-colors shadow-xs"
+              className="btn-tactile flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-teal-900 hover:bg-teal-800 text-teal-200 text-xs sm:text-sm font-black border border-teal-800 transition-colors shadow-xs shrink-0"
             >
-              <Download className="h-4 w-4" />
-              <span className="hidden lg:inline">Export</span>
+              <Download className="h-4 w-4 shrink-0" />
+              <span className="hidden xl:inline">Export</span>
             </button>
           </div>
 
@@ -169,12 +176,12 @@ export default function CarePathPrototypeApp() {
       </header>
 
       {/* 2. RESPONSIVE WORKSPACE CONTAINER */}
-      <main className="flex-1 w-full px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-4">
+      <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-3.5 sm:py-5 max-w-7xl mx-auto">
         
-        {/* MOBILE VIEW CONTROLLER (< md screens) */}
-        <div className="block md:hidden">
+        {/* MOBILE VIEW CONTROLLER (< md screens: phones & phablets) */}
+        <div className="block md:hidden w-full">
           {mobileInnerTab === 'sms' ? (
-            <div className="w-full max-w-lg mx-auto pb-16">
+            <div className="w-full max-w-lg mx-auto pb-20">
               <SmsSimulator
                 smsLog={store.smsLog}
                 customPhone={store.customJudgePhone}
@@ -184,7 +191,7 @@ export default function CarePathPrototypeApp() {
               />
             </div>
           ) : mobileInnerTab === 'portal' ? (
-            <div className="w-full max-w-lg mx-auto pb-16">
+            <div className="w-full max-w-2xl mx-auto pb-20">
               <FacilityPortal
                 events={store.events}
                 patients={store.patients}
@@ -202,28 +209,30 @@ export default function CarePathPrototypeApp() {
               />
             </div>
           ) : (
-            <PatientCareView
-              patients={store.patients}
-              activePatient={store.activePatient}
-              events={store.activeEvents}
-              smsLog={store.smsLog}
-              mobileTab={mobileInnerTab}
-              onMobileTabChange={setMobileInnerTab}
-              onSelectPatient={store.handleSelectPatient}
-              onOpenEventSheet={store.setSelectedEventForSheet}
-              onConfirmEvent={(id) => store.confirmAppointment(id, 'app')}
-              onRescheduleEvent={store.requestReschedule}
-              onReplySms={handleSmsReply}
-              onDispatchReminder={store.dispatchManualReminder}
-              onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
-              onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
-              onDeletePatient={store.deletePatient}
-            />
+            <div className="w-full pb-20">
+              <PatientCareView
+                patients={store.patients}
+                activePatient={store.activePatient}
+                events={store.activeEvents}
+                smsLog={store.smsLog}
+                mobileTab={mobileInnerTab}
+                onMobileTabChange={setMobileInnerTab}
+                onSelectPatient={store.handleSelectPatient}
+                onOpenEventSheet={store.setSelectedEventForSheet}
+                onConfirmEvent={(id) => store.confirmAppointment(id, 'app')}
+                onRescheduleEvent={store.requestReschedule}
+                onReplySms={handleSmsReply}
+                onDispatchReminder={store.dispatchManualReminder}
+                onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
+                onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
+                onDeletePatient={store.deletePatient}
+              />
+            </div>
           )}
         </div>
 
-        {/* DESKTOP RESPONSIVE VIEW (>= md screens) */}
-        <div className="hidden md:block">
+        {/* DESKTOP RESPONSIVE VIEW (>= md screens: tablets, laptops, desktops) */}
+        <div className="hidden md:block w-full">
           {activeDesktopTab === 'patient' && (
             <PatientCareView
               patients={store.patients}
@@ -245,7 +254,7 @@ export default function CarePathPrototypeApp() {
           )}
 
           {activeDesktopTab === 'portal' && (
-            <div className="max-w-7xl mx-auto h-[calc(100vh-110px)]">
+            <div className="w-full min-h-[calc(100vh-120px)]">
               <FacilityPortal
                 events={store.events}
                 patients={store.patients}
@@ -265,7 +274,7 @@ export default function CarePathPrototypeApp() {
           )}
 
           {activeDesktopTab === 'sms' && (
-            <div className="max-w-3xl mx-auto h-[calc(100vh-110px)]">
+            <div className="max-w-3xl mx-auto min-h-[calc(100vh-120px)]">
               <SmsSimulator
                 smsLog={store.smsLog}
                 customPhone={store.customJudgePhone}
@@ -277,7 +286,7 @@ export default function CarePathPrototypeApp() {
           )}
 
           {activeDesktopTab === 'logs' && (
-            <div className="max-w-4xl mx-auto h-[calc(100vh-110px)]">
+            <div className="max-w-4xl mx-auto min-h-[calc(100vh-120px)]">
               <LiveEventLog logs={store.auditLogs} />
             </div>
           )}

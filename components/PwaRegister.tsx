@@ -83,7 +83,7 @@ export function PwaRegister() {
 
       {/* Floating PWA Install Banner (When installable) */}
       {isInstallable && !isInstalled && (
-        <div className="fixed bottom-20 md:bottom-6 right-4 z-50 bg-teal-950 text-white p-3 sm:p-4 rounded-2xl shadow-float border-2 border-teal-700/80 flex items-center gap-3 animate-in slide-in-from-bottom duration-200 max-w-sm">
+        <div className="fixed bottom-20 md:bottom-6 left-3 right-3 sm:left-auto sm:right-4 z-50 bg-teal-950 text-white p-3 sm:p-4 rounded-2xl shadow-float border-2 border-teal-700/80 flex items-center gap-3 animate-in slide-in-from-bottom duration-200 max-w-sm">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-800 text-cream-200 shrink-0 font-black text-sm">
             CP
           </div>

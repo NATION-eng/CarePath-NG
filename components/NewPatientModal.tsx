@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { CareCategory } from '@/lib/types';
-import { X, UserPlus, Heart, Baby, Shield, Users, Phone, MapPin } from 'lucide-react';
+import { X, UserPlus, Heart, Baby, Shield, Users, Phone } from 'lucide-react';
 import { playChime } from '@/lib/audioVoice';
 
 interface NewPatientModalProps {
@@ -53,14 +53,17 @@ export function NewPatientModal({ isOpen, onClose, onRegisterPatient }: NewPatie
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-xs p-0 sm:p-4 animate-in fade-in duration-150">
       <div className="fixed inset-0" onClick={onClose} />
 
-      <div className="relative w-full max-w-lg rounded-3xl bg-white p-6 shadow-float z-10 max-h-[90vh] overflow-y-auto border-2 border-surface-border">
+      <div className="relative w-full max-w-lg rounded-t-3xl sm:rounded-3xl bg-white p-4 sm:p-6 shadow-float z-10 max-h-[92vh] sm:max-h-[85vh] overflow-y-auto border-2 border-surface-border">
+        {/* Mobile drag handle */}
+        <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-surface-border sm:hidden" />
+
         {/* Header */}
-        <div className="flex items-center justify-between border-b-2 border-surface-border pb-3.5 mb-4">
+        <div className="flex items-center justify-between border-b-2 border-surface-border pb-3 mb-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-800 text-cream-200">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-800 text-cream-200 shrink-0">
               <UserPlus className="h-5 w-5" />
             </div>
             <div>
@@ -80,170 +83,178 @@ export function NewPatientModal({ isOpen, onClose, onRegisterPatient }: NewPatie
         <form onSubmit={handleSubmit} className="space-y-4 text-xs sm:text-sm">
           {/* Patient Full Name */}
           <div>
-            <label className="block font-black text-teal-950 mb-1.5">Patient Full Name *</label>
+            <label className="block font-black text-teal-950 mb-1">Patient Full Name *</label>
             <input
               type="text"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="e.g. Fatima Bello or Baby Kemi"
-              className="w-full rounded-xl border-2 border-surface-border bg-surface-base px-3.5 py-2.5 font-bold text-surface-dark focus:outline-none focus:ring-2 focus:ring-teal-700"
+              className="w-full rounded-xl border-2 border-surface-border bg-surface-base px-3.5 py-2.5 text-base sm:text-sm font-bold text-surface-dark focus:outline-none focus:ring-2 focus:ring-teal-700"
             />
           </div>
 
-          {/* Care Category */}
+          {/* Care Category (1-col on tiny mobile, 2-col on sm+) */}
           <div>
-            <label className="block font-black text-teal-950 mb-1.5">Care Category *</label>
-            <div className="grid grid-cols-2 gap-2">
+            <label className="block font-black text-teal-950 mb-1">Care Category *</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => {
                   setCategory('immunisation');
                   setRelationship('child');
-                  setStageInfo('Newborn (0 Wks)');
+                  setHasPersonalPhone(false);
                 }}
-                className={`p-3 rounded-xl border-2 text-left transition-all ${
+                className={`p-3 rounded-xl border-2 text-left font-black flex items-center gap-2.5 transition-all ${
                   category === 'immunisation'
-                    ? 'border-teal-800 bg-teal-50 text-teal-950 font-black shadow-xs'
-                    : 'border-surface-border bg-surface-base text-surface-dark/80 font-bold'
+                    ? 'border-teal-800 bg-teal-50 text-teal-950 shadow-xs'
+                    : 'border-surface-border bg-surface-base text-surface-dark/80 hover:bg-surface-muted'
                 }`}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <Baby className="h-4 w-4 text-teal-800" />
-                  <span>Infant Immunisation</span>
+                <Baby className="h-5 w-5 text-teal-800 shrink-0" />
+                <div>
+                  <div className="text-xs sm:text-sm">Child Immunisation</div>
+                  <div className="text-[10px] text-surface-dark/60 font-semibold">NPHCDA Yellow Card Schedule</div>
                 </div>
-                <p className="text-[11px] font-normal text-surface-dark/70">NPHCDA 2024 Schedule</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => {
                   setCategory('maternal');
-                  setRelationship('self');
-                  setStageInfo('28 Weeks Gestation');
+                  setRelationship('mother');
+                  setHasPersonalPhone(true);
                 }}
-                className={`p-3 rounded-xl border-2 text-left transition-all ${
+                className={`p-3 rounded-xl border-2 text-left font-black flex items-center gap-2.5 transition-all ${
                   category === 'maternal'
-                    ? 'border-teal-800 bg-teal-50 text-teal-950 font-black shadow-xs'
-                    : 'border-surface-border bg-surface-base text-surface-dark/80 font-bold'
+                    ? 'border-teal-800 bg-teal-50 text-teal-950 shadow-xs'
+                    : 'border-surface-border bg-surface-base text-surface-dark/80 hover:bg-surface-muted'
                 }`}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <Heart className="h-4 w-4 text-teal-800" />
-                  <span>Maternal ANC</span>
+                <Heart className="h-5 w-5 text-rose-600 shrink-0" />
+                <div>
+                  <div className="text-xs sm:text-sm">Maternal ANC Care</div>
+                  <div className="text-[10px] text-surface-dark/60 font-semibold">Antenatal Federal Pathway</div>
                 </div>
-                <p className="text-[11px] font-normal text-surface-dark/70">Antenatal Consultations</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => {
                   setCategory('postnatal');
-                  setRelationship('self');
-                  setStageInfo('6 Weeks Postnatal');
+                  setRelationship('mother');
                 }}
-                className={`p-3 rounded-xl border-2 text-left transition-all ${
+                className={`p-3 rounded-xl border-2 text-left font-black flex items-center gap-2.5 transition-all ${
                   category === 'postnatal'
-                    ? 'border-teal-800 bg-teal-50 text-teal-950 font-black shadow-xs'
-                    : 'border-surface-border bg-surface-base text-surface-dark/80 font-bold'
+                    ? 'border-teal-800 bg-teal-50 text-teal-950 shadow-xs'
+                    : 'border-surface-border bg-surface-base text-surface-dark/80 hover:bg-surface-muted'
                 }`}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <Users className="h-4 w-4 text-teal-800" />
-                  <span>Postnatal Care</span>
+                <Users className="h-5 w-5 text-teal-800 shrink-0" />
+                <div>
+                  <div className="text-xs sm:text-sm">Postnatal & Neonatal</div>
+                  <div className="text-[10px] text-surface-dark/60 font-semibold">6-Week Post-Delivery Care</div>
                 </div>
-                <p className="text-[11px] font-normal text-surface-dark/70">Mother & Newborn Review</p>
               </button>
 
               <button
                 type="button"
                 onClick={() => {
                   setCategory('general');
-                  setRelationship('mother');
-                  setStageInfo('Routine Review');
+                  setRelationship('self');
                 }}
-                className={`p-3 rounded-xl border-2 text-left transition-all ${
+                className={`p-3 rounded-xl border-2 text-left font-black flex items-center gap-2.5 transition-all ${
                   category === 'general'
-                    ? 'border-teal-800 bg-teal-50 text-teal-950 font-black shadow-xs'
-                    : 'border-surface-border bg-surface-base text-surface-dark/80 font-bold'
+                    ? 'border-teal-800 bg-teal-50 text-teal-950 shadow-xs'
+                    : 'border-surface-border bg-surface-base text-surface-dark/80 hover:bg-surface-muted'
                 }`}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <Shield className="h-4 w-4 text-teal-800" />
-                  <span>Chronic / General</span>
+                <Shield className="h-5 w-5 text-emerald-700 shrink-0" />
+                <div>
+                  <div className="text-xs sm:text-sm">General & Chronic</div>
+                  <div className="text-[10px] text-surface-dark/60 font-semibold">Hypertension, Diabetes, Wellness</div>
                 </div>
-                <p className="text-[11px] font-normal text-surface-dark/70">Blood pressure, Diabetes, etc.</p>
               </button>
             </div>
           </div>
 
-          {/* Current Clinical Stage */}
+          {/* Stage / Milestone Description */}
           <div>
-            <label className="block font-black text-teal-950 mb-1.5">Current Health Stage</label>
+            <label className="block font-black text-teal-950 mb-1">Current Milestone / Stage Info</label>
             <input
               type="text"
               value={stageInfo}
               onChange={(e) => setStageInfo(e.target.value)}
-              placeholder="e.g. 6 Weeks Postnatal, 32 Weeks Gestation, or Routine Check"
-              className="w-full rounded-xl border-2 border-surface-border bg-surface-base px-3.5 py-2.5 font-bold text-surface-dark focus:outline-none focus:ring-2 focus:ring-teal-700"
+              placeholder={category === 'immunisation' ? 'e.g. Newborn (0 Weeks)' : 'e.g. 28 Weeks Gestation'}
+              className="w-full rounded-xl border-2 border-surface-border bg-surface-base px-3.5 py-2.5 text-base sm:text-sm font-bold text-surface-dark focus:outline-none focus:ring-2 focus:ring-teal-700"
             />
           </div>
 
-          {/* Phone Ownership & Proxy Management */}
-          <div className="bg-surface-base p-4 rounded-2xl border-2 border-surface-border space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="font-black text-teal-950">Does patient own a personal mobile phone?</span>
-              <button
-                type="button"
-                onClick={() => setHasPersonalPhone(!hasPersonalPhone)}
-                className={`px-3 py-1 rounded-xl text-xs font-black transition-all ${
-                  hasPersonalPhone
-                    ? 'bg-teal-800 text-white shadow-xs'
-                    : 'bg-cream-200 text-teal-950 border border-teal-800/20'
-                }`}
-              >
-                {hasPersonalPhone ? 'Yes (Personal Phone)' : 'No (Caregiver Proxy)'}
-              </button>
+          {/* Phone Ownership Toggle */}
+          <div className="bg-surface-base rounded-2xl p-3 sm:p-4 border-2 border-surface-border space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <span className="font-black text-teal-950 text-xs sm:text-sm block">Does patient have a personal phone?</span>
+                <span className="text-[11px] text-surface-dark/70 font-semibold">
+                  {hasPersonalPhone ? 'SMS sent directly to patient' : 'Patient uses a Proxy Caregiver / Guardian'}
+                </span>
+              </div>
+              <input
+                type="checkbox"
+                checked={hasPersonalPhone}
+                onChange={(e) => setHasPersonalPhone(e.target.checked)}
+                className="h-5 w-5 rounded border-2 border-teal-800 text-teal-800 focus:ring-teal-700 shrink-0"
+              />
             </div>
 
             {hasPersonalPhone ? (
               <div>
-                <label className="block font-bold text-surface-dark mb-1">Patient Mobile Phone Number *</label>
-                <input
-                  type="tel"
-                  required
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="e.g. +234 803 123 4567"
-                  className="w-full rounded-xl border-2 border-surface-border bg-white px-3.5 py-2.5 font-bold text-surface-dark focus:outline-none focus:ring-2 focus:ring-teal-700"
-                />
+                <label className="block font-black text-teal-950 mb-1">Patient Mobile Phone Number *</label>
+                <div className="relative">
+                  <Phone className="absolute left-3.5 top-3 h-4 w-4 text-surface-dark/50" />
+                  <input
+                    type="tel"
+                    required
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="e.g. +234 803 123 4567"
+                    className="w-full rounded-xl border-2 border-surface-border bg-white pl-10 pr-4 py-2.5 text-base sm:text-sm font-bold text-surface-dark focus:outline-none focus:ring-2 focus:ring-teal-700"
+                  />
+                </div>
               </div>
             ) : (
               <div className="space-y-3 pt-1 border-t border-surface-border">
-                <p className="text-xs text-surface-dark/70 font-semibold">
-                  Reminders will be routed to the authorized proxy caregiver:
-                </p>
+                <div>
+                  <label className="block font-black text-teal-950 mb-1">Proxy Caregiver / Guardian Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={proxyName}
+                    onChange={(e) => setProxyName(e.target.value)}
+                    placeholder="e.g. Amina Danjuma (Mother)"
+                    className="w-full rounded-xl border-2 border-surface-border bg-white px-3.5 py-2 text-base sm:text-sm font-bold text-surface-dark focus:outline-none focus:ring-2 focus:ring-teal-700"
+                  />
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <div>
-                    <label className="block font-bold text-surface-dark mb-1">Caregiver Name *</label>
-                    <input
-                      type="text"
-                      required
-                      value={proxyName}
-                      onChange={(e) => setProxyName(e.target.value)}
-                      placeholder="e.g. Mrs. Amina Bello"
-                      className="w-full rounded-xl border-2 border-surface-border bg-white px-3.5 py-2 font-bold text-surface-dark"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-surface-dark mb-1">Caregiver Phone *</label>
+                    <label className="block font-black text-teal-950 mb-1">Proxy Mobile Number *</label>
                     <input
                       type="tel"
                       required
                       value={proxyPhone}
                       onChange={(e) => setProxyPhone(e.target.value)}
-                      placeholder="e.g. +234 802 987 6543"
-                      className="w-full rounded-xl border-2 border-surface-border bg-white px-3.5 py-2 font-bold text-surface-dark"
+                      placeholder="+234 802 987 6543"
+                      className="w-full rounded-xl border-2 border-surface-border bg-white px-3.5 py-2 text-base sm:text-sm font-bold text-surface-dark focus:outline-none focus:ring-2 focus:ring-teal-700"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-black text-teal-950 mb-1">Relationship to Patient</label>
+                    <input
+                      type="text"
+                      value={proxyRelationship}
+                      onChange={(e) => setProxyRelationship(e.target.value)}
+                      placeholder="e.g. Mother, Father, Aunt"
+                      className="w-full rounded-xl border-2 border-surface-border bg-white px-3.5 py-2 text-base sm:text-sm font-bold text-surface-dark focus:outline-none focus:ring-2 focus:ring-teal-700"
                     />
                   </div>
                 </div>
@@ -251,14 +262,20 @@ export function NewPatientModal({ isOpen, onClose, onRegisterPatient }: NewPatie
             )}
           </div>
 
-          {/* Submit Button */}
-          <div className="pt-2">
+          {/* Action Buttons */}
+          <div className="flex gap-2.5 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="btn-tactile flex-1 py-3 rounded-xl border-2 border-surface-border text-surface-dark font-black text-xs sm:text-sm hover:bg-surface-muted"
+            >
+              Cancel
+            </button>
             <button
               type="submit"
-              className="btn-tactile w-full py-3.5 rounded-2xl bg-teal-800 text-white font-black text-sm hover:bg-teal-900 shadow-card flex items-center justify-center gap-2"
+              className="btn-tactile flex-1 py-3 rounded-xl bg-teal-800 hover:bg-teal-900 text-white font-black text-xs sm:text-sm shadow-card"
             >
-              <UserPlus className="h-5 w-5" />
-              <span>Register Patient & Generate Care Pathway</span>
+              Register & Save
             </button>
           </div>
         </form>
