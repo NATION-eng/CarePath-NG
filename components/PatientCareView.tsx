@@ -610,60 +610,6 @@ export function PatientCareView({
 
         </div>
       </div>
-
-      {/* 3. FIXED BOTTOM THUMB NAVIGATION (MOBILE ONLY: < md screens) */}
-      <nav className="fixed md:hidden bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t-2 border-surface-border px-2 sm:px-4 py-2 flex items-center justify-around safe-bottom z-30 shadow-subtle">
-        <button
-          type="button"
-          onClick={() => {
-            onMobileTabChange('home');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          className={`flex flex-col items-center py-1 px-2.5 rounded-lg text-[11px] sm:text-xs font-black transition-colors ${
-            mobileTab === 'home' ? 'text-teal-900' : 'text-surface-dark/60 hover:text-teal-900'
-          }`}
-        >
-          <Home className={`h-5 w-5 mb-0.5 ${mobileTab === 'home' ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span>Care Hub</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            onMobileTabChange('home');
-            const el = document.getElementById('carepath-milestones');
-            if (el) {
-              el.scrollIntoView({ behavior: 'smooth' });
-            }
-          }}
-          className="flex flex-col items-center py-1 px-2.5 rounded-lg text-[11px] sm:text-xs font-black text-surface-dark/60 hover:text-teal-900 transition-colors"
-        >
-          <Layers className="h-5 w-5 mb-0.5 stroke-2" />
-          <span>Timeline</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onMobileTabChange('sms')}
-          className={`flex flex-col items-center py-1 px-2.5 rounded-lg text-[11px] sm:text-xs font-black transition-colors ${
-            mobileTab === 'sms' ? 'text-teal-900' : 'text-surface-dark/60 hover:text-teal-900'
-          }`}
-        >
-          <Smartphone className={`h-5 w-5 mb-0.5 ${mobileTab === 'sms' ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span>SMS Feed</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onMobileTabChange('portal')}
-          className={`flex flex-col items-center py-1 px-2.5 rounded-lg text-[11px] sm:text-xs font-black transition-colors ${
-            mobileTab === 'portal' ? 'text-teal-900' : 'text-surface-dark/60 hover:text-teal-900'
-          }`}
-        >
-          <Building2 className={`h-5 w-5 mb-0.5 ${mobileTab === 'portal' ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span>PHC Portal</span>
-        </button>
-      </nav>
     </div>
   );
 }

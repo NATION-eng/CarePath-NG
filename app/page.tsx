@@ -16,14 +16,16 @@ import {
   HeartHandshake,
   UserPlus,
   Download,
-  Calendar
+  Calendar,
+  Layers
 } from 'lucide-react';
 import { playChime } from '@/lib/audioVoice';
 
+type AppTab = 'patient' | 'portal' | 'sms' | 'logs';
+
 export default function CarePathApp() {
   const store = useCarePathStore();
-  const [activeDesktopTab, setActiveDesktopTab] = useState<'patient' | 'portal' | 'sms' | 'logs'>('patient');
-  const [mobileInnerTab, setMobileInnerTab] = useState<'home' | 'timeline' | 'sms' | 'portal'>('home');
+  const [activeTab, setActiveTab] = useState<AppTab>('patient');
 
   if (!store.isClient || store.isLoadingBackend) {
     return (
@@ -87,13 +89,13 @@ export default function CarePathApp() {
             </div>
           </div>
 
-          {/* Desktop & Tablet Navigation Tabs */}
+          {/* Desktop & Tablet Navigation Tabs (>= md screens) */}
           <nav className="hidden md:flex items-center bg-teal-900/90 rounded-xl p-1 border border-teal-800 text-xs lg:text-sm">
             <button
               type="button"
-              onClick={() => setActiveDesktopTab('patient')}
+              onClick={() => setActiveTab('patient')}
               className={`btn-tactile flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-3.5 py-1.5 rounded-lg font-black transition-all ${
-                activeDesktopTab === 'patient'
+                activeTab === 'patient'
                   ? 'bg-cream-200 text-teal-950 shadow-xs'
                   : 'text-teal-200 hover:text-white'
               }`}
@@ -105,9 +107,9 @@ export default function CarePathApp() {
 
             <button
               type="button"
-              onClick={() => setActiveDesktopTab('portal')}
+              onClick={() => setActiveTab('portal')}
               className={`btn-tactile flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-3.5 py-1.5 rounded-lg font-black transition-all ${
-                activeDesktopTab === 'portal'
+                activeTab === 'portal'
                   ? 'bg-cream-200 text-teal-950 shadow-xs'
                   : 'text-teal-200 hover:text-white'
               }`}
@@ -119,9 +121,9 @@ export default function CarePathApp() {
 
             <button
               type="button"
-              onClick={() => setActiveDesktopTab('sms')}
+              onClick={() => setActiveTab('sms')}
               className={`btn-tactile flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-3.5 py-1.5 rounded-lg font-black transition-all ${
-                activeDesktopTab === 'sms'
+                activeTab === 'sms'
                   ? 'bg-cream-200 text-teal-950 shadow-xs'
                   : 'text-teal-200 hover:text-white'
               }`}
@@ -133,9 +135,9 @@ export default function CarePathApp() {
 
             <button
               type="button"
-              onClick={() => setActiveDesktopTab('logs')}
+              onClick={() => setActiveTab('logs')}
               className={`btn-tactile flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-3.5 py-1.5 rounded-lg font-black transition-all ${
-                activeDesktopTab === 'logs'
+                activeTab === 'logs'
                   ? 'bg-cream-200 text-teal-950 shadow-xs'
                   : 'text-teal-200 hover:text-white'
               }`}
@@ -175,72 +177,74 @@ export default function CarePathApp() {
         </div>
       </header>
 
-      {/* 2. RESPONSIVE WORKSPACE CONTAINER */}
-      <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-3.5 sm:py-5 max-w-7xl mx-auto">
-        
-        {/* MOBILE VIEW CONTROLLER (< md screens: phones & phablets) */}
-        <div className="block md:hidden w-full">
-          {mobileInnerTab === 'sms' ? (
-            <div className="w-full max-w-lg mx-auto pb-20">
-              <SmsSimulator
-                smsLog={store.smsLog}
-                customPhone={store.customJudgePhone}
-                onUpdatePhone={store.handleUpdateJudgePhone}
-                onReplySms={handleSmsReply}
-                onReset={() => {}}
-              />
-            </div>
-          ) : mobileInnerTab === 'portal' ? (
-            <div className="w-full max-w-2xl mx-auto pb-20">
-              <FacilityPortal
-                events={store.events}
-                patients={store.patients}
-                onConfirm={(id) => store.confirmAppointment(id, 'app')}
-                onReschedule={store.requestReschedule}
-                onDispatchReminder={store.dispatchManualReminder}
-                onMarkCompleted={store.markAdministeredAndCompleted}
-                onSelectPatient={(id) => {
-                  store.handleSelectPatient(id);
-                  setMobileInnerTab('home');
-                }}
-                onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
-                onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
-                onExportData={store.exportDataToJson}
-              />
-            </div>
-          ) : (
-            <div className="w-full pb-20">
-              <PatientCareView
-                patients={store.patients}
-                activePatient={store.activePatient}
-                events={store.activeEvents}
-                smsLog={store.smsLog}
-                mobileTab={mobileInnerTab}
-                onMobileTabChange={setMobileInnerTab}
-                onSelectPatient={store.handleSelectPatient}
-                onOpenEventSheet={store.setSelectedEventForSheet}
-                onConfirmEvent={(id) => store.confirmAppointment(id, 'app')}
-                onRescheduleEvent={store.requestReschedule}
-                onReplySms={handleSmsReply}
-                onDispatchReminder={store.dispatchManualReminder}
-                onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
-                onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
-                onDeletePatient={store.deletePatient}
-              />
-            </div>
-          )}
-        </div>
+      {/* MOBILE TOP TAB BAR (< md screens) */}
+      <div className="md:hidden sticky top-[53px] z-30 bg-teal-900 border-b border-teal-800 px-2 py-1.5 flex items-center justify-around text-xs font-black gap-1 shadow-xs">
+        <button
+          type="button"
+          onClick={() => setActiveTab('patient')}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all ${
+            activeTab === 'patient'
+              ? 'bg-cream-200 text-teal-950 shadow-xs'
+              : 'text-teal-200 hover:text-white'
+          }`}
+        >
+          <HeartHandshake className="h-3.5 w-3.5" />
+          <span>Care Hub</span>
+        </button>
 
-        {/* DESKTOP RESPONSIVE VIEW (>= md screens: tablets, laptops, desktops) */}
-        <div className="hidden md:block w-full">
-          {activeDesktopTab === 'patient' && (
+        <button
+          type="button"
+          onClick={() => setActiveTab('portal')}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all ${
+            activeTab === 'portal'
+              ? 'bg-cream-200 text-teal-950 shadow-xs'
+              : 'text-teal-200 hover:text-white'
+          }`}
+        >
+          <Building2 className="h-3.5 w-3.5" />
+          <span>Portal</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('sms')}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all ${
+            activeTab === 'sms'
+              ? 'bg-cream-200 text-teal-950 shadow-xs'
+              : 'text-teal-200 hover:text-white'
+          }`}
+        >
+          <Smartphone className="h-3.5 w-3.5" />
+          <span>SMS</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('logs')}
+          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all ${
+            activeTab === 'logs'
+              ? 'bg-cream-200 text-teal-950 shadow-xs'
+              : 'text-teal-200 hover:text-white'
+          }`}
+        >
+          <Activity className="h-3.5 w-3.5" />
+          <span>Audit</span>
+        </button>
+      </div>
+
+      {/* 2. MAIN APPLICATION WORKSPACE */}
+      <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-3.5 sm:py-5 max-w-7xl mx-auto pb-24 md:pb-8">
+        
+        {/* CARE HUB VIEW */}
+        {activeTab === 'patient' && (
+          <div className="w-full">
             <PatientCareView
               patients={store.patients}
               activePatient={store.activePatient}
               events={store.activeEvents}
               smsLog={store.smsLog}
               mobileTab="home"
-              onMobileTabChange={setMobileInnerTab}
+              onMobileTabChange={() => {}}
               onSelectPatient={store.handleSelectPatient}
               onOpenEventSheet={store.setSelectedEventForSheet}
               onConfirmEvent={(id) => store.confirmAppointment(id, 'app')}
@@ -251,51 +255,113 @@ export default function CarePathApp() {
               onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
               onDeletePatient={store.deletePatient}
             />
-          )}
+          </div>
+        )}
 
-          {activeDesktopTab === 'portal' && (
-            <div className="w-full min-h-[calc(100vh-120px)]">
-              <FacilityPortal
-                events={store.events}
-                patients={store.patients}
-                onConfirm={(id) => store.confirmAppointment(id, 'app')}
-                onReschedule={store.requestReschedule}
-                onDispatchReminder={store.dispatchManualReminder}
-                onMarkCompleted={store.markAdministeredAndCompleted}
-                onSelectPatient={(id) => {
-                  store.handleSelectPatient(id);
-                  setActiveDesktopTab('patient');
-                }}
-                onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
-                onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
-                onExportData={store.exportDataToJson}
-              />
-            </div>
-          )}
+        {/* PHC NURSE PORTAL VIEW */}
+        {activeTab === 'portal' && (
+          <div className="w-full min-h-[calc(100vh-160px)]">
+            <FacilityPortal
+              events={store.events}
+              patients={store.patients}
+              onConfirm={(id) => store.confirmAppointment(id, 'app')}
+              onReschedule={store.requestReschedule}
+              onDispatchReminder={store.dispatchManualReminder}
+              onMarkCompleted={store.markAdministeredAndCompleted}
+              onSelectPatient={(id) => {
+                store.handleSelectPatient(id);
+                setActiveTab('patient');
+              }}
+              onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
+              onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
+              onExportData={store.exportDataToJson}
+            />
+          </div>
+        )}
 
-          {activeDesktopTab === 'sms' && (
-            <div className="max-w-3xl mx-auto min-h-[calc(100vh-120px)]">
-              <SmsSimulator
-                smsLog={store.smsLog}
-                customPhone={store.customJudgePhone}
-                onUpdatePhone={store.handleUpdateJudgePhone}
-                onReplySms={handleSmsReply}
-                onReset={() => {}}
-              />
-            </div>
-          )}
+        {/* SMS TELEPHONY FEED VIEW */}
+        {activeTab === 'sms' && (
+          <div className="max-w-3xl mx-auto min-h-[calc(100vh-160px)]">
+            <SmsSimulator
+              smsLog={store.smsLog}
+              customPhone={store.customJudgePhone}
+              onUpdatePhone={store.handleUpdateJudgePhone}
+              onReplySms={handleSmsReply}
+              onReset={() => {}}
+            />
+          </div>
+        )}
 
-          {activeDesktopTab === 'logs' && (
-            <div className="max-w-4xl mx-auto min-h-[calc(100vh-120px)]">
-              <LiveEventLog logs={store.auditLogs} />
-            </div>
-          )}
-        </div>
+        {/* DATABASE AUDIT LOGS VIEW */}
+        {activeTab === 'logs' && (
+          <div className="max-w-4xl mx-auto min-h-[calc(100vh-160px)]">
+            <LiveEventLog logs={store.auditLogs} />
+          </div>
+        )}
 
       </main>
 
-      {/* 3. APPOINTMENT DETAIL BOTTOM SHEET MODAL */}
-      {store.selectedEventForSheet && (
+      {/* 3. UNIVERSAL FIXED BOTTOM THUMB NAVIGATION (MOBILE ONLY: ALWAYS VISIBLE ON ALL PAGES) */}
+      <nav className="fixed md:hidden bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t-2 border-surface-border px-3 py-2 flex items-center justify-around safe-bottom z-40 shadow-subtle">
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab('patient');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`flex flex-col items-center py-1 px-3 rounded-lg text-xs font-black transition-colors ${
+            activeTab === 'patient' ? 'text-teal-900 font-black' : 'text-surface-dark/60 hover:text-teal-900'
+          }`}
+        >
+          <HeartHandshake className={`h-5 w-5 mb-0.5 ${activeTab === 'patient' ? 'stroke-[2.5]' : 'stroke-2'}`} />
+          <span>Care Hub</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab('portal');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`flex flex-col items-center py-1 px-3 rounded-lg text-xs font-black transition-colors ${
+            activeTab === 'portal' ? 'text-teal-900 font-black' : 'text-surface-dark/60 hover:text-teal-900'
+          }`}
+        >
+          <Building2 className={`h-5 w-5 mb-0.5 ${activeTab === 'portal' ? 'stroke-[2.5]' : 'stroke-2'}`} />
+          <span>PHC Portal</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab('sms');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`flex flex-col items-center py-1 px-3 rounded-lg text-xs font-black transition-colors ${
+            activeTab === 'sms' ? 'text-teal-900 font-black' : 'text-surface-dark/60 hover:text-teal-900'
+          }`}
+        >
+          <Smartphone className={`h-5 w-5 mb-0.5 ${activeTab === 'sms' ? 'stroke-[2.5]' : 'stroke-2'}`} />
+          <span>SMS Feed</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setActiveTab('logs');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`flex flex-col items-center py-1 px-3 rounded-lg text-xs font-black transition-colors ${
+            activeTab === 'logs' ? 'text-teal-900 font-black' : 'text-surface-dark/60 hover:text-teal-900'
+          }`}
+        >
+          <Activity className={`h-5 w-5 mb-0.5 ${activeTab === 'logs' ? 'stroke-[2.5]' : 'stroke-2'}`} />
+          <span>Audit Log</span>
+        </button>
+      </nav>
+
+      {/* 4. APPOINTMENT DETAIL BOTTOM SHEET MODAL */}
+      {store.selectedEventForSheet && store.activePatient && (
         <AppointmentSheet
           event={store.selectedEventForSheet}
           patient={store.activePatient}
@@ -315,14 +381,14 @@ export default function CarePathApp() {
         />
       )}
 
-      {/* 4. REAL PATIENT REGISTRATION MODAL */}
+      {/* 5. REAL PATIENT REGISTRATION MODAL */}
       <NewPatientModal
         isOpen={store.isNewPatientModalOpen}
         onClose={() => store.setIsNewPatientModalOpen(false)}
         onRegisterPatient={store.registerRealPatient}
       />
 
-      {/* 5. REAL APPOINTMENT BOOKING MODAL */}
+      {/* 6. REAL APPOINTMENT BOOKING MODAL */}
       <NewAppointmentModal
         isOpen={store.isNewAppointmentModalOpen}
         onClose={() => store.setIsNewAppointmentModalOpen(false)}
