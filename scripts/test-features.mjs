@@ -116,6 +116,21 @@ async function runAllTests() {
     assert.strictEqual(checkAptData.events.length, 0, 'Appointments must be cascade deleted');
   });
 
+  // Clean up any test audit logs so database remains pristine for real clinical data
+  try {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const dbFile = path.resolve(process.cwd(), 'data', 'carepath_primary.db.json');
+    if (fs.existsSync(dbFile)) {
+      const raw = JSON.parse(fs.readFileSync(dbFile, 'utf-8'));
+      raw.audit = [];
+      raw.patients = [];
+      raw.events = [];
+      raw.sms = [];
+      fs.writeFileSync(dbFile, JSON.stringify(raw, null, 2), 'utf-8');
+    }
+  } catch {}
+
   console.log('\n====================================================');
   console.log('🎉 ALL BACKEND DATABASE & CRUD TESTS PASSED 100%!');
   console.log('====================================================');

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "lastUpdated": "2026-11-13T16:00:00.000Z",
+  "lastUpdated": "2026-11-13T16:31:59.208Z",
   "facility": {
     "name": "Garki Primary Healthcare Centre",
     "code": "FCT-AMAC-PHC-004",
@@ -10,14 +10,5 @@
   "patients": [],
   "events": [],
   "sms": [],
-  "audit": [
-    {
-      "id": "aud-init-001",
-      "timestamp": "04:00:00 PM WAT",
-      "action": "SYSTEM_INITIALIZED",
-      "details": "CarePath NG Care Continuity Database initialized. Awaiting live clinical registrations.",
-      "actor": "Garki PHC Registry",
-      "status": "info"
-    }
-  ]
+  "audit": []
 }

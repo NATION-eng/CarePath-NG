@@ -85,7 +85,7 @@ export function AppointmentSheet({
                     : 'bg-amber-100 text-amber-900 border border-amber-300'
                 }`}
               >
-                {isConfirmed ? '● Confirmed Attendance' : '○ Scheduled (Awaiting Attendance)'}
+                {isConfirmed ? '● Confirmed Attendance' : '○ Scheduled'}
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-teal-950 leading-tight">
@@ -275,14 +275,14 @@ export function AppointmentSheet({
             </button>
           </div>
 
-          {/* Quick Trigger SMS Button for Judges */}
+          {/* Outbound SMS Dispatch */}
           <button
             type="button"
             onClick={() => onDispatchReminder(event.id)}
             className="btn-tactile flex items-center justify-center gap-2 rounded-xl border-2 border-teal-800/20 bg-cream-100 py-3 px-4 font-extrabold text-xs sm:text-sm text-teal-950 hover:bg-cream-200 transition-colors"
           >
             <Send className="h-4 w-4 text-teal-800" />
-            <span>Test Outbox: Trigger Immediate SMS</span>
+            <span>Dispatch Reminder SMS Now</span>
           </button>
         </div>
       </div>

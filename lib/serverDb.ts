@@ -31,16 +31,7 @@ const INITIAL_CLEAN_DATABASE: DatabaseSchema = {
   patients: [],
   events: [],
   sms: [],
-  audit: [
-    {
-      id: `aud-${Date.now()}`,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WAT',
-      action: 'SYSTEM_INITIALIZED',
-      details: 'CarePath NG Care Continuity Database initialized. Awaiting live clinical registrations.',
-      actor: 'Garki PHC Registry',
-      status: 'info',
-    },
-  ],
+  audit: [],
 };
 
 /**

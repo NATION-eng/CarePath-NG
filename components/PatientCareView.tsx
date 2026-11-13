@@ -70,10 +70,10 @@ export function PatientCareView({
             <Users className="h-8 w-8" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-teal-950 mb-2">
-            Clinical Registry is Ready
+            Primary Healthcare Patient Registry
           </h2>
           <p className="text-sm sm:text-base text-surface-dark/80 font-semibold max-w-lg mx-auto mb-6">
-            All placeholder subjects have been removed. Begin registering real patients for Maternal ANC, Child Immunisation (NPHCDA), or Chronic Care.
+            No patients registered in the current session. Register a patient to initiate Antenatal Care (ANC), Child Immunisation (NPHCDA), or Chronic Healthcare schedules.
           </p>
           <button
             type="button"
@@ -81,7 +81,7 @@ export function PatientCareView({
             className="btn-tactile inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-teal-800 hover:bg-teal-900 text-white font-black text-sm sm:text-base shadow-card w-full sm:w-auto"
           >
             <UserPlus className="h-5 w-5" />
-            <span>+ Register First Patient</span>
+            <span>+ Register Patient</span>
           </button>
         </div>
       </div>
@@ -562,7 +562,7 @@ export function PatientCareView({
               ))}
               {smsLog.length === 0 && (
                 <p className="text-xs text-surface-dark/60 italic text-center py-4">
-                  No notifications dispatched yet. Register a patient to see live SMS traces.
+                  No notifications dispatched yet.
                 </p>
               )}
             </div>
@@ -570,7 +570,7 @@ export function PatientCareView({
             {/* Quick SMS interactive buttons on desktop */}
             <div className="p-3 bg-white border-t border-surface-border">
               <div className="text-xs font-black text-surface-dark/70 uppercase tracking-wider mb-1.5">
-                Simulated Handset Reply Test:
+                Patient Inbound SMS Response:
               </div>
               <div className="flex gap-2">
                 <button

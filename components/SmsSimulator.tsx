@@ -73,23 +73,23 @@ export function SmsSimulator({
         <div className="flex items-center justify-between gap-2 mb-2">
           <span className="font-black text-teal-950 flex items-center gap-1.5">
             <Info className="h-4 w-4 text-teal-800 shrink-0" />
-            <span>Live Pitch Stage Integration:</span>
+            <span>SMS Notification Routing:</span>
           </span>
-          <span className="text-[11px] text-teal-900 font-extrabold hidden sm:inline">Instant Handset Delivery</span>
+          <span className="text-[11px] text-teal-900 font-extrabold hidden sm:inline">Telco SMS Delivery</span>
         </div>
         <form onSubmit={handleSavePhone} className="flex flex-col sm:flex-row gap-2">
           <input
             type="tel"
             value={phoneInput}
             onChange={(e) => setPhoneInput(e.target.value)}
-            placeholder="Enter Judge's Phone Number (+234 803...)"
+            placeholder="Recipient Mobile Phone (+234 803...)"
             className="flex-1 rounded-xl border-2 border-teal-800/30 bg-white px-3.5 py-2 text-base sm:text-sm font-bold text-surface-dark placeholder:text-surface-dark/50 focus:outline-none focus:ring-2 focus:ring-teal-700"
           />
           <button
             type="submit"
             className="btn-tactile rounded-xl bg-teal-800 px-4 py-2 text-xs sm:text-sm font-black text-white hover:bg-teal-900 shadow-xs shrink-0"
           >
-            {isSavedPhone ? 'Saved ✓' : 'Set Phone'}
+            {isSavedPhone ? 'Saved ✓' : 'Save Number'}
           </button>
         </form>
       </div>
@@ -127,7 +127,7 @@ export function SmsSimulator({
 
         {smsLog.length === 0 && (
           <div className="text-center py-12 px-4 text-surface-dark/60 italic text-xs sm:text-sm">
-            No SMS messages yet. Register a patient to see live telephony traces.
+            No SMS messages dispatched yet.
           </div>
         )}
       </div>

@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { playChime } from '@/lib/audioVoice';
 
-export default function CarePathPrototypeApp() {
+export default function CarePathApp() {
   const store = useCarePathStore();
   const [activeDesktopTab, setActiveDesktopTab] = useState<'patient' | 'portal' | 'sms' | 'logs'>('patient');
   const [mobileInnerTab, setMobileInnerTab] = useState<'home' | 'timeline' | 'sms' | 'portal'>('home');

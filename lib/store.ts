@@ -188,7 +188,7 @@ export function useCarePathStore() {
     vaccines?: string[];
   }) => {
     const targetPatient = patients.find((p) => p.id === data.patientId) || patients[0];
-    const recipientPhone = customJudgePhone || targetPatient?.notificationContact.phone || '+234 803 000 1122';
+    const recipientPhone = targetPatient?.notificationContact.phone || customJudgePhone || '+234 800 000 0000';
 
     try {
       const res = await fetch('/api/appointments', {
@@ -281,7 +281,7 @@ export function useCarePathStore() {
     if (!targetEvent) return;
 
     const activePatient = patients.find((p) => p.id === targetEvent.patientId);
-    const recipientPhone = customJudgePhone || activePatient?.notificationContact.phone || '+234 803 456 7890';
+    const recipientPhone = activePatient?.notificationContact.phone || customJudgePhone || '+234 800 000 0000';
 
     try {
       await fetch('/api/telephony/send-sms', {
