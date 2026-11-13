@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { serverDb } from '@/lib/serverDb';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     const sms = serverDb.sms.getAll();

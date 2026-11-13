@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { PatientProfile } from '@/lib/types';
 import { serverDb } from '@/lib/serverDb';
 
+export const dynamic = 'force-dynamic';
+
 // GET all registered patients
 export async function GET() {
   try {

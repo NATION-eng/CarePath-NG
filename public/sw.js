@@ -1,4 +1,4 @@
-const CACHE_NAME = 'carepath-ng-v1';
+const CACHE_NAME = 'carepath-ng-v2';
 const PRECACHE_ASSETS = [
   '/',
   '/manifest.json',
@@ -27,7 +27,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: network-first with cache fallback for pages, cache-first for static assets
+// Fetch handling
 self.addEventListener('fetch', (event) => {
   // Ignore non-GET or chrome-extension requests
   if (event.request.method !== 'GET' || !event.request.url.startsWith('http')) {
@@ -36,22 +36,36 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(event.request.url);
 
-  // Cache static assets (images, fonts, manifest)
-  if (url.pathname.startsWith('/icons/') || url.pathname.endsWith('.svg') || url.pathname.endsWith('.png')) {
+  // 1. Never cache API routes: always go to network to prevent stale clinical data
+  if (url.pathname.startsWith('/api/')) {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return new Response(
+          JSON.stringify({ error: 'Network offline. Live clinical registry unavailable.', offline: true }),
+          { status: 503, headers: { 'Content-Type': 'application/json' } }
+        );
+      })
+    );
+    return;
+  }
+
+  // 2. Cache-first for static icons & images
+  if (url.pathname.startsWith('/icons/') || url.pathname.endsWith('.svg') || url.pathname.endsWith('.png') || url.pathname.endsWith('.ico')) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
         return cached || fetch(event.request).then((response) => {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, response.clone());
-            return response;
-          });
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
         });
       })
     );
     return;
   }
 
-  // Network-first strategy with cache fallback for HTML and data
+  // 3. Network-first strategy with cache fallback for page navigation
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
@@ -64,7 +78,6 @@ self.addEventListener('fetch', (event) => {
       .catch(async () => {
         const cached = await caches.match(event.request);
         if (cached) return cached;
-        // If navigating to a page offline, return cached root app
         if (event.request.mode === 'navigate') {
           return caches.match('/');
         }

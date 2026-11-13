@@ -17,7 +17,7 @@ async function verifyPwa() {
   const swRes = await fetch(`${BASE_URL}/sw.js`);
   assert.strictEqual(swRes.status, 200, 'sw.js must return 200');
   const swText = await swRes.text();
-  assert(swText.includes('carepath-ng-v1'), 'sw.js must contain cache name');
+  assert(swText.includes('carepath-ng-'), 'sw.js must contain cache name');
   console.log('✅ sw.js (ServiceWorker): 200 OK');
 
   // 3. Verify Icons

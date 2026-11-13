@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import { PatientProfile, CareEvent, SmsMessage, AuditEvent } from './types';
 
 export interface DatabaseSchema {
@@ -17,9 +18,7 @@ export interface DatabaseSchema {
   audit: AuditEvent[];
 }
 
-const DB_DIR = path.resolve(process.cwd(), 'data');
-const DB_PATH = path.join(DB_DIR, 'carepath_primary.db.json');
-
+// Default initial state (clean registry with zero mock data / zero synthetic patients)
 const INITIAL_CLEAN_DATABASE: DatabaseSchema = {
   version: 1,
   lastUpdated: new Date().toISOString(),
@@ -29,7 +28,6 @@ const INITIAL_CLEAN_DATABASE: DatabaseSchema = {
     state: 'FCT Abuja',
     lga: 'Abuja Municipal (AMAC)',
   },
-  // CLEAN START: No synthetic test subjects / placeholders
   patients: [],
   events: [],
   sms: [],
@@ -45,18 +43,83 @@ const INITIAL_CLEAN_DATABASE: DatabaseSchema = {
   ],
 };
 
-function ensureDbFile(): DatabaseSchema {
+/**
+ * Resolves the writable database path.
+ * In Vercel serverless functions, the root filesystem is read-only (/var/task).
+ * We automatically route to os.tmpdir() (/tmp) when running on Vercel or when
+ * the project data directory is read-only.
+ */
+function getDatabaseLocation(): { dir: string; filePath: string } {
+  const isServerless = !!(
+    process.env.VERCEL ||
+    process.env.AWS_LAMBDA_FUNCTION_NAME ||
+    process.env.NOW_REGION
+  );
+
+  if (isServerless) {
+    const tmpDir = os.tmpdir();
+    return {
+      dir: tmpDir,
+      filePath: path.join(tmpDir, 'carepath_primary.db.json'),
+    };
+  }
+
+  const localDir = path.resolve(process.cwd(), 'data');
   try {
-    if (!fs.existsSync(DB_DIR)) {
-      fs.mkdirSync(DB_DIR, { recursive: true });
+    if (!fs.existsSync(localDir)) {
+      fs.mkdirSync(localDir, { recursive: true });
+    }
+    // Test write permission
+    const testFile = path.join(localDir, `.write-test-${Date.now()}`);
+    fs.writeFileSync(testFile, 'ok');
+    fs.unlinkSync(testFile);
+    return {
+      dir: localDir,
+      filePath: path.join(localDir, 'carepath_primary.db.json'),
+    };
+  } catch {
+    // Filesystem is read-only (e.g. Vercel build container), fallback to temp directory
+    const tmpDir = os.tmpdir();
+    return {
+      dir: tmpDir,
+      filePath: path.join(tmpDir, 'carepath_primary.db.json'),
+    };
+  }
+}
+
+/**
+ * Ensure database file exists. If running on Vercel/tmp and file not yet copied,
+ * seeds from bundled repository data or clean initial schema.
+ */
+function ensureDbFile(): DatabaseSchema {
+  const { dir, filePath } = getDatabaseLocation();
+
+  try {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
 
-    if (!fs.existsSync(DB_PATH)) {
+    if (!fs.existsSync(filePath)) {
+      // Check if bundled seed file exists in project data directory
+      const bundledSeedPath = path.resolve(process.cwd(), 'data', 'carepath_primary.db.json');
+      if (fs.existsSync(bundledSeedPath) && bundledSeedPath !== filePath) {
+        try {
+          const seedContent = fs.readFileSync(bundledSeedPath, 'utf-8');
+          const parsed = JSON.parse(seedContent);
+          saveDb(parsed);
+          return parsed;
+        } catch {
+          // If reading seed fails, write clean default
+          saveDb(INITIAL_CLEAN_DATABASE);
+          return INITIAL_CLEAN_DATABASE;
+        }
+      }
+
       saveDb(INITIAL_CLEAN_DATABASE);
       return INITIAL_CLEAN_DATABASE;
     }
 
-    const content = fs.readFileSync(DB_PATH, 'utf-8');
+    const content = fs.readFileSync(filePath, 'utf-8');
     return JSON.parse(content);
   } catch (err) {
     console.error('Error reading database file, resetting to clean schema:', err);
@@ -65,17 +128,33 @@ function ensureDbFile(): DatabaseSchema {
   }
 }
 
+/**
+ * Persist database state atomically with fallback to direct write.
+ */
 function saveDb(data: DatabaseSchema): void {
+  const { dir, filePath } = getDatabaseLocation();
+
   try {
-    if (!fs.existsSync(DB_DIR)) {
-      fs.mkdirSync(DB_DIR, { recursive: true });
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
     data.lastUpdated = new Date().toISOString();
-    
-    // Atomic write pattern: write to temp file then rename
-    const tempPath = `${DB_PATH}.tmp.${Date.now()}`;
-    fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), 'utf-8');
-    fs.renameSync(tempPath, DB_PATH);
+
+    const serialized = JSON.stringify(data, null, 2);
+    const tempPath = path.join(dir, `.tmp.${Date.now()}.${Math.random().toString(36).slice(2)}.db.json`);
+
+    try {
+      fs.writeFileSync(tempPath, serialized, 'utf-8');
+      fs.renameSync(tempPath, filePath);
+    } catch {
+      // In environments where atomic rename across volumes fails, fallback to direct write
+      fs.writeFileSync(filePath, serialized, 'utf-8');
+      if (fs.existsSync(tempPath)) {
+        try {
+          fs.unlinkSync(tempPath);
+        } catch {}
+      }
+    }
   } catch (err) {
     console.error('Failed to commit transaction to disk:', err);
     throw new Error('Database write failure');
@@ -102,7 +181,7 @@ export const serverDb = {
       const db = ensureDbFile();
       // Prevent duplicates by code or id
       db.patients = [patient, ...db.patients.filter((p) => p.id !== patient.id)];
-      
+
       const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' WAT';
       db.audit.unshift({
         id: `aud-${Date.now()}`,

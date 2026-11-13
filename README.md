@@ -1,63 +1,108 @@
-# CarePath NG — Competition Prototype & Pitch Guide
+# CarePath NG — Nigerian Healthcare Continuity Platform
 
-A family-centred healthcare continuity platform designed for Nigerian maternal and child healthcare journeys.
+A family-centred maternal, child, and chronic healthcare continuity platform for Nigeria, fully ready for production hosting on **Vercel** as an installable Progressive Web App (PWA).
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FNATION-eng%2FCarePath-NG)
 
 ---
 
-## 🚀 Running the Prototype Locally
+## ⚡ Hosting on Vercel (Quick Start)
 
-The application is running live at:
-**[http://localhost:3000](http://localhost:3000)**
+### Option A: 1-Click Web Deployment
+1. Go to [https://vercel.com/new](https://vercel.com/new).
+2. Connect your GitHub account and import `https://github.com/NATION-eng/CarePath-NG`.
+3. Keep the default settings (**Framework Preset**: Next.js, **Root Directory**: `./`).
+4. (Optional) Set environment variables under **Environment Variables** (see `.env.example`).
+5. Click **Deploy**. Vercel will build and assign you a live HTTPS domain (e.g., `https://carepath-ng.vercel.app`).
 
+### Option B: Deploy via Vercel CLI
 ```bash
-# To restart the server at any time:
-npm run dev
-# Or run optimized production build:
-npm run build
-npm run start
+# 1. Install Vercel CLI globally
+npm i -g vercel
+
+# 2. Login to your Vercel account
+vercel login
+
+# 3. Deploy to preview
+vercel
+
+# 4. Deploy directly to production
+vercel --prod
 ```
 
 ---
 
-## 🏆 The 3-Minute Competition Pitch Script
-
-### Stage 1: The Core Problem (0:00 - 0:45)
-* *"In Nigeria, the 2024 Demographic and Health Survey shows that over 80% of infants miss completing their basic immunisation schedule. It is not because mothers do not care; it is because healthcare schedules are fragmented across paper cards, clinic registers, and shared family phones."*
-* Point to the **Patient Profile Switcher** at the top:
-  * Show **Ada Eze** (Mother, 32-Week Antenatal Care).
-  * Switch to **Baby Chinedu** (6-Week Immunisation): *"Notice that Baby Chinedu owns no smartphone. His care is managed by Ada as an authorized proxy. The notification routing separates the account owner, the patient, and the contact recipient."*
-
-### Stage 2: Solving the Literacy Barrier with Spoken Audio (0:45 - 1:30)
-* On Baby Chinedu's Hero Card, tap **"Listen in Pidgin"**:
-  * The natural Nigerian voice prompt plays:
-    > *"Good morning Mama Chinedu. Remember say tomorrow Thursday by 9 in the morning, na time for Baby Chinedu 6-week injection for Garki PHC. Carry your child yellow card come..."*
-* Switch to **English**:
-  * Explain: *"Textual SMS is not enough. Millions of Nigerians are oral speakers. CarePath speaks to mothers in their preferred language with zero clinical fluff."*
-
-### Stage 3: The Live Closed Loop (1:30 - 2:30)
-* Move to the **SMS Telephony Simulator** (Center Panel):
-  * Show the incoming discreet SMS: *"Notice how the SMS says 'Important visit scheduled at Garki PHC'. It protects privacy on shared family phones by omitting sensitive medical tags."*
-* Tap **"Reply 1 (Confirm)"**:
-  * An immediate confirmation chime sounds, tactile confetti triggers, and the **Facility Nurse Portal** on the right turns from Amber to **Green (Confirmed Attendance via SMS)** in real time.
-* Tap **"Rapid Newborn Intake (<25s)"** in the PHC Portal:
-  * Register a new infant in 2 fields. Show that the NPHCDA schedule is automatically attached and an SMS is queued instantly.
-
-### Stage 4: Technical & Regulatory Rigor (2:30 - 3:00)
-* Click **"Audit Outbox"** tab:
-  * Show judges the transactional outbox:
-    * Monotonic timestamps.
-    * MTN Transactional DND route verification.
-    * Compliance with the **Nigeria Data Protection Act (NDPA) 2023**.
-* *"CarePath NG is not a generic AI chatbot. It is a deterministic, lightweight care continuity engine built for the realities of Nigerian primary healthcare."*
+## 📱 Progressive Web App (PWA) Capabilities
+- **Installable**: Works on Android, iOS, Windows, macOS, and ChromeOS as a standalone app.
+- **Offline Shell**: Service Worker precaches the UI shell, assets, and icons for instant offline launch.
+- **Real-Time Continuity**: Network-first strategy for live clinical data, with dignified offline messaging when out of cell range.
+- **Install Banner**: Built-in PWA installation prompt component with custom instructions for iOS and Android.
 
 ---
 
-## 🎨 Anti-AI Design Heuristics Enforced
-1. **Zero AI Buzzwords**: No "empowering AI synergy" or generic marketing copy. Only clear clinical language (*"Penta 1 Due"*, *"Yellow Card"*, *"Garki PHC Area 10"*).
-2. **Tactile App-First Ergonomics**: Fixed viewport, bottom thumb navigation, smooth drawer sheets, zero pull-to-refresh web jitter.
-3. **Clinical Color Palette**:
-   * **Deep Teal (`#174C45`)**: Authority, calm clinical guidance.
-   * **Soft Sage (`#4C9A83`)**: Reassurance and active milestones.
-   * **Warm Cream (`#F1E8DA`)**: High-contrast, friendly alert blocks.
-   * **Off-White Canvas (`#F7F8F6`)**: Low battery drain and clean surfaces.
-4. **Lightweight (<25MB target)**: Initial page bundle is **109 kB**, loading in under 0.8s on 2G/3G networks.
+## 🏗 Architecture & Backend
+- **Framework**: Next.js 14 App Router (React 18, TypeScript, Tailwind CSS).
+- **Backend API Routes**:
+  - `GET /api/patients`, `POST /api/patients`, `DELETE /api/patients` (Atomic CRUD with NDPA 2023 cascading deletion).
+  - `GET /api/appointments`, `POST /api/appointments`, `PATCH /api/appointments`, `DELETE /api/appointments`.
+  - `GET /api/audit` (Immutable clinical audit log).
+  - `GET /api/health` (Uptime and health check for Vercel monitoring).
+  - `POST /api/telephony/send-sms`, `POST /api/telephony/webhook`, `GET /api/telephony/feed`.
+- **Database Engine**:
+  - Serverless-resilient atomic engine (`lib/serverDb.ts`).
+  - Auto-detects Vercel Serverless environment (`/tmp` atomic fallback) to prevent read-only filesystem errors.
+  - Zero placeholder records: starts clean awaiting real clinical intake.
+
+---
+
+## 🔧 Environment Variables
+
+Copy `.env.example` to `.env.local` for local development or configure in your Vercel Project Settings:
+
+```env
+NODE_ENV=production
+NEXT_PUBLIC_APP_URL=https://carepath-ng.vercel.app
+
+NEXT_PUBLIC_DEFAULT_FACILITY_NAME="Garki Primary Healthcare Centre"
+NEXT_PUBLIC_DEFAULT_FACILITY_CODE="FCT-AMAC-PHC-004"
+NEXT_PUBLIC_DEFAULT_STATE="FCT Abuja"
+NEXT_PUBLIC_DEFAULT_LGA="Abuja Municipal (AMAC)"
+
+# Telephony: 'simulation' | 'termii' | 'twilio'
+SMS_PROVIDER=simulation
+TERMII_API_KEY=your_key_here
+TERMII_SENDER_ID=CarePath
+```
+
+---
+
+## 🛠 Local Development & Testing
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Run ESLint validation
+npm run lint
+
+# TypeScript verification
+npx tsc --noEmit
+
+# Production build test
+npm run build
+
+# Run automated feature test suite
+node scripts/test-features.mjs
+```
+
+---
+
+## 🎨 Clinical Design System
+- **Deep Teal (`#174C45`)**: Authority, calm clinical guidance.
+- **Soft Sage (`#4C9A83`)**: Reassurance and active milestones.
+- **Warm Cream (`#F1E8DA`)**: High-contrast, legible alert cards.
+- **Off-White Canvas (`#F7F8F6`)**: Low battery consumption on mobile screens.
+- **Typography**: High-legibility, bold, accessible hierarchy tailored for outdoor PHC conditions.

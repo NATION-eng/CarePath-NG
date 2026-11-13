@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Inbound Webhook for Telco Delivery Receipts (DLR) and Inbound SMS Replies
  * Accepts payloads from Termii or Twilio webhooks when patients reply '1' (Confirm) or '2' (Reschedule)

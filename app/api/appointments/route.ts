@@ -3,6 +3,8 @@ import { CareEvent } from '@/lib/types';
 import { dispatchRealSms } from '@/lib/telephonyService';
 import { serverDb } from '@/lib/serverDb';
 
+export const dynamic = 'force-dynamic';
+
 // GET all appointments or filter by patientId
 export async function GET(request: Request) {
   try {
