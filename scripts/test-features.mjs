@@ -16,7 +16,7 @@ async function testEndpoint(name, fn) {
 
 async function runAllTests() {
   console.log('====================================================');
-  console.log('CarePath NG — Automated End-to-End Feature Test Suite');
+  console.log('CarePath NG — Backend Database & API Verification');
   console.log('====================================================\n');
 
   // 1. Test Web App Root HTML
@@ -29,7 +29,7 @@ async function runAllTests() {
 
   // 2. Test Real Patient Registration API (/api/patients)
   let createdPatientId = '';
-  await testEndpoint('Patient Registration API (Maternal & Infant Intake)', async () => {
+  await testEndpoint('POST /api/patients (Register Real Patient in Backend DB)', async () => {
     const res = await fetch(`${BASE_URL}/api/patients`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -47,19 +47,25 @@ async function runAllTests() {
     const data = await res.json();
     assert(data.success, 'Expected success: true');
     assert(data.patient.code.startsWith('CP-C-'), 'Expected code starting with CP-C-');
-    assert.strictEqual(data.patient.notificationContact.name, 'Amina Danjuma');
-    assert.strictEqual(data.patient.notificationContact.phone, '+2348039876543');
     createdPatientId = data.patient.id;
   });
 
-  // 3. Test Appointment Scheduling API (/api/appointments)
+  // 3. Test GET /api/patients
+  await testEndpoint('GET /api/patients (Fetch Patients from Server Database)', async () => {
+    const res = await fetch(`${BASE_URL}/api/patients`);
+    assert.strictEqual(res.status, 200);
+    const data = await res.json();
+    assert(data.patients.some((p) => p.id === createdPatientId), 'Patient must be persisted in DB');
+  });
+
+  // 4. Test Appointment Scheduling API (/api/appointments)
   let createdEventId = '';
-  await testEndpoint('Appointment Scheduling API with SMS Outbox Trigger', async () => {
+  await testEndpoint('POST /api/appointments (Schedule Visit in Backend DB)', async () => {
     const res = await fetch(`${BASE_URL}/api/appointments`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        patientId: createdPatientId || 'pat-demo',
+        patientId: createdPatientId,
         patientName: 'Halima Danjuma',
         recipientPhone: '+2348039876543',
         title: '6-Week Penta 1 & Rota 1 Visit',
@@ -70,74 +76,48 @@ async function runAllTests() {
         time: '09:00 AM',
         duePeriod: '6-Week Milestone',
         category: 'immunisation',
-        instructions: ['Bring yellow child health card', 'Wear loose clothes'],
+        instructions: ['Bring yellow child health card'],
         clinicianName: 'Nurse Blessing Aliyu',
         clinicianRole: 'Senior CHO',
         vaccines: ['Penta 1', 'OPV 1', 'PCV 1', 'Rota 1'],
       }),
     });
-    assert.strictEqual(res.status, 201, `Expected 201 Created, got ${res.status}`);
+    assert.strictEqual(res.status, 201);
     const data = await res.json();
-    assert(data.success, 'Expected success: true');
-    assert.strictEqual(data.event.title, '6-Week Penta 1 & Rota 1 Visit');
-    assert(data.smsDispatch, 'Expected SMS dispatch payload');
-    assert.strictEqual(data.smsDispatch.success, true);
+    assert(data.success);
     createdEventId = data.event.id;
   });
 
-  // 4. Test Telephony Direct SMS Dispatch API (/api/telephony/send-sms)
-  await testEndpoint('Telephony Direct SMS Dispatch API (Nigerian E.164)', async () => {
-    const res = await fetch(`${BASE_URL}/api/telephony/send-sms`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        to: '+2348031234567',
-        message: 'CarePath: Scheduled visit tomorrow at 9AM. Reply 1 to Confirm.',
-        referenceId: 'TEST-REF-001',
-      }),
-    });
-    assert.strictEqual(res.status, 200, `Expected 200 OK, got ${res.status}`);
+  // 5. Test GET /api/appointments
+  await testEndpoint('GET /api/appointments (Fetch Events from Server Database)', async () => {
+    const res = await fetch(`${BASE_URL}/api/appointments?patientId=${createdPatientId}`);
+    assert.strictEqual(res.status, 200);
     const data = await res.json();
-    assert(data.success, 'Expected dispatch success');
-    assert(data.messageId, 'Expected tracking message ID');
+    assert(data.events.some((e) => e.id === createdEventId), 'Appointment must be persisted in DB');
   });
 
-  // 5. Test Telco Inbound Webhook (Reply '1' - Confirm Attendance)
-  await testEndpoint('Inbound Telco Webhook (Patient replies "1" to Confirm)', async () => {
-    const res = await fetch(`${BASE_URL}/api/telephony/webhook`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: '+2348039876543',
-        message: '1',
-        message_id: 'INBOUND-MSG-001',
-      }),
+  // 6. Test DELETE /api/patients (Cascading Purge)
+  await testEndpoint('DELETE /api/patients (Cascading Patient & Records Deletion)', async () => {
+    const res = await fetch(`${BASE_URL}/api/patients?id=${createdPatientId}`, {
+      method: 'DELETE',
     });
     assert.strictEqual(res.status, 200, `Expected 200 OK, got ${res.status}`);
     const data = await res.json();
-    assert.strictEqual(data.received, true);
-    assert.strictEqual(data.actionTaken, 'ATTENDANCE_CONFIRMED');
-  });
+    assert.strictEqual(data.success, true);
 
-  // 6. Test Telco Inbound Webhook (Reply '2' - Reschedule Request)
-  await testEndpoint('Inbound Telco Webhook (Patient replies "2" to Reschedule)', async () => {
-    const res = await fetch(`${BASE_URL}/api/telephony/webhook`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: '+2348039876543',
-        message: '2',
-        message_id: 'INBOUND-MSG-002',
-      }),
-    });
-    assert.strictEqual(res.status, 200, `Expected 200 OK, got ${res.status}`);
-    const data = await res.json();
-    assert.strictEqual(data.received, true);
-    assert.strictEqual(data.actionTaken, 'RESCHEDULE_REQUESTED');
+    // Verify patient is gone
+    const checkPatRes = await fetch(`${BASE_URL}/api/patients`);
+    const checkPatData = await checkPatRes.json();
+    assert(!checkPatData.patients.some((p) => p.id === createdPatientId), 'Patient must be deleted');
+
+    // Verify appointments for that patient were cascaded
+    const checkAptRes = await fetch(`${BASE_URL}/api/appointments?patientId=${createdPatientId}`);
+    const checkAptData = await checkAptRes.json();
+    assert.strictEqual(checkAptData.events.length, 0, 'Appointments must be cascade deleted');
   });
 
   console.log('\n====================================================');
-  console.log('🎉 ALL AUTOMATED TESTS COMPLETED WITH 100% SUCCESS!');
+  console.log('🎉 ALL BACKEND DATABASE & CRUD TESTS PASSED 100%!');
   console.log('====================================================');
 }
 

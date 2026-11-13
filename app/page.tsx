@@ -15,7 +15,8 @@ import {
   Smartphone,
   HeartHandshake,
   UserPlus,
-  Download
+  Download,
+  Database
 } from 'lucide-react';
 import { playChime } from '@/lib/audioVoice';
 
@@ -24,12 +25,17 @@ export default function CarePathPrototypeApp() {
   const [activeDesktopTab, setActiveDesktopTab] = useState<'patient' | 'portal' | 'sms' | 'logs'>('patient');
   const [mobileInnerTab, setMobileInnerTab] = useState<'home' | 'timeline' | 'sms' | 'portal'>('home');
 
-  if (!store.isClient) {
+  if (!store.isClient || store.isLoadingBackend) {
     return (
       <div className="flex h-screen items-center justify-center bg-surface-base">
-        <div className="flex items-center gap-3 text-teal-950 font-black text-base">
-          <span className="h-3 w-3 rounded-full bg-teal-800 animate-ping" />
-          <span>Starting CarePath NG Care Engine...</span>
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-800 text-cream-200 font-black text-lg border-2 border-teal-700 animate-pulse shadow-card">
+            CP
+          </div>
+          <div className="flex items-center gap-2 text-teal-950 font-black text-sm">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+            <span>Connecting to CarePath Clinical Database...</span>
+          </div>
         </div>
       </div>
     );
@@ -69,7 +75,7 @@ export default function CarePathPrototypeApp() {
                   CarePath NG
                 </span>
                 <span className="hidden sm:inline-block text-[10px] font-black tracking-wider uppercase px-2 py-0.5 rounded-md bg-teal-800 text-teal-200 border border-teal-700 shrink-0">
-                  Release v1.0
+                  Clinical v1.0
                 </span>
               </div>
               <p className="hidden md:block text-[11px] text-teal-300 font-bold leading-none mt-0.5 truncate">
@@ -129,11 +135,11 @@ export default function CarePathPrototypeApp() {
               }`}
             >
               <Activity className="h-4 w-4" />
-              <span>Transactional Outbox</span>
+              <span>Database Audit Log</span>
             </button>
           </nav>
 
-          {/* Action Header Buttons: Register Patient & Export Records */}
+          {/* Action Header Buttons */}
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
@@ -151,7 +157,7 @@ export default function CarePathPrototypeApp() {
             <button
               type="button"
               onClick={store.exportDataToJson}
-              title="Export all clinical records to JSON backup"
+              title="Export all clinical records from database"
               className="btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-900 hover:bg-teal-800 text-teal-200 text-xs sm:text-sm font-black border border-teal-800 transition-colors shadow-xs"
             >
               <Download className="h-4 w-4" />
@@ -211,6 +217,7 @@ export default function CarePathPrototypeApp() {
               onDispatchReminder={store.dispatchManualReminder}
               onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
               onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
+              onDeletePatient={store.deletePatient}
             />
           )}
         </div>
@@ -233,6 +240,7 @@ export default function CarePathPrototypeApp() {
               onDispatchReminder={store.dispatchManualReminder}
               onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
               onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
+              onDeletePatient={store.deletePatient}
             />
           )}
 

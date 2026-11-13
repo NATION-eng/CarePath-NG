@@ -17,14 +17,17 @@ import {
   Radio,
   CheckCheck,
   UserPlus,
-  CalendarPlus
+  CalendarPlus,
+  Trash2,
+  AlertTriangle,
+  Users
 } from 'lucide-react';
 import { AudioVoicePlayer } from './AudioVoicePlayer';
 import { playChime } from '@/lib/audioVoice';
 
 interface PatientCareViewProps {
   patients: PatientProfile[];
-  activePatient: PatientProfile;
+  activePatient?: PatientProfile;
   events: CareEvent[];
   smsLog: SmsMessage[];
   mobileTab: 'home' | 'timeline' | 'sms' | 'portal';
@@ -37,6 +40,7 @@ interface PatientCareViewProps {
   onDispatchReminder: (eventId: string) => void;
   onOpenNewPatientModal: () => void;
   onOpenNewAppointmentModal: () => void;
+  onDeletePatient: (patientId: string) => void;
 }
 
 export function PatientCareView({
@@ -52,8 +56,36 @@ export function PatientCareView({
   onReplySms,
   onOpenNewPatientModal,
   onOpenNewAppointmentModal,
+  onDeletePatient,
 }: PatientCareViewProps) {
   const [selectedTimelineFilter, setSelectedTimelineFilter] = useState<'all' | 'upcoming'>('all');
+
+  // EMPTY STATE: Zero patients in registry
+  if (!activePatient || patients.length === 0) {
+    return (
+      <div className="w-full max-w-4xl mx-auto py-12 px-4 text-center">
+        <div className="bg-white rounded-3xl border-2 border-surface-border p-8 sm:p-12 shadow-card">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-teal-100 text-teal-800 mx-auto mb-4 border-2 border-teal-200">
+            <Users className="h-8 w-8" />
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-black text-teal-950 mb-2">
+            Clinical Registry is Ready
+          </h2>
+          <p className="text-sm sm:text-base text-surface-dark/80 font-semibold max-w-lg mx-auto mb-6">
+            All placeholder subjects have been removed. Begin registering real patients for Maternal ANC, Child Immunisation (NPHCDA), or Chronic Care.
+          </p>
+          <button
+            type="button"
+            onClick={onOpenNewPatientModal}
+            className="btn-tactile inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-teal-800 hover:bg-teal-900 text-white font-black text-sm sm:text-base shadow-card"
+          >
+            <UserPlus className="h-5 w-5" />
+            <span>+ Register First Patient</span>
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Next active upcoming appointment
   const nextEvent = events.find((e) => e.status === 'scheduled' || e.status === 'confirmed') || events[0];
@@ -61,38 +93,38 @@ export function PatientCareView({
 
   return (
     <div className="w-full max-w-7xl mx-auto flex flex-col min-h-full pb-20 md:pb-8">
-      {/* 1. SLEEK, HIGH-DENSITY PROFILE BANNER & SWITCHER */}
+      {/* 1. TOP RESPONSIVE PROFILE BANNER & SWITCHER */}
       <div className="bg-white rounded-2xl border-2 border-surface-border p-3.5 sm:p-4 shadow-subtle mb-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-800 text-cream-200 text-sm font-black shrink-0 shadow-xs">
-              {activePatient?.avatarInitials || 'CP'}
+              {activePatient.avatarInitials}
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-xl sm:text-2xl font-black text-teal-950 tracking-tight leading-tight truncate">
-                  {activePatient?.name || 'Care Registry'}
+                  {activePatient.name}
                 </h1>
                 <span className="text-xs font-black tracking-wider uppercase text-teal-900 bg-teal-100 px-2 py-0.5 rounded border border-teal-200 shrink-0">
-                  {activePatient?.categoryLabel || 'Primary Care'}
+                  {activePatient.categoryLabel}
                 </span>
                 <span className="text-xs text-surface-dark/60 font-mono font-bold shrink-0">
-                  ID: {activePatient?.code || 'CP-NEW'}
+                  ID: {activePatient.code}
                 </span>
               </div>
               <p className="text-xs sm:text-sm text-surface-dark/75 font-semibold truncate mt-0.5">
-                Stage: <strong className="text-teal-900 font-bold">{activePatient?.stageInfo || 'Active Care'}</strong> • Garki Primary Health Centre (Ward FCT-04)
+                Stage: <strong className="text-teal-900 font-bold">{activePatient.stageInfo}</strong> • Garki Primary Health Centre (Ward FCT-04)
               </p>
             </div>
           </div>
 
-          {/* Profile Switcher Pills & Add Button */}
+          {/* Profile Switcher Pills & Action Buttons */}
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0 pt-1 md:pt-0">
             <span className="text-xs font-black text-surface-dark/60 uppercase tracking-wider hidden xl:inline-block mr-1">
               Active Patient:
             </span>
             {patients.map((pat) => {
-              const isSelected = pat.id === activePatient?.id;
+              const isSelected = pat.id === activePatient.id;
               return (
                 <button
                   key={pat.id}
@@ -124,14 +156,25 @@ export function PatientCareView({
               );
             })}
 
-            {/* "+ Add New Patient / Dependent" Button */}
+            {/* "+ Register Patient" Button */}
             <button
               type="button"
               onClick={onOpenNewPatientModal}
               className="btn-tactile flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-black bg-cream-200 hover:bg-cream-300 text-teal-950 border-2 border-teal-800/20 shadow-xs"
             >
               <UserPlus className="h-4 w-4" />
-              <span>+ Register Patient</span>
+              <span>+ Register</span>
+            </button>
+
+            {/* "DELETE PATIENT" BUTTON */}
+            <button
+              type="button"
+              onClick={() => onDeletePatient(activePatient.id)}
+              title="Delete patient and permanently purge all their records (NDPA 2023)"
+              className="btn-tactile flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs sm:text-sm font-bold bg-red-50 hover:bg-red-100 text-red-800 border-2 border-red-200 transition-colors"
+            >
+              <Trash2 className="h-4 w-4 text-red-700" />
+              <span className="hidden sm:inline">Delete Record</span>
             </button>
           </div>
         </div>
@@ -280,11 +323,11 @@ export function PatientCareView({
               </div>
             </div>
           ) : (
-            <div className="rounded-3xl bg-white p-8 border-2 border-surface-border text-center">
+            <div className="rounded-3xl bg-white p-8 border-2 border-surface-border text-center shadow-subtle">
               <CalendarPlus className="h-12 w-12 text-teal-800 mx-auto mb-3" />
-              <h3 className="text-xl font-black text-teal-950">No Appointments Scheduled</h3>
+              <h3 className="text-xl font-black text-teal-950">No Active Visits Scheduled</h3>
               <p className="text-sm text-surface-dark/70 font-semibold mb-4">
-                Schedule a clinical follow-up or immunisation session for this patient.
+                Schedule a clinical follow-up or immunisation session for {activePatient.name}.
               </p>
               <button
                 type="button"
@@ -301,7 +344,7 @@ export function PatientCareView({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div>
                 <h3 className="text-base sm:text-lg font-black text-teal-950">
-                  {activePatient?.category === 'immunisation' ? 'National Immunisation Schedule (NPHCDA 2024)' : 'Federal Maternal ANC Pathway'}
+                  {activePatient.category === 'immunisation' ? 'National Immunisation Schedule (NPHCDA 2024)' : 'Federal Maternal ANC Pathway'}
                 </h3>
                 <p className="text-xs sm:text-sm text-surface-dark/70 font-bold">
                   Sequential clinical milestones with interval protection
@@ -412,7 +455,7 @@ export function PatientCareView({
               <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-teal-800" />
                 <h3 className="text-base font-black text-teal-950">
-                  {activePatient?.category === 'immunisation' ? 'Digital Child Yellow Card' : 'Official Maternal ANC Card'}
+                  {activePatient.category === 'immunisation' ? 'Digital Child Yellow Card' : 'Official Maternal ANC Card'}
                 </h3>
               </div>
               <span className="text-xs font-black bg-cream-200 text-teal-950 px-2 py-0.5 rounded border border-teal-900/10">
@@ -423,11 +466,11 @@ export function PatientCareView({
             <div className="bg-surface-base rounded-xl p-3 border border-surface-border text-xs sm:text-sm space-y-2 mb-3">
               <div className="flex justify-between border-b border-surface-border pb-1.5">
                 <span className="text-surface-dark/70 font-semibold">Registered Name:</span>
-                <span className="font-black text-teal-950">{activePatient?.name}</span>
+                <span className="font-black text-teal-950">{activePatient.name}</span>
               </div>
               <div className="flex justify-between border-b border-surface-border pb-1.5">
                 <span className="text-surface-dark/70 font-semibold">National Record #:</span>
-                <span className="font-mono font-black text-teal-900">{activePatient?.code}</span>
+                <span className="font-mono font-black text-teal-900">{activePatient.code}</span>
               </div>
               <div className="flex justify-between border-b border-surface-border pb-1.5">
                 <span className="text-surface-dark/70 font-semibold">Primary Centre:</span>
@@ -435,13 +478,24 @@ export function PatientCareView({
               </div>
               <div className="flex justify-between">
                 <span className="text-surface-dark/70 font-semibold">Proxy Guardian:</span>
-                <span className="font-extrabold text-teal-800 truncate max-w-[150px]">{activePatient?.notificationContact.name}</span>
+                <span className="font-extrabold text-teal-800 truncate max-w-[150px]">{activePatient.notificationContact.name}</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-surface-dark/70 font-semibold">
-              <ShieldCheck className="h-4 w-4 text-emerald-600 shrink-0" />
-              <span>Complies with Federal Child Health Registry & NDPA 2023.</span>
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-xs text-surface-dark/70 font-semibold flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                <span>NDPA 2023 Compliant</span>
+              </span>
+
+              {/* Delete Patient Button in Sidebar */}
+              <button
+                type="button"
+                onClick={() => onDeletePatient(activePatient.id)}
+                className="text-xs text-red-700 hover:text-red-900 font-bold hover:underline"
+              >
+                Delete Record
+              </button>
             </div>
           </div>
 
@@ -467,6 +521,11 @@ export function PatientCareView({
                   <p className="text-surface-dark font-semibold leading-relaxed text-xs sm:text-sm">{sms.messageText}</p>
                 </div>
               ))}
+              {smsLog.length === 0 && (
+                <p className="text-xs text-surface-dark/60 italic text-center py-4">
+                  No notifications dispatched yet. Register a patient to see live SMS traces.
+                </p>
+              )}
             </div>
 
             {/* Quick SMS interactive buttons on desktop */}
@@ -505,8 +564,8 @@ export function PatientCareView({
               In Nigerian care journeys, account owners frequently coordinate for multiple dependents without phones.
             </p>
             <div className="bg-teal-900/70 p-2.5 rounded-xl border border-teal-800 text-xs font-semibold space-y-1">
-              <p>• <strong>Patient</strong>: {activePatient?.name} (Phone-less profile)</p>
-              <p>• <strong>SMS Recipient</strong>: {activePatient?.notificationContact.name} ({activePatient?.notificationContact.phone})</p>
+              <p>• <strong>Patient</strong>: {activePatient.name} ({activePatient.phoneOwnedByPatient ? 'Personal phone' : 'Phone-less profile'})</p>
+              <p>• <strong>SMS Recipient</strong>: {activePatient.notificationContact.name} ({activePatient.notificationContact.phone})</p>
             </div>
           </div>
 
