@@ -52,35 +52,35 @@ export default function CarePathPrototypeApp() {
   return (
     <div className="flex flex-col min-h-screen w-full bg-surface-base">
       {/* 1. RESPONSIVE TOP APP / DASHBOARD HEADER */}
-      <header className="sticky top-0 z-40 bg-teal-950 text-white px-4 sm:px-6 py-3 border-b-2 border-teal-900 shadow-subtle">
+      <header className="sticky top-0 z-40 bg-teal-950 text-white px-4 sm:px-6 py-2.5 border-b-2 border-teal-900 shadow-subtle">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           
           {/* Brand Identity */}
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-teal-800 text-cream-200 font-black text-base border-2 border-teal-700 shadow-xs">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-800 text-cream-200 font-black text-sm border-2 border-teal-700 shadow-xs shrink-0">
               CP
             </div>
-            <div>
-              <div className="flex items-center gap-2.5">
-                <span className="font-black tracking-tight text-lg sm:text-xl text-white">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-black tracking-tight text-base sm:text-lg text-white truncate">
                   CarePath NG
                 </span>
-                <span className="hidden sm:inline-block text-xs font-black tracking-wider uppercase px-2.5 py-0.5 rounded-md bg-teal-800 text-teal-200 border border-teal-700">
+                <span className="hidden sm:inline-block text-[10px] font-black tracking-wider uppercase px-2 py-0.5 rounded-md bg-teal-800 text-teal-200 border border-teal-700 shrink-0">
                   Prototype
                 </span>
               </div>
-              <p className="hidden md:block text-xs text-teal-300 font-bold leading-none mt-0.5">
+              <p className="hidden md:block text-[11px] text-teal-300 font-bold leading-none mt-0.5 truncate">
                 Maternal & Child Healthcare Continuity Platform • Nigeria
               </p>
             </div>
           </div>
 
           {/* Desktop Navigation Tabs */}
-          <nav className="hidden md:flex items-center bg-teal-900 rounded-2xl p-1.5 border border-teal-800 text-xs sm:text-sm">
+          <nav className="hidden md:flex items-center bg-teal-900 rounded-xl p-1 border border-teal-800 text-xs sm:text-sm">
             <button
               type="button"
               onClick={() => setActiveDesktopTab('patient')}
-              className={`btn-tactile flex items-center gap-2 px-4 py-2 rounded-xl font-black transition-all ${
+              className={`btn-tactile flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-black transition-all ${
                 activeDesktopTab === 'patient'
                   ? 'bg-cream-200 text-teal-950 shadow-xs'
                   : 'text-teal-200 hover:text-white'
@@ -93,7 +93,7 @@ export default function CarePathPrototypeApp() {
             <button
               type="button"
               onClick={() => setActiveDesktopTab('portal')}
-              className={`btn-tactile flex items-center gap-2 px-4 py-2 rounded-xl font-black transition-all ${
+              className={`btn-tactile flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-black transition-all ${
                 activeDesktopTab === 'portal'
                   ? 'bg-cream-200 text-teal-950 shadow-xs'
                   : 'text-teal-200 hover:text-white'
@@ -106,7 +106,7 @@ export default function CarePathPrototypeApp() {
             <button
               type="button"
               onClick={() => setActiveDesktopTab('sms')}
-              className={`btn-tactile flex items-center gap-2 px-4 py-2 rounded-xl font-black transition-all ${
+              className={`btn-tactile flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-black transition-all ${
                 activeDesktopTab === 'sms'
                   ? 'bg-cream-200 text-teal-950 shadow-xs'
                   : 'text-teal-200 hover:text-white'
@@ -119,7 +119,7 @@ export default function CarePathPrototypeApp() {
             <button
               type="button"
               onClick={() => setActiveDesktopTab('logs')}
-              className={`btn-tactile flex items-center gap-2 px-4 py-2 rounded-xl font-black transition-all ${
+              className={`btn-tactile flex items-center gap-2 px-3.5 py-1.5 rounded-lg font-black transition-all ${
                 activeDesktopTab === 'logs'
                   ? 'bg-cream-200 text-teal-950 shadow-xs'
                   : 'text-teal-200 hover:text-white'
@@ -131,8 +131,8 @@ export default function CarePathPrototypeApp() {
           </nav>
 
           {/* Real-time Status Badge & Demo Reset */}
-          <div className="flex items-center gap-2.5">
-            <div className="hidden lg:flex items-center gap-2 text-xs text-emerald-400 bg-teal-900/80 px-3 py-1.5 rounded-xl border border-teal-800 font-black">
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="hidden lg:flex items-center gap-2 text-xs text-emerald-400 bg-teal-900/80 px-2.5 py-1 rounded-lg border border-teal-800 font-bold">
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
               <span className="font-mono text-xs">Sync: Active</span>
             </div>
@@ -144,9 +144,9 @@ export default function CarePathPrototypeApp() {
                 store.resetDemoData();
               }}
               title="Reset to fresh competition demo state"
-              className="btn-tactile flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-teal-900 hover:bg-teal-800 text-teal-200 text-xs sm:text-sm font-black border border-teal-800 transition-colors shadow-xs"
+              className="btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-900 hover:bg-teal-800 text-teal-200 text-xs sm:text-sm font-black border border-teal-800 transition-colors shadow-xs"
             >
-              <RotateCcw className="h-4 w-4" />
+              <RotateCcw className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Reset Demo</span>
             </button>
           </div>
@@ -155,7 +155,7 @@ export default function CarePathPrototypeApp() {
       </header>
 
       {/* 2. RESPONSIVE WORKSPACE CONTAINER */}
-      <main className="flex-1 w-full px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 w-full px-3.5 sm:px-6 lg:px-8 py-3.5 sm:py-4">
         
         {/* MOBILE VIEW CONTROLLER (< md screens) */}
         <div className="block md:hidden">
@@ -222,7 +222,7 @@ export default function CarePathPrototypeApp() {
           )}
 
           {activeDesktopTab === 'portal' && (
-            <div className="max-w-7xl mx-auto h-[calc(100vh-130px)]">
+            <div className="max-w-7xl mx-auto h-[calc(100vh-110px)]">
               <FacilityPortal
                 events={store.events}
                 patients={store.patients}
@@ -239,7 +239,7 @@ export default function CarePathPrototypeApp() {
           )}
 
           {activeDesktopTab === 'sms' && (
-            <div className="max-w-3xl mx-auto h-[calc(100vh-130px)]">
+            <div className="max-w-3xl mx-auto h-[calc(100vh-110px)]">
               <SmsSimulator
                 smsLog={store.smsLog}
                 customPhone={store.customJudgePhone}
@@ -251,7 +251,7 @@ export default function CarePathPrototypeApp() {
           )}
 
           {activeDesktopTab === 'logs' && (
-            <div className="max-w-4xl mx-auto h-[calc(100vh-130px)]">
+            <div className="max-w-4xl mx-auto h-[calc(100vh-110px)]">
               <LiveEventLog logs={store.auditLogs} />
             </div>
           )}

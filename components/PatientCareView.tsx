@@ -47,7 +47,6 @@ export function PatientCareView({
   onOpenEventSheet,
   onConfirmEvent,
   onReplySms,
-  onDispatchReminder,
 }: PatientCareViewProps) {
   const [selectedTimelineFilter, setSelectedTimelineFilter] = useState<'all' | 'upcoming'>('all');
 
@@ -57,86 +56,88 @@ export function PatientCareView({
 
   return (
     <div className="w-full max-w-7xl mx-auto flex flex-col min-h-full pb-20 md:pb-8">
-      {/* 1. TOP RESPONSIVE PROFILE BANNER & SWITCHER */}
-      <div className="bg-white rounded-2xl border-2 border-surface-border p-5 sm:p-6 shadow-subtle mb-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-5">
-          <div>
-            <div className="flex items-center gap-2.5 mb-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs sm:text-sm font-black tracking-wider uppercase text-teal-900 bg-teal-100 px-2.5 py-0.5 rounded-md border border-teal-300">
-                {activePatient.categoryLabel}
-              </span>
-              <span className="text-xs sm:text-sm text-surface-dark/70 font-mono font-bold">
-                ID: {activePatient.code}
-              </span>
+      {/* 1. SLEEK, HIGH-DENSITY PROFILE BANNER & SWITCHER */}
+      <div className="bg-white rounded-2xl border-2 border-surface-border p-3.5 sm:p-4 shadow-subtle mb-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-teal-800 text-cream-200 text-sm font-black shrink-0 shadow-xs">
+              {activePatient.avatarInitials}
             </div>
-            <h1 className="text-2xl sm:text-4xl font-black text-teal-950 tracking-tight">
-              {activePatient.name}
-            </h1>
-            <p className="text-sm sm:text-base text-surface-dark/85 font-semibold mt-1">
-              Current Stage: <strong className="text-teal-900 font-extrabold">{activePatient.stageInfo}</strong> • Registered at <strong className="text-surface-dark font-extrabold">Garki Primary Health Centre</strong>
-            </p>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl font-black text-teal-950 tracking-tight leading-tight truncate">
+                  {activePatient.name}
+                </h1>
+                <span className="text-xs font-black tracking-wider uppercase text-teal-900 bg-teal-100 px-2 py-0.5 rounded border border-teal-200 shrink-0">
+                  {activePatient.categoryLabel}
+                </span>
+                <span className="text-xs text-surface-dark/60 font-mono font-bold shrink-0">
+                  ID: {activePatient.code}
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-surface-dark/75 font-semibold truncate mt-0.5">
+                Stage: <strong className="text-teal-900 font-bold">{activePatient.stageInfo}</strong> • Garki Primary Health Centre (Ward FCT-04)
+              </p>
+            </div>
           </div>
 
           {/* Profile Switcher Pills */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5">
-            <span className="text-xs font-black text-surface-dark/70 uppercase tracking-wider hidden lg:inline-block">
-              Switch Managed Profile:
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0 pt-1 md:pt-0">
+            <span className="text-xs font-black text-surface-dark/60 uppercase tracking-wider hidden xl:inline-block mr-1">
+              Switch:
             </span>
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
-              {patients.map((pat) => {
-                const isSelected = pat.id === activePatient.id;
-                return (
-                  <button
-                    key={pat.id}
-                    type="button"
-                    onClick={() => {
-                      playChime('reminder');
-                      onSelectPatient(pat.id);
-                    }}
-                    className={`btn-tactile flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold whitespace-nowrap transition-all border-2 ${
-                      isSelected
-                        ? 'bg-teal-800 text-white border-teal-800 shadow-card ring-2 ring-teal-700/30'
-                        : 'bg-surface-base text-surface-dark border-surface-border hover:bg-surface-muted hover:border-teal-400'
-                    }`}
-                  >
-                    <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs font-black ${
-                      isSelected ? 'bg-teal-950 text-cream-200' : 'bg-teal-200 text-teal-950'
+            {patients.map((pat) => {
+              const isSelected = pat.id === activePatient.id;
+              return (
+                <button
+                  key={pat.id}
+                  type="button"
+                  onClick={() => {
+                    playChime('reminder');
+                    onSelectPatient(pat.id);
+                  }}
+                  className={`btn-tactile flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-extrabold whitespace-nowrap transition-all border-2 ${
+                    isSelected
+                      ? 'bg-teal-800 text-white border-teal-800 shadow-xs ring-2 ring-teal-700/20'
+                      : 'bg-surface-base text-surface-dark border-surface-border hover:bg-surface-muted hover:border-teal-400'
+                  }`}
+                >
+                  <span className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black ${
+                    isSelected ? 'bg-teal-950 text-cream-200' : 'bg-teal-200 text-teal-950'
+                  }`}>
+                    {pat.avatarInitials}
+                  </span>
+                  <span>{pat.name}</span>
+                  {pat.relationship === 'child' && (
+                    <span className={`text-[10px] px-1.5 py-0.2 rounded font-black ${
+                      isSelected ? 'bg-teal-900 text-teal-100' : 'bg-cream-200 text-teal-950 border border-teal-900/10'
                     }`}>
-                      {pat.avatarInitials}
+                      Proxy
                     </span>
-                    <span>{pat.name}</span>
-                    {pat.relationship === 'child' && (
-                      <span className={`text-[11px] px-1.5 py-0.5 rounded font-black ${
-                        isSelected ? 'bg-teal-900 text-teal-100' : 'bg-cream-200 text-teal-950 border border-teal-900/10'
-                      }`}>
-                        Proxy
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+                  )}
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>
 
       {/* 2. MAIN RESPONSIVE GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         
         {/* LEFT / MAIN COLUMN (lg:col-span-8) */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-8 space-y-5">
           
           {/* HERO CARD: NEXT SCHEDULED CLINIC EVENT */}
           {nextEvent && (
-            <div className="rounded-3xl bg-teal-900 text-white p-6 sm:p-7 shadow-float border-2 border-teal-700/80 relative overflow-hidden">
+            <div className="rounded-3xl bg-teal-900 text-white p-5 sm:p-6 shadow-float border-2 border-teal-700/80 relative overflow-hidden">
               {/* Top Status & Milestone Header */}
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-                <span className="text-xs sm:text-sm font-black tracking-wider uppercase bg-teal-800 text-cream-200 px-3.5 py-1 rounded-lg border border-teal-600">
+              <div className="flex flex-wrap items-center justify-between gap-2.5 mb-3">
+                <span className="text-xs sm:text-sm font-black tracking-wider uppercase bg-teal-800 text-cream-200 px-3 py-1 rounded-lg border border-teal-600">
                   {nextEvent.duePeriod}
                 </span>
                 <span
-                  className={`text-xs sm:text-sm font-black px-3.5 py-1 rounded-full ${
+                  className={`text-xs sm:text-sm font-black px-3 py-1 rounded-full ${
                     isConfirmed
                       ? 'bg-emerald-400 text-emerald-950 shadow-xs'
                       : 'bg-amber-400 text-amber-950 animate-pulse'
@@ -147,51 +148,59 @@ export function PatientCareView({
               </div>
 
               {/* Title & Description */}
-              <h2 className="text-2xl sm:text-3xl font-black text-white leading-tight mb-1.5 tracking-tight">
+              <h2 className="text-xl sm:text-3xl font-black text-white leading-tight mb-1 tracking-tight">
                 {nextEvent.title}
               </h2>
-              <p className="text-sm sm:text-base text-teal-100 font-bold mb-5">
+              <p className="text-xs sm:text-sm text-teal-100 font-bold mb-4">
                 {nextEvent.subtitle}
               </p>
 
-              {/* Date, Time, Location & Clinician Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-teal-950/80 p-4 rounded-2xl border border-teal-700/60 mb-5">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-800/80 text-cream-200 shrink-0">
-                    <Calendar className="h-5 w-5" />
+              {/* 3 DISTINCT TILES GRID (Zero text overlap, fully constrained with min-w-0) */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 bg-teal-950/80 p-3 rounded-2xl border border-teal-700/60 mb-4">
+                
+                {/* Tile 1: Date & Time */}
+                <div className="bg-teal-900/70 rounded-xl p-3 border border-teal-800/80 flex flex-col justify-between min-w-0">
+                  <div className="flex items-center gap-1.5 text-teal-300 mb-1">
+                    <Calendar className="h-4 w-4 text-cream-200 shrink-0" />
+                    <span className="text-[11px] font-black uppercase tracking-wider">Date & Time</span>
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-teal-300 uppercase tracking-wider">Date & Time</p>
-                    <p className="font-black text-white text-base leading-tight">{nextEvent.date}</p>
-                    <p className="text-xs font-extrabold text-teal-200">{nextEvent.time}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-3 sm:border-l border-teal-800 sm:pl-3.5">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-800/80 text-cream-200 shrink-0">
-                    <MapPin className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-teal-300 uppercase tracking-wider">Facility</p>
-                    <p className="font-black text-white text-base truncate leading-tight">{nextEvent.facilityName}</p>
-                    <p className="text-xs font-bold text-teal-200 truncate">Area 10, Garki, Abuja</p>
+                  <div className="min-w-0">
+                    <p className="font-black text-white text-sm sm:text-base leading-snug truncate">{nextEvent.date}</p>
+                    <p className="text-xs font-bold text-teal-200 mt-0.5">{nextEvent.time}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 sm:border-l border-teal-800 sm:pl-3.5">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-800/80 text-emerald-300 shrink-0">
-                    <ShieldCheck className="h-5 w-5" />
+                {/* Tile 2: Healthcare Centre */}
+                <div className="bg-teal-900/70 rounded-xl p-3 border border-teal-800/80 flex flex-col justify-between min-w-0">
+                  <div className="flex items-center gap-1.5 text-teal-300 mb-1">
+                    <MapPin className="h-4 w-4 text-cream-200 shrink-0" />
+                    <span className="text-[11px] font-black uppercase tracking-wider">Healthcare Centre</span>
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-teal-300 uppercase tracking-wider">Clinical Officer</p>
-                    <p className="font-black text-white text-base truncate leading-tight">{nextEvent.clinicianName}</p>
-                    <p className="text-xs font-bold text-teal-200 truncate">{nextEvent.clinicianRole}</p>
+                  <div className="min-w-0">
+                    <p className="font-black text-white text-sm sm:text-base leading-snug truncate" title={nextEvent.facilityName}>
+                      {nextEvent.facilityName}
+                    </p>
+                    <p className="text-xs font-bold text-teal-200 mt-0.5 truncate">{nextEvent.facilityAddress}</p>
+                  </div>
+                </div>
+
+                {/* Tile 3: Clinical Officer */}
+                <div className="bg-teal-900/70 rounded-xl p-3 border border-teal-800/80 flex flex-col justify-between min-w-0">
+                  <div className="flex items-center gap-1.5 text-teal-300 mb-1">
+                    <ShieldCheck className="h-4 w-4 text-emerald-400 shrink-0" />
+                    <span className="text-[11px] font-black uppercase tracking-wider">Clinical Officer</span>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-black text-white text-sm sm:text-base leading-snug truncate" title={nextEvent.clinicianName}>
+                      {nextEvent.clinicianName}
+                    </p>
+                    <p className="text-xs font-bold text-teal-200 mt-0.5 truncate">{nextEvent.clinicianRole}</p>
                   </div>
                 </div>
               </div>
 
               {/* Spoken Voice Note Preview */}
-              <div className="mb-5">
+              <div className="mb-4">
                 <AudioVoicePlayer
                   pidginText={nextEvent.pidginAudioText}
                   englishText={nextEvent.englishAudioText}
@@ -200,13 +209,13 @@ export function PatientCareView({
               </div>
 
               {/* Preparation Checklist */}
-              <div className="bg-teal-950/60 rounded-2xl p-4 mb-5 border border-teal-800">
-                <p className="text-xs sm:text-sm font-black uppercase tracking-wider text-teal-200 mb-2.5">
+              <div className="bg-teal-950/60 rounded-2xl p-3.5 mb-4 border border-teal-800">
+                <p className="text-xs sm:text-sm font-black uppercase tracking-wider text-teal-200 mb-2">
                   What to Bring & Preparation Checklist:
                 </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs sm:text-sm text-white font-semibold">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs sm:text-sm text-white font-semibold">
                   {nextEvent.instructions.map((ins, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 bg-teal-900/80 p-2.5 rounded-xl border border-teal-700/60">
+                    <div key={idx} className="flex items-start gap-2 bg-teal-900/80 p-2 rounded-xl border border-teal-700/60">
                       <CheckCircle2 className="h-4 w-4 text-cream-200 shrink-0 mt-0.5" />
                       <span>{ins}</span>
                     </div>
@@ -215,12 +224,12 @@ export function PatientCareView({
               </div>
 
               {/* Primary Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3.5 pt-1">
+              <div className="flex flex-wrap items-center gap-3 pt-1">
                 {!isConfirmed ? (
                   <button
                     type="button"
                     onClick={() => onConfirmEvent(nextEvent.id)}
-                    className="btn-tactile flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-xl bg-cream-200 hover:bg-cream-300 text-teal-950 py-3.5 px-6 font-black text-sm sm:text-base shadow-card transition-colors"
+                    className="btn-tactile flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-xl bg-cream-200 hover:bg-cream-300 text-teal-950 py-3 px-5 font-black text-sm shadow-card transition-colors"
                   >
                     <CheckCircle2 className="h-5 w-5 text-teal-900" />
                     <span>Confirm Attendance (I Will Go)</span>
@@ -229,7 +238,7 @@ export function PatientCareView({
                   <button
                     type="button"
                     disabled
-                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-xl bg-emerald-500 text-teal-950 py-3.5 px-6 font-black text-sm sm:text-base shadow-card cursor-default"
+                    className="flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-xl bg-emerald-500 text-teal-950 py-3 px-5 font-black text-sm shadow-card cursor-default"
                   >
                     <CheckCircle2 className="h-5 w-5" />
                     <span>Attendance Confirmed ✓</span>
@@ -239,7 +248,7 @@ export function PatientCareView({
                 <button
                   type="button"
                   onClick={() => onOpenEventSheet(nextEvent)}
-                  className="btn-tactile flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-xl bg-teal-800 hover:bg-teal-700 text-white py-3.5 px-5 font-extrabold text-sm sm:text-base border border-teal-600 transition-colors"
+                  className="btn-tactile flex-1 sm:flex-none flex items-center justify-center gap-2 rounded-xl bg-teal-800 hover:bg-teal-700 text-white py-3 px-4 font-extrabold text-sm border border-teal-600 transition-colors"
                 >
                   <span>Full Instructions & Reschedule</span>
                   <ChevronRight className="h-4 w-4" />
@@ -249,10 +258,10 @@ export function PatientCareView({
           )}
 
           {/* CARE PATHWAY MILESTONES */}
-          <div className="bg-white rounded-2xl border-2 border-surface-border p-5 sm:p-6 shadow-subtle">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+          <div className="bg-white rounded-2xl border-2 border-surface-border p-4 sm:p-5 shadow-subtle">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
               <div>
-                <h3 className="text-lg sm:text-xl font-black text-teal-950">
+                <h3 className="text-base sm:text-lg font-black text-teal-950">
                   {activePatient.category === 'immunisation' ? 'National Immunisation Schedule (NPHCDA 2024)' : 'Federal Maternal ANC Pathway'}
                 </h3>
                 <p className="text-xs sm:text-sm text-surface-dark/70 font-bold">
@@ -264,7 +273,7 @@ export function PatientCareView({
                 <button
                   type="button"
                   onClick={() => setSelectedTimelineFilter('all')}
-                  className={`px-3 py-1.5 rounded-lg transition-colors ${
+                  className={`px-3 py-1 rounded-lg transition-colors ${
                     selectedTimelineFilter === 'all'
                       ? 'bg-teal-800 text-white font-extrabold shadow-xs'
                       : 'text-surface-dark/70 hover:text-teal-950'
@@ -275,7 +284,7 @@ export function PatientCareView({
                 <button
                   type="button"
                   onClick={() => setSelectedTimelineFilter('upcoming')}
-                  className={`px-3 py-1.5 rounded-lg transition-colors ${
+                  className={`px-3 py-1 rounded-lg transition-colors ${
                     selectedTimelineFilter === 'upcoming'
                       ? 'bg-teal-800 text-white font-extrabold shadow-xs'
                       : 'text-surface-dark/70 hover:text-teal-950'
@@ -287,7 +296,7 @@ export function PatientCareView({
             </div>
 
             {/* Milestones Responsive Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {events
                 .filter((ev) => selectedTimelineFilter === 'all' || ev.status !== 'completed')
                 .map((ev) => {
@@ -299,7 +308,7 @@ export function PatientCareView({
                     <div
                       key={ev.id}
                       onClick={() => onOpenEventSheet(ev)}
-                      className={`btn-tactile p-4 sm:p-5 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                      className={`btn-tactile p-3.5 sm:p-4 rounded-2xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
                         isCurrent
                           ? 'bg-cream-50/80 border-teal-700/50 shadow-xs'
                           : isDone
@@ -308,8 +317,8 @@ export function PatientCareView({
                       }`}
                     >
                       <div>
-                        <div className="flex items-center justify-between gap-1 mb-2.5">
-                          <span className="text-xs font-black uppercase tracking-wider text-teal-900 bg-teal-100 px-2.5 py-0.5 rounded-md border border-teal-200">
+                        <div className="flex items-center justify-between gap-1 mb-2">
+                          <span className="text-xs font-black uppercase tracking-wider text-teal-900 bg-teal-100 px-2 py-0.5 rounded-md border border-teal-200">
                             {ev.duePeriod}
                           </span>
                           <span
@@ -325,15 +334,15 @@ export function PatientCareView({
                           </span>
                         </div>
 
-                        <h4 className="text-base sm:text-lg font-black text-surface-dark leading-snug mb-1">
+                        <h4 className="text-base sm:text-lg font-black text-surface-dark leading-snug mb-0.5">
                           {ev.title}
                         </h4>
-                        <p className="text-xs sm:text-sm text-surface-dark/80 font-semibold mb-3.5 line-clamp-1">
+                        <p className="text-xs sm:text-sm text-surface-dark/80 font-semibold mb-3 line-clamp-1">
                           {ev.subtitle}
                         </p>
                       </div>
 
-                      <div className="flex items-center justify-between text-xs sm:text-sm text-surface-dark/70 pt-3 border-t border-surface-border font-bold">
+                      <div className="flex items-center justify-between text-xs sm:text-sm text-surface-dark/70 pt-2.5 border-t border-surface-border font-bold">
                         <span>{ev.date} • {ev.time}</span>
                         <span className="text-teal-800 font-extrabold flex items-center gap-0.5">
                           View Details <ChevronRight className="h-4 w-4" />
@@ -347,23 +356,23 @@ export function PatientCareView({
         </div>
 
         {/* RIGHT / SIDEBAR COMPANION COLUMN (lg:col-span-4) */}
-        <div className="lg:col-span-4 space-y-6">
+        <div className="lg:col-span-4 space-y-5">
           
           {/* 1. OFFICIAL HEALTH CARD / YELLOW CARD SUMMARY */}
-          <div className="bg-white rounded-2xl border-2 border-surface-border p-5 shadow-subtle">
-            <div className="flex items-center justify-between mb-3.5">
+          <div className="bg-white rounded-2xl border-2 border-surface-border p-4 sm:p-5 shadow-subtle">
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-teal-800" />
                 <h3 className="text-base font-black text-teal-950">
                   {activePatient.category === 'immunisation' ? 'Digital Child Yellow Card' : 'Official Maternal ANC Card'}
                 </h3>
               </div>
-              <span className="text-xs font-black bg-cream-200 text-teal-950 px-2.5 py-0.5 rounded border border-teal-900/10">
+              <span className="text-xs font-black bg-cream-200 text-teal-950 px-2 py-0.5 rounded border border-teal-900/10">
                 Verified
               </span>
             </div>
 
-            <div className="bg-surface-base rounded-xl p-3.5 border border-surface-border text-xs sm:text-sm space-y-2.5 mb-3.5">
+            <div className="bg-surface-base rounded-xl p-3 border border-surface-border text-xs sm:text-sm space-y-2 mb-3">
               <div className="flex justify-between border-b border-surface-border pb-1.5">
                 <span className="text-surface-dark/70 font-semibold">Registered Name:</span>
                 <span className="font-black text-teal-950">{activePatient.name}</span>
@@ -378,7 +387,7 @@ export function PatientCareView({
               </div>
               <div className="flex justify-between">
                 <span className="text-surface-dark/70 font-semibold">Proxy Guardian:</span>
-                <span className="font-extrabold text-teal-800">{activePatient.notificationContact.name}</span>
+                <span className="font-extrabold text-teal-800 truncate max-w-[150px]">{activePatient.notificationContact.name}</span>
               </div>
             </div>
 
@@ -390,7 +399,7 @@ export function PatientCareView({
 
           {/* 2. LIVE TELEPHONY COMPANION WIDGET */}
           <div className="bg-white rounded-2xl border-2 border-surface-border shadow-subtle overflow-hidden">
-            <div className="bg-teal-950 text-white px-4 py-3 flex items-center justify-between text-xs sm:text-sm border-b border-teal-900">
+            <div className="bg-teal-950 text-white px-4 py-2.5 flex items-center justify-between text-xs sm:text-sm border-b border-teal-900">
               <div className="flex items-center gap-2 font-black">
                 <Radio className="h-4 w-4 text-emerald-400 animate-pulse" />
                 <span>Live SMS Telephony Feed</span>
@@ -398,10 +407,10 @@ export function PatientCareView({
               <span className="text-xs text-teal-300 font-bold">MTN Whitelisted</span>
             </div>
 
-            <div className="p-4 bg-surface-base space-y-3 max-h-[320px] overflow-y-auto">
+            <div className="p-3 bg-surface-base space-y-2.5 max-h-[260px] overflow-y-auto">
               {smsLog.slice(0, 2).map((sms) => (
-                <div key={sms.id} className="rounded-xl bg-white border border-surface-border p-3 shadow-xs">
-                  <div className="flex items-center justify-between text-xs text-surface-dark/60 mb-1.5 font-bold">
+                <div key={sms.id} className="rounded-xl bg-white border border-surface-border p-2.5 shadow-xs">
+                  <div className="flex items-center justify-between text-xs text-surface-dark/60 mb-1 font-bold">
                     <span className="font-black text-teal-900">{sms.sender}</span>
                     <span className="text-emerald-700 font-extrabold flex items-center gap-1">
                       <CheckCheck className="h-3.5 w-3.5" /> Delivered
@@ -413,15 +422,15 @@ export function PatientCareView({
             </div>
 
             {/* Quick SMS interactive buttons on desktop */}
-            <div className="p-3.5 bg-white border-t border-surface-border">
-              <div className="text-xs font-black text-surface-dark/70 uppercase tracking-wider mb-2">
+            <div className="p-3 bg-white border-t border-surface-border">
+              <div className="text-xs font-black text-surface-dark/70 uppercase tracking-wider mb-1.5">
                 Quick Stage Test:
               </div>
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => onReplySms('1')}
-                  className="btn-tactile flex-1 rounded-xl border-2 border-emerald-300 bg-emerald-50 py-2.5 px-3 text-xs sm:text-sm font-black text-emerald-950 hover:bg-emerald-100 flex items-center justify-center gap-1.5 shadow-xs"
+                  className="btn-tactile flex-1 rounded-xl border-2 border-emerald-400 bg-emerald-50 py-2 px-2.5 text-xs sm:text-sm font-black text-emerald-950 hover:bg-emerald-100 flex items-center justify-center gap-1 shadow-xs"
                 >
                   <span>Reply &ldquo;1&rdquo;</span>
                   <span className="text-xs font-bold text-emerald-800">(Confirm)</span>
@@ -429,7 +438,7 @@ export function PatientCareView({
                 <button
                   type="button"
                   onClick={() => onReplySms('2')}
-                  className="btn-tactile flex-1 rounded-xl border-2 border-amber-300 bg-amber-50 py-2.5 px-3 text-xs sm:text-sm font-black text-amber-950 hover:bg-amber-100 flex items-center justify-center gap-1.5 shadow-xs"
+                  className="btn-tactile flex-1 rounded-xl border-2 border-amber-400 bg-amber-50 py-2 px-2.5 text-xs sm:text-sm font-black text-amber-950 hover:bg-amber-100 flex items-center justify-center gap-1 shadow-xs"
                 >
                   <span>Reply &ldquo;2&rdquo;</span>
                   <span className="text-xs font-bold text-amber-800">(Reschedule)</span>
@@ -439,18 +448,18 @@ export function PatientCareView({
           </div>
 
           {/* 3. PROXY NOTIFICATION ARCHITECTURE NOTE */}
-          <div className="rounded-2xl border-2 border-teal-900/20 bg-teal-950 text-white p-4 sm:p-5 text-xs sm:text-sm">
-            <div className="flex items-center gap-2 font-black text-cream-200 text-sm sm:text-base mb-2">
-              <PhoneForwarded className="h-5 w-5 text-teal-400" />
+          <div className="rounded-2xl border-2 border-teal-900/20 bg-teal-950 text-white p-4 text-xs sm:text-sm">
+            <div className="flex items-center gap-2 font-black text-cream-200 text-sm mb-1.5">
+              <PhoneForwarded className="h-4 w-4 text-teal-400" />
               <span>Independent Proxy Architecture</span>
             </div>
-            <p className="text-white/90 leading-relaxed text-xs sm:text-sm font-medium mb-2.5">
+            <p className="text-white/90 leading-relaxed text-xs font-medium mb-2">
               In Nigerian care journeys, account owners frequently coordinate for multiple dependents without phones.
             </p>
-            <div className="bg-teal-900/70 p-3 rounded-xl border border-teal-800 text-xs sm:text-sm font-semibold space-y-1.5">
+            <div className="bg-teal-900/70 p-2.5 rounded-xl border border-teal-800 text-xs font-semibold space-y-1">
               <p>• <strong>Patient</strong>: {activePatient.name} (Phone-less profile)</p>
               <p>• <strong>Account Owner</strong>: Ada Eze (Signed in)</p>
-              <p>• <strong>SMS Recipient</strong>: {activePatient.notificationContact.name} ({activePatient.notificationContact.phone})</p>
+              <p>• <strong>SMS Recipient</strong>: {activePatient.notificationContact.name}</p>
             </div>
           </div>
 
