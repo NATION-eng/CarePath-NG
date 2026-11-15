@@ -10,8 +10,8 @@ async function verifyPwa() {
   assert.strictEqual(manifestRes.status, 200, 'manifest.json must return 200');
   const manifest = await manifestRes.json();
   assert.strictEqual(manifest.display, 'standalone');
-  assert.strictEqual(manifest.theme_color, '#174C45');
-  console.log('✅ manifest.json: 200 OK (standalone, #174C45)');
+  assert.strictEqual(manifest.theme_color, '#0C2B3A');
+  console.log('✅ manifest.json: 200 OK (standalone, #0C2B3A)');
 
   // 2. Verify sw.js
   const swRes = await fetch(`${BASE_URL}/sw.js`);

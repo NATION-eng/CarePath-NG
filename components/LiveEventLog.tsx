@@ -12,12 +12,12 @@ export function LiveEventLog({ logs }: LiveEventLogProps) {
   return (
     <div className="flex flex-col h-full bg-white rounded-2xl border-2 border-surface-border shadow-card overflow-hidden">
       {/* Header */}
-      <div className="bg-teal-950 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm border-b border-teal-900">
+      <div className="bg-petrol-900 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm border-b border-petrol-800">
         <div className="flex items-center gap-2">
-          <Activity className="h-4 w-4 text-emerald-400 shrink-0" />
+          <Activity className="h-4 w-4 text-peach-500 shrink-0" />
           <span className="font-black tracking-wide">Transactional Outbox & Audit Engine</span>
         </div>
-        <span className="text-[11px] text-teal-300 font-mono font-bold">NDPA 2023 Compliant</span>
+        <span className="text-[11px] text-peach-300 font-mono font-bold">NDPA 2023 Compliant</span>
       </div>
 
       {/* Description tag */}
@@ -56,7 +56,7 @@ export function LiveEventLog({ logs }: LiveEventLogProps) {
                 {log.details}
               </p>
               <div className="flex flex-wrap items-center justify-between text-[11px] text-surface-dark/70 font-sans border-t border-surface-border/50 pt-1.5">
-                <span>Actor: <strong className="text-teal-950 font-black">{log.actor}</strong></span>
+                <span>Actor: <strong className="text-petrol-950 font-black">{log.actor}</strong></span>
                 <span className="text-emerald-700 font-extrabold flex items-center gap-1">
                   <CheckCircle2 className="h-3.5 w-3.5" /> Transaction Committed
                 </span>

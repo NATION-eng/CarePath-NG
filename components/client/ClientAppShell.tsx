@@ -71,7 +71,7 @@ export function ClientAppShell({
         <div className="orb-glow bg-mint-500/15 w-[360px] h-[360px] bottom-20 -left-20 pointer-events-none fixed" />
 
         {/* 1. CLIENT HEADER */}
-        <header className="sticky top-0 z-40 bg-petrol-900/85 backdrop-blur-xl border-b border-white/10 text-white shadow-card">
+        <header className="sticky top-0 z-40 bg-petrol-900/85 backdrop-blur-xl border-b border-white/10 text-white shadow-card pt-safe">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
               <button
@@ -138,14 +138,14 @@ export function ClientAppShell({
   }
 
   return (
-    <div className="min-h-screen w-full bg-surface-base text-surface-dark flex flex-col font-sans pb-24 md:pb-12 relative overflow-x-hidden">
+    <div className="min-h-screen w-full bg-surface-base text-surface-dark flex flex-col font-sans pb-28 md:pb-12 relative overflow-x-hidden">
       
       {/* Floating Ambient Radiant Light Orbs for Sophisticated Glass Feel */}
       <div className="orb-glow bg-peach-500/15 w-[400px] h-[400px] top-10 -right-20 pointer-events-none fixed" />
       <div className="orb-glow bg-mint-500/15 w-[360px] h-[360px] bottom-20 -left-20 pointer-events-none fixed" />
 
       {/* 1. CLIENT HEADER (FROSTED GLASS) */}
-      <header className="sticky top-0 z-40 bg-petrol-900/85 backdrop-blur-xl border-b border-white/10 text-white shadow-card">
+      <header className="sticky top-0 z-40 bg-petrol-900/85 backdrop-blur-xl border-b border-white/10 text-white shadow-card pt-safe">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between gap-3">
           
           {/* Brand & Back Button */}
@@ -490,49 +490,59 @@ export function ClientAppShell({
 
       {/* 3. UNIVERSAL MOBILE BOTTOM THUMB NAVIGATION (CLIENT APP) */}
       {/* 3. UNIVERSAL MOBILE BOTTOM THUMB NAVIGATION (FROSTED GLASS DOCK) */}
-      <nav className="fixed md:hidden bottom-0 inset-x-0 bg-petrol-900/90 backdrop-blur-xl border-t border-white/10 px-3 py-2 flex items-center justify-around safe-bottom z-40 shadow-2xl text-white">
+      <nav className="fixed md:hidden bottom-0 inset-x-0 bg-petrol-900/95 backdrop-blur-xl border-t border-white/10 px-2 py-2 flex items-center justify-around safe-bottom z-40 shadow-2xl text-white">
         <button
           type="button"
           onClick={() => setActiveTab('home')}
-          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-xs font-black transition-all ${
+          className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[11px] font-black transition-all ${
             activeTab === 'home' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
-          <Calendar className={`h-5 w-5 mb-0.5 ${activeTab === 'home' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
+          <Calendar className={`h-4.5 w-4.5 mb-0.5 ${activeTab === 'home' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
           <span>Home</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('card')}
-          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-xs font-black transition-all ${
+          className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[11px] font-black transition-all ${
             activeTab === 'card' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
-          <FileText className={`h-5 w-5 mb-0.5 ${activeTab === 'card' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
-          <span>Care Card</span>
+          <FileText className={`h-4.5 w-4.5 mb-0.5 ${activeTab === 'card' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
+          <span>Card</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('family')}
-          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-xs font-black transition-all ${
+          className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[11px] font-black transition-all ${
             activeTab === 'family' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
-          <Users className={`h-5 w-5 mb-0.5 ${activeTab === 'family' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
+          <Users className={`h-4.5 w-4.5 mb-0.5 ${activeTab === 'family' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
           <span>Family ({patients.length})</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('emergency')}
-          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-xs font-black transition-all ${
+          className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[11px] font-black transition-all ${
             activeTab === 'emergency' ? 'text-red-400 bg-red-950/50 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
-          <AlertTriangle className={`h-5 w-5 mb-0.5 ${activeTab === 'emergency' ? 'text-red-400 stroke-[2.5]' : 'stroke-2'}`} />
-          <span>Emergency</span>
+          <AlertTriangle className={`h-4.5 w-4.5 mb-0.5 ${activeTab === 'emergency' ? 'text-red-400 stroke-[2.5]' : 'stroke-2'}`} />
+          <span>Alerts</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onBackToLanding}
+          className="flex flex-col items-center py-1.5 px-2 rounded-xl text-[11px] font-bold text-petrol-200 hover:text-white transition-all"
+          title="Return to Public Website"
+        >
+          <ArrowLeft className="h-4.5 w-4.5 mb-0.5 stroke-2 text-peach-500" />
+          <span>Website</span>
         </button>
       </nav>
 

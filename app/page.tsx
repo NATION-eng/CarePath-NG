@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useTransition, useEffect } from 'react';
 import { useCarePathStore } from '@/lib/store';
 import { LandingPage } from '@/components/landing/LandingPage';
 import { ClientAppShell } from '@/components/client/ClientAppShell';
@@ -41,6 +41,28 @@ export default function CarePathApp() {
       window.scrollTo(0, 0);
     }
   };
+
+  // Handle PWA App Shortcuts & Direct Navigation Query Parameters
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const action = params.get('action');
+        if (action === 'client') {
+          setViewMode('client');
+        } else if (action === 'staff' || action === 'portal') {
+          setIsStaffPinModalOpen(true);
+        } else if (action === 'book') {
+          if (store.patients.length === 0) {
+            store.setIsNewPatientModalOpen(true);
+          } else {
+            store.setIsNewAppointmentModalOpen(true);
+          }
+        }
+      } catch {}
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Loading state
   if (!store.isClient || store.isLoadingBackend) {
@@ -235,7 +257,7 @@ export default function CarePathApp() {
     <div className="flex flex-col min-h-screen w-full bg-surface-base antialiased">
       
       {/* Staff Header */}
-      <header className="sticky top-0 z-40 bg-petrol-900 text-white px-3 sm:px-6 py-2.5 border-b-2 border-petrol-800 shadow-card">
+      <header className="sticky top-0 z-40 bg-petrol-900 text-white px-3 sm:px-6 py-2.5 border-b-2 border-petrol-800 shadow-card pt-safe">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
           
           {/* Identity & Return Controls */}
@@ -243,7 +265,7 @@ export default function CarePathApp() {
             <button
               type="button"
               onClick={() => navigateToView('landing')}
-              className="p-1.5 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-peach-500 border border-petrol-700 transition-colors"
+              className="p-1.5 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-peach-500 border border-petrol-700 transition-colors shrink-0"
               title="Return to Public Website"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -265,7 +287,7 @@ export default function CarePathApp() {
           </div>
 
           {/* Desktop Navigation Tabs for Clinical Staff */}
-          <nav className="flex items-center bg-petrol-950/80 rounded-xl p-1 border border-petrol-800 text-xs sm:text-sm">
+          <nav className="hidden sm:flex items-center bg-petrol-950/80 rounded-xl p-1 border border-petrol-800 text-xs sm:text-sm">
             <button
               type="button"
               onClick={() => navigateToView('portal')}
@@ -276,8 +298,7 @@ export default function CarePathApp() {
               }`}
             >
               <Building2 className="h-4 w-4 shrink-0" />
-              <span className="hidden sm:inline">PHC Registry</span>
-              <span className="sm:hidden">Registry</span>
+              <span>PHC Registry</span>
             </button>
 
             <button
@@ -290,8 +311,7 @@ export default function CarePathApp() {
               }`}
             >
               <Smartphone className="h-4 w-4 shrink-0" />
-              <span className="hidden sm:inline">SMS Gateway</span>
-              <span className="sm:hidden">SMS</span>
+              <span>SMS Gateway</span>
             </button>
 
             <button
@@ -304,8 +324,7 @@ export default function CarePathApp() {
               }`}
             >
               <Activity className="h-4 w-4 shrink-0" />
-              <span className="hidden sm:inline">NDPA Audit</span>
-              <span className="sm:hidden">Audit</span>
+              <span>NDPA Audit</span>
             </button>
           </nav>
 
@@ -338,7 +357,7 @@ export default function CarePathApp() {
       </header>
 
       {/* Main Staff Container */}
-      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 w-full flex-1 pb-16">
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 w-full flex-1 pb-28 md:pb-16">
         
         {viewMode === 'portal' && (
           <div className="w-full min-h-[calc(100vh-160px)]">
@@ -379,6 +398,55 @@ export default function CarePathApp() {
         )}
 
       </main>
+
+      {/* Mobile Staff Bottom Navigation Dock (Native PWA Feel) */}
+      <nav className="fixed sm:hidden bottom-0 inset-x-0 z-40 bg-petrol-900/95 backdrop-blur-xl border-t border-white/10 px-2 py-2 safe-bottom shadow-2xl flex items-center justify-around text-white">
+        <button
+          type="button"
+          onClick={() => navigateToView('portal')}
+          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-[11px] font-black transition-all ${
+            viewMode === 'portal' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
+          }`}
+        >
+          <Building2 className={`h-4.5 w-4.5 mb-0.5 ${viewMode === 'portal' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
+          <span>Registry</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigateToView('sms')}
+          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-[11px] font-black transition-all ${
+            viewMode === 'sms' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
+          }`}
+        >
+          <Smartphone className={`h-4.5 w-4.5 mb-0.5 ${viewMode === 'sms' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
+          <span>SMS Gateway</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigateToView('logs')}
+          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-[11px] font-black transition-all ${
+            viewMode === 'logs' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
+          }`}
+        >
+          <Activity className={`h-4.5 w-4.5 mb-0.5 ${viewMode === 'logs' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
+          <span>Audit</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setIsStaffAuthenticated(false);
+            navigateToView('landing');
+          }}
+          className="flex flex-col items-center py-1.5 px-3 rounded-xl text-[11px] font-bold text-petrol-200 hover:text-white transition-all"
+          title="Lock portal and return to public website"
+        >
+          <Lock className="h-4.5 w-4.5 mb-0.5 stroke-2 text-peach-500" />
+          <span>Exit</span>
+        </button>
+      </nav>
 
       {/* Global Modals */}
       {store.selectedEventForSheet && store.activePatient && (

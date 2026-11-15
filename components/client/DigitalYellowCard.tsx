@@ -208,11 +208,12 @@ export function DigitalYellowCard({ patient, events }: DigitalYellowCardProps) {
                 <span>NPHCDA Routine Immunisation Status</span>
               </div>
               <h3 className="text-2xl sm:text-3xl font-black text-white">
-                {patient?.name || 'Halima Danjuma'}&apos;s Protection
+                {patient?.name || 'Child'}&apos;s Protection
               </h3>
               <p className="text-xs sm:text-sm text-petrol-100/90 leading-relaxed font-medium">
-                Your child has completed at-birth antigens. The next vital session is the 
-                <strong> 6-Week Penta 1, OPV 1, PCV 1, and Rota 1</strong> at Garki PHC.
+                {completedCount > 0
+                  ? `Your child has completed ${completedCount} federal immunisation milestone(s). Next clinical milestone is tracked below at Garki PHC.`
+                  : 'Federal childhood immunisation milestones from birth to 9 months tracked according to NPHCDA protocol.'}
               </p>
             </div>
 

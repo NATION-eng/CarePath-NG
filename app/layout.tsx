@@ -30,7 +30,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: '#174C45',
+  themeColor: '#0C2B3A',
 };
 
 export default function RootLayout({
@@ -40,7 +40,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full antialiased">
-      <body className="h-full bg-surface-base text-surface-dark select-none sm:select-auto">
+      <body className="h-full bg-surface-base text-surface-dark select-none sm:select-auto overscroll-none">
         <PwaRegister />
         {children}
       </body>

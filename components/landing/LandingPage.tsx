@@ -17,7 +17,10 @@ import {
   Lock, 
   Building2, 
   HeartHandshake,
-  UserPlus
+  UserPlus,
+  Menu,
+  Smartphone,
+  X
 } from 'lucide-react';
 import { BrandLogo } from '../BrandLogo';
 import { AudioVoicePlayer } from '../AudioVoicePlayer';
@@ -38,6 +41,7 @@ export function LandingPage({
   onOpenSmsSimulator,
 }: LandingPageProps) {
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const careServices = [
     {
@@ -100,7 +104,7 @@ export function LandingPage({
     <div className="min-h-screen w-full bg-surface-base text-surface-dark flex flex-col font-sans selection:bg-peach-200 selection:text-petrol-950 overflow-x-hidden">
       
       {/* 1. TOP HEADER / NAVBAR (FROSTED GLASS REFERENCE DESIGN) */}
-      <header className="sticky top-0 z-40 bg-petrol-900/85 backdrop-blur-xl border-b border-white/10 text-white shadow-card transition-all">
+      <header className="sticky top-0 z-40 bg-petrol-900/85 backdrop-blur-xl border-b border-white/10 text-white shadow-card transition-all pt-safe">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
           
           {/* Brand Logo with Two Hands Shaking Heart Emblem */}
@@ -142,11 +146,119 @@ export function LandingPage({
               onClick={onBookAppointment}
               className="btn-tactile px-4 sm:px-6 py-2.5 rounded-full bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs sm:text-sm shadow-peach transition-all transform hover:-translate-y-0.5 flex items-center gap-1.5"
             >
-              <span>Book Appointment</span>
+              <span className="hidden xs:inline">Book Appointment</span>
+              <span className="xs:hidden">Book Visit</span>
               <ArrowRight className="h-4 w-4" />
+            </button>
+
+            {/* Mobile Hamburger Menu Toggle */}
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="p-2.5 rounded-2xl bg-petrol-800 text-peach-500 hover:text-white md:hidden border border-petrol-700 transition-colors shrink-0"
+              aria-label="Toggle navigation menu"
+            >
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
+
+        {/* Mobile Slide-Out Drawer */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-petrol-950/95 backdrop-blur-2xl border-b border-petrol-800 px-4 py-5 space-y-4 animate-in slide-in-from-top-3">
+            <div className="grid grid-cols-2 gap-2.5 text-xs font-black">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  onStartPatientApp();
+                }}
+                className="btn-tactile p-3.5 rounded-2xl bg-petrol-900 border border-petrol-750 text-peach-500 flex flex-col items-start gap-1.5 shadow-sm text-left"
+              >
+                <HeartHandshake className="h-5 w-5 text-peach-500" />
+                <span className="text-white">Care Hub / Card</span>
+                <span className="text-[10px] text-petrol-200 font-medium">Child Yellow Card & ANC</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  onOpenNursePortal();
+                }}
+                className="btn-tactile p-3.5 rounded-2xl bg-petrol-900 border border-petrol-750 text-white flex flex-col items-start gap-1.5 shadow-sm text-left"
+              >
+                <Lock className="h-5 w-5 text-peach-500" />
+                <span className="text-white">PHC Staff Portal</span>
+                <span className="text-[10px] text-petrol-200 font-medium">Hospital Nurse Login</span>
+              </button>
+            </div>
+
+            <div className="space-y-1 pt-2 border-t border-petrol-800/80 text-xs font-bold text-petrol-200">
+              <a
+                href="#about"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-2.5 px-3 rounded-xl hover:bg-petrol-900 text-white transition-colors"
+              >
+                About Platform
+              </a>
+              <a
+                href="#services"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-2.5 px-3 rounded-xl hover:bg-petrol-900 text-white transition-colors"
+              >
+                Services (ANC & Pediatric Milestones)
+              </a>
+              <a
+                href="#providers"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-2.5 px-3 rounded-xl hover:bg-petrol-900 text-white transition-colors"
+              >
+                Clinicians & Garki PHC Staff
+              </a>
+              <a
+                href="#interactive-demo"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-2.5 px-3 rounded-xl hover:bg-petrol-900 text-white transition-colors"
+              >
+                Live Spoken Pidgin Audio Demo
+              </a>
+              <a
+                href="#faqs"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="block py-2.5 px-3 rounded-xl hover:bg-petrol-900 text-white transition-colors"
+              >
+                Frequently Asked Questions
+              </a>
+            </div>
+
+            <div className="pt-2 border-t border-petrol-800/80 flex flex-col gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  onBookAppointment();
+                }}
+                className="btn-tactile w-full py-3 rounded-xl bg-peach-500 text-petrol-950 font-black text-xs shadow-peach flex items-center justify-center gap-2"
+              >
+                <Calendar className="h-4 w-4" />
+                <span>Book Clinic Appointment</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  onCreateAccount();
+                }}
+                className="w-full py-3 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-white font-bold text-xs border border-petrol-700 flex items-center justify-center gap-2 transition-colors"
+              >
+                <UserPlus className="h-4 w-4 text-peach-500" />
+                <span>Create Family Account</span>
+              </button>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* 2. HERO SECTION (EXACT REFERENCE: "Modern Care, Local Heart.") */}
@@ -548,7 +660,7 @@ export function LandingPage({
                     <span>MTN DND Whitelisted</span>
                   </div>
                   <p className="leading-relaxed text-petrol-100">
-                    &quot;CarePath: Important clinic visit for Halima at Garki PHC on Thursday at 09:00 AM. Ref: #CP-C-4091. Reply 1 to Confirm.&quot;
+                    &quot;CarePath: Clinic milestone visit scheduled at Garki PHC. Reply 1 to Confirm Attendance or 2 to Reschedule.&quot;
                   </p>
                 </div>
               </div>
@@ -609,7 +721,7 @@ export function LandingPage({
       </section>
 
       {/* 8. FOOTER */}
-      <footer className="bg-petrol-950 text-white py-12 border-t-2 border-petrol-900">
+      <footer className="bg-petrol-950 text-white py-12 pb-28 md:pb-12 border-t-2 border-petrol-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-petrol-900">
             
@@ -646,6 +758,37 @@ export function LandingPage({
           </div>
         </div>
       </footer>
+
+      {/* 9. MOBILE BOTTOM THUMB DOCK (FOR MOBILE & DOWNLOADED PWA VIEW) */}
+      <div className="fixed md:hidden bottom-0 inset-x-0 z-40 bg-petrol-900/90 backdrop-blur-xl border-t border-white/10 px-3.5 py-2.5 safe-bottom shadow-2xl flex items-center justify-around gap-2 text-white">
+        <button
+          type="button"
+          onClick={onBookAppointment}
+          className="btn-tactile flex-1 py-2.5 px-3 rounded-xl bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs shadow-peach flex items-center justify-center gap-1.5"
+        >
+          <Calendar className="h-4 w-4 shrink-0" />
+          <span>Book Visit</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onStartPatientApp}
+          className="btn-tactile flex-1 py-2.5 px-3 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-white font-bold text-xs border border-petrol-700 flex items-center justify-center gap-1.5"
+        >
+          <HeartHandshake className="h-4 w-4 text-peach-500 shrink-0" />
+          <span>Care Hub</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onOpenNursePortal}
+          className="btn-tactile py-2.5 px-3.5 rounded-xl bg-petrol-950 hover:bg-petrol-850 text-petrol-200 hover:text-white font-bold text-xs border border-petrol-800 flex items-center justify-center gap-1.5 shrink-0"
+          title="Hospital Staff Gate"
+        >
+          <Lock className="h-3.5 w-3.5 text-peach-500 shrink-0" />
+          <span>Staff</span>
+        </button>
+      </div>
 
     </div>
   );

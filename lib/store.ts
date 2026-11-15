@@ -193,6 +193,38 @@ export function useCarePathStore() {
     proxyPhone?: string;
     proxyRelationship?: string;
   }) => {
+    const localId = `pat_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const categoryPrefix = data.category === 'maternal' ? 'CP-M' : data.category === 'immunisation' ? 'CP-C' : 'CP-G';
+    const localCode = `${categoryPrefix}-${Math.floor(1000 + Math.random() * 9000)}`;
+    const initials = data.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2) || 'CP';
+
+    const optimisticPatient: PatientProfile = {
+      id: localId,
+      code: localCode,
+      name: data.name,
+      relationship: data.relationship,
+      category: data.category,
+      categoryLabel: data.category === 'maternal' ? 'Maternal ANC Pathway' : data.category === 'immunisation' ? 'Child Immunisation Schedule' : 'General & Family Healthcare',
+      stageInfo: data.stageInfo,
+      avatarInitials: initials,
+      phoneOwnedByPatient: !!data.phone,
+      registeredPhone: data.phone,
+      notificationContact: {
+        name: data.phone ? data.name : (data.proxyName || 'Authorized Caregiver'),
+        phone: data.phone || data.proxyPhone || '+234 800 000 0000',
+        relationship: data.phone ? 'Self' : (data.proxyRelationship || 'Guardian'),
+      },
+    };
+
+    // Optimistically store in state & localStorage immediately for offline PWA continuity
+    setPatients((prev) => {
+      const updated = [optimisticPatient, ...prev.filter((p) => p.id !== localId)];
+      persistLocally(updated);
+      return updated;
+    });
+    setActivePatientId(localId);
+    persistLocally(undefined, undefined, undefined, undefined, localId);
+
     try {
       const res = await fetch('/api/patients', {
         method: 'POST',
@@ -206,7 +238,7 @@ export function useCarePathStore() {
         const initialEvt: CareEvent | undefined = result.initialEvent;
 
         setPatients((prev) => {
-          const updated = [newPatient, ...prev.filter((p) => p.id !== newPatient.id)];
+          const updated = [newPatient, ...prev.filter((p) => p.id !== localId && p.id !== newPatient.id)];
           persistLocally(updated);
           return updated;
         });
@@ -225,7 +257,7 @@ export function useCarePathStore() {
         notifySync();
       }
     } catch (err) {
-      console.error('Failed to register patient:', err);
+      console.warn('PWA offline mode active: Patient registered locally', err);
     }
   };
 
@@ -303,6 +335,42 @@ export function useCarePathStore() {
     const targetPatient = patients.find((p) => p.id === data.patientId) || patients[0];
     const recipientPhone = targetPatient?.notificationContact.phone || customJudgePhone || '+234 800 000 0000';
 
+    const localEvtId = `evt_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+    const optimisticEvent: CareEvent = {
+      id: localEvtId,
+      patientId: data.patientId,
+      title: data.title,
+      subtitle: data.subtitle,
+      facilityName: data.facilityName,
+      facilityAddress: data.facilityAddress,
+      date: data.date,
+      time: data.time,
+      duePeriod: data.title,
+      status: 'scheduled',
+      category: targetPatient?.category || 'general',
+      instructions: data.instructions,
+      clinicianName: data.clinicianName,
+      clinicianRole: data.clinicianRole,
+      vaccines: data.vaccines,
+      pidginAudioText: `Make you remember say you get clinic appointment for ${data.date} at ${data.facilityName}.`,
+      englishAudioText: `Reminder: you have a scheduled appointment on ${data.date} at ${data.facilityName}.`,
+      reminderSent: true,
+      reminderDeliveryStatus: 'queued',
+      lastNotificationSnippet: `CarePath: Appointment scheduled for ${targetPatient?.name || 'patient'} at ${data.facilityName} on ${data.date}.`,
+    };
+
+    // Store in state & localStorage immediately for offline PWA continuity
+    setEvents((prev) => {
+      const updated = [optimisticEvent, ...prev.filter((e) => e.id !== localEvtId)];
+      persistLocally(undefined, updated);
+      return updated;
+    });
+
+    if (data.patientId) {
+      setActivePatientId(data.patientId);
+      persistLocally(undefined, undefined, undefined, undefined, data.patientId);
+    }
+
     try {
       const res = await fetch('/api/appointments', {
         method: 'POST',
@@ -319,7 +387,7 @@ export function useCarePathStore() {
         const newEvent: CareEvent = result.event;
 
         setEvents((prev) => {
-          const updated = [newEvent, ...prev.filter((e) => e.id !== newEvent.id)];
+          const updated = [newEvent, ...prev.filter((e) => e.id !== localEvtId && e.id !== newEvent.id)];
           persistLocally(undefined, updated);
           return updated;
         });
@@ -333,7 +401,7 @@ export function useCarePathStore() {
         notifySync();
       }
     } catch (err) {
-      console.error('Failed to schedule appointment:', err);
+      console.warn('PWA offline mode active: Appointment scheduled locally', err);
     }
   };
 

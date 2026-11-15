@@ -5,10 +5,33 @@
   "start_url": "/",
   "id": "/",
   "display": "standalone",
-  "background_color": "#F7F8F6",
-  "theme_color": "#174C45",
+  "background_color": "#0C2B3A",
+  "theme_color": "#0C2B3A",
   "orientation": "portrait-primary",
   "scope": "/",
+  "shortcuts": [
+    {
+      "name": "Book Clinic Appointment",
+      "short_name": "Book Visit",
+      "description": "Schedule a maternal or child vaccination visit at Garki PHC",
+      "url": "/?action=book",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Care Hub & Yellow Card",
+      "short_name": "Care Hub",
+      "description": "View active immunization schedules and health milestones",
+      "url": "/?action=client",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Hospital Staff Gate",
+      "short_name": "Staff Portal",
+      "description": "Access Garki PHC clinical continuity registry",
+      "url": "/?action=staff",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
   "icons": [
     {
       "src": "/icons/icon-192x192.png",

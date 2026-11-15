@@ -1,4 +1,4 @@
-const CACHE_NAME = 'carepath-ng-v2';
+const CACHE_NAME = 'carepath-ng-v3';
 const PRECACHE_ASSETS = [
   '/',
   '/manifest.json',
@@ -49,11 +49,20 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Cache-first for static icons & images
-  if (url.pathname.startsWith('/icons/') || url.pathname.endsWith('.svg') || url.pathname.endsWith('.png') || url.pathname.endsWith('.ico')) {
+  // 2. Cache-first for static assets, chunks, icons & images
+  if (
+    url.pathname.startsWith('/_next/static/') ||
+    url.pathname.startsWith('/icons/') ||
+    url.pathname.endsWith('.svg') ||
+    url.pathname.endsWith('.png') ||
+    url.pathname.endsWith('.jpg') ||
+    url.pathname.endsWith('.ico') ||
+    url.pathname.endsWith('.woff2')
+  ) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
-        return cached || fetch(event.request).then((response) => {
+        if (cached) return cached;
+        return fetch(event.request).then((response) => {
           if (response.ok) {
             const clone = response.clone();
             caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
