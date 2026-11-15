@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useTransition } from 'react';
 import { useCarePathStore } from '@/lib/store';
 import { LandingPage } from '@/components/landing/LandingPage';
 import { ClientAppShell } from '@/components/client/ClientAppShell';
@@ -29,8 +29,18 @@ type ViewMode = 'landing' | 'client' | 'portal' | 'sms' | 'logs';
 export default function CarePathApp() {
   const store = useCarePathStore();
   const [viewMode, setViewMode] = useState<ViewMode>('landing');
+  const [, startTransition] = useTransition();
   const [isStaffAuthenticated, setIsStaffAuthenticated] = useState(false);
   const [isStaffPinModalOpen, setIsStaffPinModalOpen] = useState(false);
+
+  const navigateToView = (newMode: ViewMode) => {
+    startTransition(() => {
+      setViewMode(newMode);
+    });
+    if (typeof window !== 'undefined') {
+      window.scrollTo(0, 0);
+    }
+  };
 
   // Loading state
   if (!store.isClient || store.isLoadingBackend) {
@@ -55,7 +65,7 @@ export default function CarePathApp() {
   // Handle staff entry gate
   const handleOpenStaffWorkspace = () => {
     if (isStaffAuthenticated) {
-      setViewMode('portal');
+      navigateToView('portal');
     } else {
       setIsStaffPinModalOpen(true);
     }
@@ -65,7 +75,7 @@ export default function CarePathApp() {
   const handleStaffAuthSuccess = () => {
     setIsStaffAuthenticated(true);
     setIsStaffPinModalOpen(false);
-    setViewMode('portal');
+    navigateToView('portal');
   };
 
   // Handle SMS reply simulator
@@ -92,8 +102,7 @@ export default function CarePathApp() {
         <LandingPage
           onStartPatientApp={() => {
             playChime('confirm');
-            setViewMode('client');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateToView('client');
           }}
           onCreateAccount={() => {
             playChime('confirm');
@@ -105,7 +114,7 @@ export default function CarePathApp() {
             if (store.patients.length === 0) {
               store.setIsNewPatientModalOpen(true);
             } else {
-              setViewMode('client');
+              navigateToView('client');
               store.setIsNewAppointmentModalOpen(true);
             }
           }}
@@ -113,8 +122,7 @@ export default function CarePathApp() {
             handleOpenStaffWorkspace();
           }}
           onOpenSmsSimulator={() => {
-            setViewMode('sms');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateToView('sms');
           }}
         />
 
@@ -131,8 +139,7 @@ export default function CarePathApp() {
           onClose={() => store.setIsNewPatientModalOpen(false)}
           onRegisterPatient={(data) => {
             store.registerRealPatient(data);
-            setViewMode('client');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateToView('client');
           }}
         />
 
@@ -169,8 +176,7 @@ export default function CarePathApp() {
             }
           }}
           onBackToLanding={() => {
-            setViewMode('landing');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            navigateToView('landing');
           }}
           onOpenStaffGate={handleOpenStaffWorkspace}
         />
@@ -236,7 +242,7 @@ export default function CarePathApp() {
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               type="button"
-              onClick={() => setViewMode('client')}
+              onClick={() => navigateToView('client')}
               className="p-1.5 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-peach-500 border border-petrol-700 transition-colors"
               title="Switch to Patient / Family Hub"
             >
@@ -262,7 +268,7 @@ export default function CarePathApp() {
           <nav className="flex items-center bg-petrol-950/80 rounded-xl p-1 border border-petrol-800 text-xs sm:text-sm">
             <button
               type="button"
-              onClick={() => setViewMode('portal')}
+              onClick={() => navigateToView('portal')}
               className={`btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-black transition-all ${
                 viewMode === 'portal'
                   ? 'bg-peach-500 text-petrol-950 shadow-xs'
@@ -276,7 +282,7 @@ export default function CarePathApp() {
 
             <button
               type="button"
-              onClick={() => setViewMode('sms')}
+              onClick={() => navigateToView('sms')}
               className={`btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-black transition-all ${
                 viewMode === 'sms'
                   ? 'bg-peach-500 text-petrol-950 shadow-xs'
@@ -290,7 +296,7 @@ export default function CarePathApp() {
 
             <button
               type="button"
-              onClick={() => setViewMode('logs')}
+              onClick={() => navigateToView('logs')}
               className={`btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-black transition-all ${
                 viewMode === 'logs'
                   ? 'bg-peach-500 text-petrol-950 shadow-xs'
@@ -309,7 +315,7 @@ export default function CarePathApp() {
               type="button"
               onClick={() => {
                 setIsStaffAuthenticated(false);
-                setViewMode('client');
+                navigateToView('client');
               }}
               className="px-3 py-1.5 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-petrol-200 hover:text-white text-xs font-bold border border-petrol-700 flex items-center gap-1.5"
               title="Lock staff portal and switch back to patient view"
@@ -320,7 +326,7 @@ export default function CarePathApp() {
 
             <button
               type="button"
-              onClick={() => setViewMode('landing')}
+              onClick={() => navigateToView('landing')}
               className="p-1.5 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-petrol-200 hover:text-white border border-petrol-700"
               title="Return to Public Website"
             >
@@ -346,7 +352,7 @@ export default function CarePathApp() {
               onDeleteEvent={store.deleteAppointment}
               onSelectPatient={(id) => {
                 store.handleSelectPatient(id);
-                setViewMode('client');
+                navigateToView('client');
               }}
               onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
               onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}

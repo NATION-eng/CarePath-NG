@@ -27,7 +27,7 @@ export function useCarePathStore() {
   const [isNewAppointmentModalOpen, setIsNewAppointmentModalOpen] = useState(false);
   const [isLoadingBackend, setIsLoadingBackend] = useState(true);
 
-  // Save to client localStorage backup
+  // Save to client localStorage backup (Non-blocking microtask)
   const persistLocally = (
     newPatients?: PatientProfile[],
     newEvents?: CareEvent[],
@@ -36,13 +36,15 @@ export function useCarePathStore() {
     newActiveId?: string
   ) => {
     if (typeof window === 'undefined') return;
-    try {
-      if (newPatients !== undefined) localStorage.setItem(STORAGE_KEYS.PATIENTS, JSON.stringify(newPatients));
-      if (newEvents !== undefined) localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(newEvents));
-      if (newSms !== undefined) localStorage.setItem(STORAGE_KEYS.SMS, JSON.stringify(newSms));
-      if (newAudit !== undefined) localStorage.setItem(STORAGE_KEYS.AUDIT, JSON.stringify(newAudit));
-      if (newActiveId !== undefined) localStorage.setItem(STORAGE_KEYS.ACTIVE_ID, newActiveId);
-    } catch {}
+    queueMicrotask(() => {
+      try {
+        if (newPatients !== undefined) localStorage.setItem(STORAGE_KEYS.PATIENTS, JSON.stringify(newPatients));
+        if (newEvents !== undefined) localStorage.setItem(STORAGE_KEYS.EVENTS, JSON.stringify(newEvents));
+        if (newSms !== undefined) localStorage.setItem(STORAGE_KEYS.SMS, JSON.stringify(newSms));
+        if (newAudit !== undefined) localStorage.setItem(STORAGE_KEYS.AUDIT, JSON.stringify(newAudit));
+        if (newActiveId !== undefined) localStorage.setItem(STORAGE_KEYS.ACTIVE_ID, newActiveId);
+      } catch {}
+    });
   };
 
   // Fetch initial data from server database with local storage resilience

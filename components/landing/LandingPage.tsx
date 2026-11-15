@@ -105,7 +105,7 @@ export function LandingPage({
           
           {/* Brand Logo with Two Hands Shaking Heart Emblem */}
           <BrandLogo 
-            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
+            onClick={() => window.scrollTo(0, 0)} 
           />
 
           {/* Navigation Links (Desktop) */}
