@@ -197,15 +197,37 @@ export function ClientAppShell({
             <button
               type="button"
               onClick={onOpenStaffGate}
-              className="btn-tactile px-3.5 py-1.5 rounded-xl bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs shadow-peach flex items-center gap-1.5"
+              className="btn-tactile px-3 sm:px-3.5 py-1.5 rounded-xl bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs shadow-peach flex items-center gap-1.5 shrink-0"
               title="Hospital Staff Workspace (Nurse Blessing Aliyu)"
             >
               <Lock className="h-3.5 w-3.5" />
-              <span>PHC Staff Gate</span>
+              <span className="hidden sm:inline">PHC Staff Gate</span>
+              <span className="sm:hidden">Staff Gate</span>
             </button>
           </div>
 
         </div>
+
+        {/* Mobile Dependent Profile Switcher (When mother has multiple family records) */}
+        {patients.length > 1 && (
+          <div className="lg:hidden flex items-center gap-2 overflow-x-auto py-2 px-4 bg-petrol-950/70 border-t border-petrol-800/60 no-scrollbar">
+            <span className="text-[10px] font-bold text-petrol-300 uppercase shrink-0">Dependent:</span>
+            {patients.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => onSelectPatient(p.id)}
+                className={`px-2.5 py-1 rounded-full text-xs font-bold shrink-0 transition-all ${
+                  p.id === activePatient?.id
+                    ? 'bg-peach-500 text-petrol-950 font-black shadow-xs'
+                    : 'bg-petrol-900 border border-petrol-750 text-white hover:bg-petrol-800'
+                }`}
+              >
+                {p.name} ({p.categoryLabel.split(' ')[0]})
+              </button>
+            ))}
+          </div>
+        )}
 
         {/* Desktop Tab Bar */}
         <div className="hidden md:flex max-w-7xl mx-auto px-4 sm:px-6 border-t border-petrol-800/80 text-xs font-black">
@@ -489,12 +511,14 @@ export function ClientAppShell({
       </main>
 
       {/* 3. UNIVERSAL MOBILE BOTTOM THUMB NAVIGATION (CLIENT APP) */}
-      {/* 3. UNIVERSAL MOBILE BOTTOM THUMB NAVIGATION (FROSTED GLASS DOCK) */}
-      <nav className="fixed md:hidden bottom-0 inset-x-0 bg-petrol-900/95 backdrop-blur-xl border-t border-white/10 px-2 py-2 flex items-center justify-around safe-bottom z-40 shadow-2xl text-white">
+      <nav 
+        className="fixed md:hidden bottom-0 inset-x-0 bg-petrol-950/90 backdrop-blur-2xl border-t border-white/10 px-2 pt-2 pb-[max(0.6rem,env(safe-area-inset-bottom))] grid grid-cols-5 gap-1 z-40 shadow-2xl text-white"
+        aria-label="Patient App Navigation"
+      >
         <button
           type="button"
           onClick={() => setActiveTab('home')}
-          className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[11px] font-black transition-all ${
+          className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-black transition-all ${
             activeTab === 'home' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
@@ -505,7 +529,7 @@ export function ClientAppShell({
         <button
           type="button"
           onClick={() => setActiveTab('card')}
-          className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[11px] font-black transition-all ${
+          className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-black transition-all ${
             activeTab === 'card' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
@@ -516,18 +540,18 @@ export function ClientAppShell({
         <button
           type="button"
           onClick={() => setActiveTab('family')}
-          className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[11px] font-black transition-all ${
+          className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-black transition-all ${
             activeTab === 'family' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
           <Users className={`h-4.5 w-4.5 mb-0.5 ${activeTab === 'family' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
-          <span>Family ({patients.length})</span>
+          <span>Family</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab('emergency')}
-          className={`flex flex-col items-center py-1.5 px-2 rounded-xl text-[11px] font-black transition-all ${
+          className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-black transition-all ${
             activeTab === 'emergency' ? 'text-red-400 bg-red-950/50 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
@@ -538,7 +562,7 @@ export function ClientAppShell({
         <button
           type="button"
           onClick={onBackToLanding}
-          className="flex flex-col items-center py-1.5 px-2 rounded-xl text-[11px] font-bold text-petrol-200 hover:text-white transition-all"
+          className="flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-bold text-petrol-200 hover:text-white transition-all"
           title="Return to Public Website"
         >
           <ArrowLeft className="h-4.5 w-4.5 mb-0.5 stroke-2 text-peach-500" />

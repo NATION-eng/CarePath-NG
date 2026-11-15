@@ -46,25 +46,25 @@ export function AudioVoicePlayer({
   };
 
   return (
-    <div className="rounded-xl border border-teal-800/15 bg-cream-100 p-3.5 sm:p-4 transition-all shadow-subtle">
+    <div className="rounded-2xl border border-petrol-200 bg-petrol-50/70 p-3.5 sm:p-4 transition-all shadow-subtle">
       <div className="flex flex-wrap items-center justify-between gap-2 mb-2.5">
-        <div className="flex items-center gap-2 font-black text-teal-950 text-xs sm:text-base flex-wrap">
-          <Volume2 className="h-5 w-5 text-teal-800 animate-pulse shrink-0" />
+        <div className="flex items-center gap-2 font-black text-petrol-950 text-xs sm:text-sm flex-wrap">
+          <Volume2 className="h-4.5 w-4.5 text-peach-600 animate-pulse shrink-0" />
           <span>{label}</span>
-          <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded bg-cream-200 text-teal-900 border border-teal-800/10">
+          <span className="text-[10px] sm:text-xs font-bold px-2 py-0.5 rounded bg-peach-100 text-petrol-950 border border-peach-200">
             {selectedLanguage === 'pidgin' ? 'Pidgin' : 'English'}
           </span>
         </div>
 
         {/* Language Pill Selector */}
-        <div className="flex items-center rounded-xl bg-surface-card p-1 border border-surface-border shadow-xs">
+        <div className="flex items-center rounded-xl bg-white p-0.5 border border-petrol-200 shadow-xs">
           <button
             type="button"
             onClick={() => handleLanguageChange('pidgin')}
-            className={`px-3 py-1 rounded-lg text-xs font-extrabold transition-all ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-extrabold transition-all ${
               selectedLanguage === 'pidgin'
-                ? 'bg-teal-800 text-white shadow-xs'
-                : 'text-surface-dark/70 hover:text-teal-950'
+                ? 'bg-petrol-900 text-white shadow-xs'
+                : 'text-surface-dark/70 hover:text-petrol-950'
             }`}
           >
             Pidgin
@@ -72,10 +72,10 @@ export function AudioVoicePlayer({
           <button
             type="button"
             onClick={() => handleLanguageChange('english')}
-            className={`px-3 py-1 rounded-lg text-xs font-extrabold transition-all ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-extrabold transition-all ${
               selectedLanguage === 'english'
-                ? 'bg-teal-800 text-white shadow-xs'
-                : 'text-surface-dark/70 hover:text-teal-950'
+                ? 'bg-petrol-900 text-white shadow-xs'
+                : 'text-surface-dark/70 hover:text-petrol-950'
             }`}
           >
             English
@@ -84,7 +84,7 @@ export function AudioVoicePlayer({
       </div>
 
       {/* Spoken transcript quote */}
-      <p className="text-teal-950 font-semibold leading-relaxed text-xs sm:text-sm bg-white/90 p-3.5 rounded-xl border border-teal-900/10 mb-3.5 shadow-xs">
+      <p className="text-petrol-950 font-medium leading-relaxed text-xs sm:text-sm bg-white p-3 rounded-xl border border-petrol-200/80 mb-3 shadow-xs">
         &ldquo;{currentText}&rdquo;
       </p>
 
@@ -95,8 +95,8 @@ export function AudioVoicePlayer({
           onClick={handlePlayToggle}
           className={`btn-tactile flex items-center gap-2 px-4 py-2 rounded-xl font-black text-xs sm:text-sm shadow-card transition-all ${
             isPlaying
-              ? 'bg-red-700 text-white hover:bg-red-800'
-              : 'bg-teal-800 text-white hover:bg-teal-900'
+              ? 'bg-rose-700 text-white hover:bg-rose-800'
+              : 'bg-peach-500 hover:bg-peach-600 text-petrol-950 shadow-peach'
           }`}
         >
           {isPlaying ? (
@@ -106,7 +106,7 @@ export function AudioVoicePlayer({
             </>
           ) : (
             <>
-              <Volume2 className="h-4 w-4" />
+              <Volume2 className="h-4 w-4 text-petrol-950" />
               <span>Listen in {selectedLanguage === 'pidgin' ? 'Pidgin' : 'English'}</span>
             </>
           )}

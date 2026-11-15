@@ -261,11 +261,11 @@ export function LandingPage({
       </header>
 
       {/* 2. HERO SECTION (EXACT REFERENCE: "Modern Care, Local Heart.") */}
-      <section className="relative bg-petrol-900 text-white overflow-hidden py-20 sm:py-28 lg:py-36 border-b-2 border-petrol-800">
+      <section className="relative bg-petrol-900 text-white overflow-hidden py-12 sm:py-24 lg:py-32 border-b-2 border-petrol-800">
         
         {/* Floating Radiant Glass Orbs */}
-        <div className="orb-glow bg-mint-500 w-[420px] h-[420px] -top-24 -left-20" />
-        <div className="orb-glow bg-peach-500 w-[380px] h-[380px] top-1/2 -right-24" />
+        <div className="orb-glow bg-mint-500 w-[260px] sm:w-[420px] h-[260px] sm:h-[420px] -top-16 sm:-top-24 -left-16 sm:-left-20" />
+        <div className="orb-glow bg-peach-500 w-[240px] sm:w-[380px] h-[240px] sm:h-[380px] top-1/2 -right-16 sm:-right-24" />
 
         {/* Subtle Decorative Clinical Motif Overlay */}
         <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay">
@@ -278,42 +278,42 @@ export function LandingPage({
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center z-10">
           
           {/* Eyebrow Pill with Custom Healthcare Emblem (NO STAR EMOJI) */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-pill text-mint-200 text-xs sm:text-sm font-black mb-6 shadow-sm">
-            <HeartHandshake className="h-4 w-4 text-peach-500 stroke-[2.5]" />
-            <span>Family-Centred Healthcare Continuity for Nigeria</span>
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1 sm:py-1.5 rounded-full glass-pill text-mint-200 text-[11px] sm:text-xs font-black mb-4 sm:mb-6 shadow-sm max-w-full">
+            <HeartHandshake className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-peach-500 stroke-[2.5] shrink-0" />
+            <span className="truncate">Family-Centred Healthcare Continuity for Nigeria</span>
           </div>
 
           {/* Main Headline (Exact words from reference) */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.08] mb-4">
+          <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-white tracking-tight leading-[1.12] mb-3 sm:mb-4">
             Modern Care, <br className="hidden sm:inline" />
             <span className="text-white">Local Heart.</span>
           </h1>
 
           {/* Subheading */}
-          <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-mint-200/90 tracking-wide max-w-2xl mx-auto mb-8 sm:mb-10">
+          <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-mint-200/90 tracking-wide max-w-2xl mx-auto mb-4 sm:mb-6">
             Your Wellness, Redefined.
           </p>
 
-          <p className="text-sm sm:text-base text-petrol-100/90 font-medium max-w-xl mx-auto mb-10 leading-relaxed">
+          <p className="text-xs sm:text-base text-petrol-100/90 font-medium max-w-xl mx-auto mb-6 sm:mb-8 leading-relaxed">
             One connected place for pregnant mothers, newborns, and families to track clinical appointments, 
             vaccines, and spoken Pidgin reminders across Nigerian Primary Healthcare Centres.
           </p>
 
           {/* Center Peach Pill Button & Create Account CTA */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full max-w-sm sm:max-w-none mx-auto">
             <button
               type="button"
               onClick={onBookAppointment}
-              className="btn-tactile w-full sm:w-auto px-8 py-4 rounded-full bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-sm sm:text-base shadow-peach transition-all transform hover:-translate-y-0.5 tracking-wider uppercase flex items-center justify-center gap-2"
+              className="btn-tactile w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs sm:text-sm tracking-wide shadow-peach transition-all transform hover:-translate-y-0.5 uppercase flex items-center justify-center gap-2"
             >
               <span>Book An Appointment</span>
-              <ArrowRight className="h-5 w-5" />
+              <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
             </button>
 
             <button
               type="button"
               onClick={onCreateAccount}
-              className="w-full sm:w-auto px-6 py-4 rounded-full bg-petrol-800 hover:bg-petrol-750 text-white font-black text-sm border-2 border-petrol-700 transition-colors flex items-center justify-center gap-2 shadow-sm"
+              className="btn-tactile w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-petrol-800/90 hover:bg-petrol-750 text-white font-bold text-xs sm:text-sm border border-petrol-700/80 transition-all flex items-center justify-center gap-2 shadow-sm"
             >
               <UserPlus className="h-4 w-4 text-peach-500" />
               <span>Create Family Account</span>
@@ -321,21 +321,21 @@ export function LandingPage({
           </div>
 
           {/* Proof Badges */}
-          <div className="mt-14 pt-8 border-t border-petrol-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-bold text-petrol-200/80">
+          <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-petrol-800/80 grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-4 text-[11px] sm:text-xs font-bold text-petrol-200/90">
             <div className="flex items-center justify-center gap-1.5">
-              <ShieldCheck className="h-4 w-4 text-mint-400" />
+              <ShieldCheck className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-mint-400 shrink-0" />
               <span>NPHCDA 2024 Protocol</span>
             </div>
             <div className="flex items-center justify-center gap-1.5">
-              <Volume2 className="h-4 w-4 text-peach-500" />
+              <Volume2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-peach-500 shrink-0" />
               <span>Spoken Pidgin Audio</span>
             </div>
             <div className="flex items-center justify-center gap-1.5">
-              <Users className="h-4 w-4 text-mint-400" />
+              <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-mint-400 shrink-0" />
               <span>Phone-Less Proxy SMS</span>
             </div>
             <div className="flex items-center justify-center gap-1.5">
-              <CheckCircle2 className="h-4 w-4 text-peach-500" />
+              <CheckCircle2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-peach-500 shrink-0" />
               <span>100% Offline PWA Ready</span>
             </div>
           </div>
@@ -758,36 +758,39 @@ export function LandingPage({
         </div>
       </footer>
 
-      {/* 9. MOBILE BOTTOM THUMB DOCK (FOR MOBILE & DOWNLOADED PWA VIEW) */}
-      <div className="fixed md:hidden bottom-0 inset-x-0 z-40 bg-petrol-900/90 backdrop-blur-xl border-t border-white/10 px-3.5 py-2.5 safe-bottom shadow-2xl flex items-center justify-around gap-2 text-white">
+      {/* 9. MOBILE BOTTOM THUMB DOCK (SLEEK NATIVE PWA TAB BAR) */}
+      <nav 
+        className="fixed md:hidden bottom-0 inset-x-0 z-40 bg-petrol-950/90 backdrop-blur-2xl border-t border-white/10 px-3 pt-2 pb-[max(0.6rem,env(safe-area-inset-bottom))] shadow-2xl grid grid-cols-3 gap-2"
+        aria-label="Mobile Navigation"
+      >
         <button
           type="button"
           onClick={onBookAppointment}
-          className="btn-tactile flex-1 py-2.5 px-3 rounded-xl bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs shadow-peach flex items-center justify-center gap-1.5"
+          className="btn-tactile flex flex-col items-center justify-center py-1.5 px-2 rounded-xl bg-peach-500 text-petrol-950 font-black text-[11px] shadow-peach transition-all"
         >
-          <Calendar className="h-4 w-4 shrink-0" />
+          <Calendar className="h-4.5 w-4.5 mb-0.5 shrink-0" />
           <span>Book Visit</span>
         </button>
 
         <button
           type="button"
           onClick={onStartPatientApp}
-          className="btn-tactile flex-1 py-2.5 px-3 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-white font-bold text-xs border border-petrol-700 flex items-center justify-center gap-1.5"
+          className="btn-tactile flex flex-col items-center justify-center py-1.5 px-2 rounded-xl bg-petrol-900/90 hover:bg-petrol-850 text-white font-bold text-[11px] border border-white/10 transition-all"
         >
-          <HeartHandshake className="h-4 w-4 text-peach-500 shrink-0" />
+          <HeartHandshake className="h-4.5 w-4.5 mb-0.5 text-peach-500 shrink-0" />
           <span>Care Hub</span>
         </button>
 
         <button
           type="button"
           onClick={onOpenNursePortal}
-          className="btn-tactile py-2.5 px-3.5 rounded-xl bg-petrol-950 hover:bg-petrol-850 text-petrol-200 hover:text-white font-bold text-xs border border-petrol-800 flex items-center justify-center gap-1.5 shrink-0"
+          className="btn-tactile flex flex-col items-center justify-center py-1.5 px-2 rounded-xl bg-petrol-900/90 hover:bg-petrol-850 text-petrol-200 hover:text-white font-bold text-[11px] border border-white/10 transition-all"
           title="Hospital Staff Gate"
         >
-          <Lock className="h-3.5 w-3.5 text-peach-500 shrink-0" />
-          <span>Staff</span>
+          <Lock className="h-4.5 w-4.5 mb-0.5 text-peach-500 shrink-0" />
+          <span>Staff Gate</span>
         </button>
-      </div>
+      </nav>
 
     </div>
   );

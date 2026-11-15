@@ -109,19 +109,19 @@ export function FacilityPortal({
         </div>
       </div>
 
-      {/* Operational Stats Bar (1-col on mobile, 3-col on sm+) */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 p-3.5 sm:p-4 bg-white border-b-2 border-surface-border text-xs sm:text-sm">
-        <div className="rounded-2xl border-2 border-surface-border p-3 bg-surface-base">
-          <p className="text-surface-dark/70 text-[11px] font-bold uppercase tracking-wider">Total Scheduled</p>
-          <p className="text-lg sm:text-2xl font-black text-petrol-950 mt-0.5">{events.length} Visits</p>
+      {/* Operational Stats Bar (3-column responsive layout across all mobile & desktop screens) */}
+      <div className="grid grid-cols-3 gap-2 p-2.5 sm:p-4 bg-white border-b-2 border-surface-border text-xs sm:text-sm">
+        <div className="rounded-xl sm:rounded-2xl border-2 border-surface-border p-2 sm:p-3 bg-surface-base">
+          <p className="text-surface-dark/70 text-[9px] sm:text-[11px] font-bold uppercase tracking-wider truncate">Total Visits</p>
+          <p className="text-sm sm:text-2xl font-black text-petrol-950 mt-0.5">{events.length}</p>
         </div>
-        <div className="rounded-2xl border-2 border-mint-200 bg-mint-50/70 p-3">
-          <p className="text-mint-900 text-[11px] font-bold uppercase tracking-wider">Confirmed via SMS</p>
-          <p className="text-lg sm:text-2xl font-black text-mint-900 mt-0.5">{confirmedCount} Patients</p>
+        <div className="rounded-xl sm:rounded-2xl border-2 border-mint-200 bg-mint-50/70 p-2 sm:p-3">
+          <p className="text-mint-900 text-[9px] sm:text-[11px] font-bold uppercase tracking-wider truncate">SMS Confirmed</p>
+          <p className="text-sm sm:text-2xl font-black text-mint-900 mt-0.5">{confirmedCount}</p>
         </div>
-        <div className="rounded-2xl border-2 border-peach-200 bg-peach-50/70 p-3">
-          <p className="text-petrol-950 text-[11px] font-bold uppercase tracking-wider">Administered / Completed</p>
-          <p className="text-lg sm:text-2xl font-black text-petrol-950 mt-0.5">{completedCount} Completed</p>
+        <div className="rounded-xl sm:rounded-2xl border-2 border-peach-200 bg-peach-50/70 p-2 sm:p-3">
+          <p className="text-petrol-950 text-[9px] sm:text-[11px] font-bold uppercase tracking-wider truncate">Completed</p>
+          <p className="text-sm sm:text-2xl font-black text-petrol-950 mt-0.5">{completedCount}</p>
         </div>
       </div>
 

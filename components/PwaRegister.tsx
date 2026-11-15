@@ -43,10 +43,12 @@ export function PwaRegister() {
       // Check if running in standalone mode (downloaded PWA)
       const isStandalone = 
         window.matchMedia('(display-mode: standalone)').matches ||
-        (window.navigator as unknown as { standalone?: boolean }).standalone === true;
+        (window.navigator as unknown as { standalone?: boolean }).standalone === true ||
+        document.referrer.includes('android-app://');
       
       if (isStandalone) {
         setIsInstalled(true);
+        setIsInstallable(false);
       }
 
       // Check if iOS Safari
@@ -56,6 +58,13 @@ export function PwaRegister() {
 
     // 3. Listen for PWA Install Prompt (Chrome/Edge/Android)
     const handleBeforeInstallPrompt = (e: Event) => {
+      // If already in standalone mode, suppress
+      if (
+        window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as unknown as { standalone?: boolean }).standalone === true
+      ) {
+        return;
+      }
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setIsInstallable(true);
@@ -86,37 +95,37 @@ export function PwaRegister() {
     <>
       {/* Offline Alert Strip (Crucial for rural clinics and downloaded PWA) */}
       {isOffline && (
-        <div className="bg-amber-800 text-amber-50 px-4 py-2 text-xs font-bold flex items-center justify-center gap-2 border-b border-amber-900 safe-top sticky top-0 z-50 animate-in fade-in shadow-md">
-          <WifiOff className="h-4 w-4 shrink-0 text-amber-200" />
-          <span>CarePath Offline Mode: Device cache active. All records and cards are safely accessible.</span>
+        <div className="bg-amber-800 text-amber-50 px-3 py-1.5 text-xs font-bold flex items-center justify-center gap-2 border-b border-amber-900 safe-top sticky top-0 z-50 animate-in fade-in shadow-md">
+          <WifiOff className="h-3.5 w-3.5 shrink-0 text-amber-200" />
+          <span className="text-[11px] sm:text-xs">CarePath Offline Mode: Device cache active. All records safely accessible.</span>
         </div>
       )}
 
       {/* Floating PWA Install Banner (Android / Chrome / Edge) */}
       {isInstallable && !isInstalled && !isBannerDismissed && (
-        <div className="fixed bottom-20 md:bottom-6 left-3 right-3 sm:left-auto sm:right-6 z-50 bg-petrol-900/95 backdrop-blur-xl text-white p-3.5 sm:p-4 rounded-3xl shadow-float border-2 border-white/15 flex items-center gap-3 animate-in slide-in-from-bottom duration-300 max-w-md">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-petrol-800 border border-petrol-700 text-peach-500 shrink-0 shadow-sm">
-            <HeartHandshake className="h-6 w-6 stroke-[2.3]" />
+        <div className="fixed bottom-20 md:bottom-6 left-3 right-3 sm:left-auto sm:right-6 z-50 bg-petrol-950/95 backdrop-blur-xl text-white p-3 rounded-2xl shadow-float border border-white/15 flex items-center gap-2.5 animate-in slide-in-from-bottom duration-300 max-w-sm mx-auto sm:mx-0">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-petrol-800 border border-petrol-700 text-peach-500 shrink-0 shadow-sm">
+            <HeartHandshake className="h-5 w-5 stroke-[2.3]" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs sm:text-sm font-black text-white leading-tight">Install CarePath NG App</p>
-            <p className="text-[11px] text-petrol-200 font-medium mt-0.5">Download to phone for 1-tap offline clinical records</p>
+            <p className="text-xs font-black text-white leading-tight">Install CarePath NG</p>
+            <p className="text-[10px] text-petrol-200 font-medium truncate">1-tap offline clinical records</p>
           </div>
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               type="button"
               onClick={handleInstallClick}
-              className="btn-tactile rounded-xl bg-peach-500 hover:bg-peach-600 text-petrol-950 px-3.5 py-2 font-black text-xs shadow-peach"
+              className="btn-tactile rounded-lg bg-peach-500 hover:bg-peach-600 text-petrol-950 px-3 py-1.5 font-black text-xs shadow-peach"
             >
-              Install App
+              Install
             </button>
             <button
               type="button"
               onClick={() => setIsBannerDismissed(true)}
-              className="p-1.5 text-petrol-400 hover:text-white rounded-lg"
+              className="p-1 text-petrol-400 hover:text-white rounded-lg"
               title="Dismiss"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5" />
             </button>
           </div>
         </div>

@@ -400,11 +400,14 @@ export default function CarePathApp() {
       </main>
 
       {/* Mobile Staff Bottom Navigation Dock (Native PWA Feel) */}
-      <nav className="fixed sm:hidden bottom-0 inset-x-0 z-40 bg-petrol-900/95 backdrop-blur-xl border-t border-white/10 px-2 py-2 safe-bottom shadow-2xl flex items-center justify-around text-white">
+      <nav 
+        className="fixed sm:hidden bottom-0 inset-x-0 z-40 bg-petrol-950/90 backdrop-blur-2xl border-t border-white/10 px-2 pt-2 pb-[max(0.6rem,env(safe-area-inset-bottom))] shadow-2xl grid grid-cols-4 gap-1 text-white"
+        aria-label="Staff Workspace Navigation"
+      >
         <button
           type="button"
           onClick={() => navigateToView('portal')}
-          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-[11px] font-black transition-all ${
+          className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-black transition-all ${
             viewMode === 'portal' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
@@ -415,18 +418,18 @@ export default function CarePathApp() {
         <button
           type="button"
           onClick={() => navigateToView('sms')}
-          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-[11px] font-black transition-all ${
+          className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-black transition-all ${
             viewMode === 'sms' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
           <Smartphone className={`h-4.5 w-4.5 mb-0.5 ${viewMode === 'sms' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
-          <span>SMS Gateway</span>
+          <span>Gateway</span>
         </button>
 
         <button
           type="button"
           onClick={() => navigateToView('logs')}
-          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-[11px] font-black transition-all ${
+          className={`flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-black transition-all ${
             viewMode === 'logs' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
@@ -440,7 +443,7 @@ export default function CarePathApp() {
             setIsStaffAuthenticated(false);
             navigateToView('landing');
           }}
-          className="flex flex-col items-center py-1.5 px-3 rounded-xl text-[11px] font-bold text-petrol-200 hover:text-white transition-all"
+          className="flex flex-col items-center justify-center py-1.5 px-1 rounded-xl text-[10px] sm:text-[11px] font-bold text-petrol-200 hover:text-white transition-all"
           title="Lock portal and return to public website"
         >
           <Lock className="h-4.5 w-4.5 mb-0.5 stroke-2 text-peach-500" />

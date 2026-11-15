@@ -140,19 +140,19 @@ body {
 
 /* Safe area for mobile devices & Standalone PWA */
 .safe-top {
-  padding-top: env(safe-area-inset-top, 0px);
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
 }
 .safe-bottom {
-  padding-bottom: env(safe-area-inset-bottom, 16px);
+  padding-bottom: max(0.6rem, env(safe-area-inset-bottom, 12px));
 }
 .pt-safe {
-  padding-top: env(safe-area-inset-top, 0px);
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
 }
 .pb-safe {
-  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-bottom: max(0.6rem, env(safe-area-inset-bottom, 0px));
 }
 .mb-safe {
-  margin-bottom: env(safe-area-inset-bottom, 0px);
+  margin-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
 }
 
 /* Standalone PWA & Mobile Touch Polish */
