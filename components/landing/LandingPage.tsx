@@ -144,10 +144,9 @@ export function LandingPage({
             <button
               type="button"
               onClick={onBookAppointment}
-              className="btn-tactile px-4 sm:px-6 py-2.5 rounded-full bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs sm:text-sm shadow-peach transition-all transform hover:-translate-y-0.5 flex items-center gap-1.5"
+              className="hidden md:flex btn-tactile px-5 lg:px-6 py-2.5 rounded-full bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs sm:text-sm shadow-peach transition-all transform hover:-translate-y-0.5 items-center gap-1.5 whitespace-nowrap"
             >
-              <span className="hidden xs:inline">Book Appointment</span>
-              <span className="xs:hidden">Book Visit</span>
+              <span>Book Appointment</span>
               <ArrowRight className="h-4 w-4" />
             </button>
 
@@ -155,7 +154,7 @@ export function LandingPage({
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2.5 rounded-2xl bg-petrol-800 text-peach-500 hover:text-white md:hidden border border-petrol-700 transition-colors shrink-0"
+              className="p-2.5 rounded-2xl bg-petrol-800 text-peach-500 hover:text-white md:hidden border border-petrol-700 transition-colors shrink-0 shadow-sm flex items-center justify-center"
               aria-label="Toggle navigation menu"
             >
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

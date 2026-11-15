@@ -29,7 +29,7 @@ export function BrandLogo({
 
   return (
     <div 
-      className={`flex items-center gap-2.5 sm:gap-3 ${onClick ? 'cursor-pointer select-none' : ''}`}
+      className={`flex items-center gap-2.5 sm:gap-3 min-w-0 ${onClick ? 'cursor-pointer select-none' : ''}`}
       onClick={onClick}
     >
       {/* Emblem: Two hands shaking to form a heart */}
@@ -40,7 +40,7 @@ export function BrandLogo({
       </div>
 
       {showText && (
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
             <span className={`${titleSize} font-black tracking-tight text-white leading-none truncate`}>
               CarePath NG
@@ -52,7 +52,7 @@ export function BrandLogo({
             )}
           </div>
           {subtitle && (
-            <p className="text-[11px] font-bold text-petrol-200 tracking-wide leading-none mt-1 truncate">
+            <p className="text-[10px] sm:text-[11px] font-bold text-petrol-200 tracking-wide leading-tight mt-1 truncate">
               {subtitle}
             </p>
           )}

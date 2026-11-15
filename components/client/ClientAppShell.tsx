@@ -88,7 +88,7 @@ export function ClientAppShell({
             <button
               type="button"
               onClick={onOpenNewPatientModal}
-              className="btn-tactile px-4 py-2 rounded-xl bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs shadow-peach flex items-center gap-1.5"
+              className="btn-tactile px-3.5 sm:px-4 py-2 rounded-xl bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs shadow-peach flex items-center gap-1.5 whitespace-nowrap shrink-0"
             >
               <UserPlus className="h-4 w-4" />
               <span>+ Create Account</span>
