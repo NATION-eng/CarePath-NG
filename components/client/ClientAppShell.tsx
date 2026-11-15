@@ -25,7 +25,8 @@ import {
   CalendarPlus,
   AlertTriangle,
   QrCode,
-  FileText
+  FileText,
+  HeartHandshake
 } from 'lucide-react';
 
 interface ClientAppShellProps {
@@ -57,9 +58,84 @@ export function ClientAppShell({
 }: ClientAppShellProps) {
   const [activeTab, setActiveTab] = useState<'home' | 'card' | 'family' | 'emergency'>('home');
 
-  // Next active upcoming appointment
-  const nextEvent = events.find((e) => e.status === 'scheduled' || e.status === 'confirmed') || events[0];
+  // Next active upcoming appointment (Live from database)
+  const nextEvent = events.find((e) => e.status === 'scheduled' || e.status === 'confirmed');
   const isConfirmed = nextEvent?.status === 'confirmed';
+
+  // If there are zero registered patients, show the clean Real-Time Readiness screen (ZERO PLACEHOLDERS)
+  if (patients.length === 0) {
+    return (
+      <div className="min-h-screen w-full bg-surface-base text-surface-dark flex flex-col font-sans pb-24 md:pb-12 relative overflow-x-hidden">
+        {/* Floating Ambient Radiant Light Orbs */}
+        <div className="orb-glow bg-peach-500/15 w-[400px] h-[400px] top-10 -right-20 pointer-events-none fixed" />
+        <div className="orb-glow bg-mint-500/15 w-[360px] h-[360px] bottom-20 -left-20 pointer-events-none fixed" />
+
+        {/* 1. CLIENT HEADER */}
+        <header className="sticky top-0 z-40 bg-petrol-900/85 backdrop-blur-xl border-b border-white/10 text-white shadow-card">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <button
+                type="button"
+                onClick={onBackToLanding}
+                className="p-2 rounded-xl bg-petrol-800 text-petrol-200 hover:text-white hover:bg-petrol-750 transition-colors"
+                title="Return to Public Website"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </button>
+              <BrandLogo size="sm" subtitle="Personal Care Companion" badge="Family Hub" onClick={onBackToLanding} />
+            </div>
+
+            <button
+              type="button"
+              onClick={onOpenNewPatientModal}
+              className="btn-tactile px-4 py-2 rounded-xl bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs shadow-peach flex items-center gap-1.5"
+            >
+              <UserPlus className="h-4 w-4" />
+              <span>+ Create Account</span>
+            </button>
+          </div>
+        </header>
+
+        {/* Real-Time Database Ready State (Zero Dummy Placeholders) */}
+        <main className="max-w-2xl mx-auto px-4 py-16 sm:py-24 text-center flex-1 flex flex-col items-center justify-center relative z-10">
+          <div className="h-16 w-16 rounded-3xl bg-petrol-900 border-2 border-petrol-700 text-peach-500 flex items-center justify-center shadow-card mb-5">
+            <HeartHandshake className="h-8 w-8 stroke-[2.3]" />
+          </div>
+
+          <span className="text-xs font-black uppercase tracking-wider text-mint-900 bg-mint-100 px-3 py-1 rounded-full border border-mint-300 mb-3">
+            Real-Time Clinical Registry Ready
+          </span>
+
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-petrol-950 tracking-tight mb-3">
+            Awaiting Live Patient Registration
+          </h2>
+
+          <p className="text-sm sm:text-base text-surface-dark/70 font-semibold max-w-lg mx-auto mb-8 leading-relaxed">
+            All placeholder subjects and dummy records have been cleared. Register yourself or a family dependent to begin tracking live maternal ANC milestones, child immunizations, and SMS continuity.
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={onOpenNewPatientModal}
+              className="btn-tactile w-full sm:w-auto px-7 py-3.5 rounded-full bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-sm shadow-peach flex items-center justify-center gap-2"
+            >
+              <UserPlus className="h-4 w-4" />
+              <span>Register Patient / Family Account</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={onBackToLanding}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-full bg-white hover:bg-surface-base text-petrol-900 border-2 border-surface-border font-bold text-sm transition-colors"
+            >
+              Return to Website
+            </button>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full bg-surface-base text-surface-dark flex flex-col font-sans pb-24 md:pb-12 relative overflow-x-hidden">
@@ -198,12 +274,12 @@ export function ClientAppShell({
             <div className="glass-card rounded-3xl p-5 sm:p-6 border-2 border-surface-border shadow-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <div className="h-14 w-14 min-w-[3.5rem] min-h-[3.5rem] rounded-2xl bg-petrol-900 border-2 border-petrol-700 text-peach-500 font-black text-xl flex items-center justify-center shadow-card shrink-0">
-                  {activePatient?.avatarInitials || 'HB'}
+                  {activePatient?.avatarInitials || 'CP'}
                 </div>
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <h2 className="text-xl sm:text-2xl font-black text-petrol-950">
-                      Welcome, {activePatient?.name || 'Amina Bello'}
+                      Welcome, {activePatient?.name}
                     </h2>
                     <span className="inline-flex items-center gap-1 text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full bg-mint-100 text-mint-900 border border-mint-300 shrink-0">
                       <ShieldCheck className="h-3 w-3 text-mint-600" />
@@ -211,7 +287,7 @@ export function ClientAppShell({
                     </span>
                   </div>
                   <p className="text-xs sm:text-sm text-petrol-700 font-bold mt-0.5">
-                    {activePatient?.categoryLabel || 'Maternal ANC Pathway'} • Stage: <strong>{activePatient?.stageInfo || 'Active Care'}</strong>
+                    {activePatient?.categoryLabel} • Stage: <strong>{activePatient?.stageInfo}</strong>
                   </p>
                 </div>
               </div>

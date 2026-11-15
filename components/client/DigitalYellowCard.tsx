@@ -29,74 +29,109 @@ export function DigitalYellowCard({ patient, events }: DigitalYellowCardProps) {
   const isMaternal = patient?.category === 'maternal';
   const effectiveTab = patient?.category === 'maternal' ? 'maternal' : activeTab;
 
-  // NPHCDA 2024 Immunisation Milestones
-  const immunisationMilestones = [
+  // Derive real-time milestone state dynamically from live database events
+  const patientEvents = events.filter((e) => !patient || e.patientId === patient.id);
+
+  // Official NPHCDA 2024 Protocol Schedule
+  const baseImmunisationMilestones = [
     {
       period: "At Birth",
       antigens: ["BCG (Tuberculosis)", "OPV 0 (Polio)", "Hep B 0 (Hepatitis B)"],
       ageDesc: "Within 2 weeks of birth",
-      status: "completed",
-      facility: "Garki Primary Healthcare Centre",
-      dateGiven: "14 Oct 2026",
     },
     {
       period: "6 Weeks",
       antigens: ["Penta 1 (DPT, HepB, Hib)", "OPV 1", "PCV 1", "Rota 1"],
       ageDesc: "6 weeks after birth",
-      status: "due",
-      facility: "Garki Primary Healthcare Centre",
-      dateGiven: "Thursday, Nov 21 (Upcoming)",
     },
     {
       period: "10 Weeks",
       antigens: ["Penta 2", "OPV 2", "PCV 2", "Rota 2"],
       ageDesc: "10 weeks after birth",
-      status: "scheduled",
-      facility: "Garki Primary Healthcare Centre",
-      dateGiven: "December 2026",
     },
     {
       period: "14 Weeks",
       antigens: ["Penta 3", "OPV 3", "PCV 3", "IPV 1 (Injectable Polio)"],
       ageDesc: "14 weeks after birth",
-      status: "scheduled",
-      facility: "Garki Primary Healthcare Centre",
-      dateGiven: "January 2027",
     },
     {
       period: "9 Months",
       antigens: ["Measles 1", "Yellow Fever", "Meningitis (Men-A)", "Vitamin A"],
       ageDesc: "9 months milestone",
-      status: "scheduled",
-      facility: "Garki Primary Healthcare Centre",
-      dateGiven: "June 2027",
     },
   ];
 
+  const immunisationMilestones = baseImmunisationMilestones.map((bm) => {
+    const matchedEvt = patientEvents.find(
+      (e) =>
+        e.duePeriod?.toLowerCase().includes(bm.period.toLowerCase()) ||
+        e.title.toLowerCase().includes(bm.period.toLowerCase()) ||
+        (bm.antigens.some((ant) => e.vaccines?.includes(ant)))
+    );
+
+    if (matchedEvt) {
+      return {
+        ...bm,
+        status: matchedEvt.status,
+        facility: matchedEvt.facilityName,
+        dateGiven:
+          matchedEvt.status === 'completed'
+            ? `Administered: ${matchedEvt.date}`
+            : `Scheduled: ${matchedEvt.date} at ${matchedEvt.time}`,
+      };
+    }
+
+    return {
+      ...bm,
+      status: "scheduled" as const,
+      facility: "Garki Primary Healthcare Centre",
+      dateGiven: "Awaiting Live Clinical Administration",
+    };
+  });
+
   // Federal Maternal ANC Milestones
-  const maternalMilestones = [
+  const baseMaternalMilestones = [
     {
       period: "1st Trimester (Contact 1)",
       title: "Booking & Intake Profile",
       items: ["Initial scan & gestational age", "Blood group & genotype", "Urine analysis & vitals"],
-      status: "completed",
-      dateGiven: "Completed at Booking",
     },
     {
       period: "2nd Trimester (Contacts 2 & 3)",
       title: "Maternal Health & Tetanus Protection",
       items: ["Tetanus Toxoid (TT1)", "Anomaly scan review", "Daily Iron & Folate check"],
-      status: "due",
-      dateGiven: "Next Clinic Visit",
     },
     {
       period: "3rd Trimester (Contacts 4 to 8)",
       title: "Fetal Growth & Birth Preparedness",
       items: ["Tetanus Toxoid (TT2)", "Fetal position & growth scan", "Delivery kit & hospital bag prep"],
-      status: "scheduled",
-      dateGiven: "Weeks 32 – 38",
     },
   ];
+
+  const maternalMilestones = baseMaternalMilestones.map((m) => {
+    const matchedEvt = patientEvents.find(
+      (e) =>
+        e.title.toLowerCase().includes(m.title.toLowerCase()) ||
+        e.duePeriod?.toLowerCase().includes(m.period.toLowerCase())
+    );
+
+    if (matchedEvt) {
+      return {
+        ...m,
+        status: matchedEvt.status,
+        dateGiven:
+          matchedEvt.status === 'completed'
+            ? `Completed: ${matchedEvt.date}`
+            : `Scheduled: ${matchedEvt.date} at ${matchedEvt.time}`,
+      };
+    }
+
+    return {
+      ...m,
+      status: "scheduled" as const,
+      dateGiven: "Awaiting Clinical Session",
+    };
+  });
 
   const completedCount = immunisationMilestones.filter((m) => m.status === 'completed').length;
   const progressPercent = Math.round((completedCount / immunisationMilestones.length) * 100);
@@ -113,7 +148,7 @@ export function DigitalYellowCard({ patient, events }: DigitalYellowCardProps) {
               National Health Credential
             </span>
             <span className="text-xs text-surface-dark/60 font-mono font-bold">
-              ID: {patient?.code || 'CP-C-4091'}
+              ID: {patient?.code || 'Live Registration Pending'}
             </span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-petrol-950">
@@ -189,7 +224,11 @@ export function DigitalYellowCard({ patient, events }: DigitalYellowCardProps) {
               <div>
                 <p className="text-xs font-bold text-petrol-200 uppercase">Milestones Done</p>
                 <p className="text-base font-black text-white">{completedCount} of {immunisationMilestones.length} Completed</p>
-                <p className="text-[11px] text-peach-500 font-bold">1 Session Due Now</p>
+                <p className="text-[11px] text-peach-500 font-bold">
+                  {immunisationMilestones.length - completedCount > 0
+                    ? `${immunisationMilestones.length - completedCount} Session(s) Pending`
+                    : 'All Milestones Up-to-Date'}
+                </p>
               </div>
             </div>
 
@@ -202,7 +241,7 @@ export function DigitalYellowCard({ patient, events }: DigitalYellowCardProps) {
         {effectiveTab === 'child' ? (
           immunisationMilestones.map((milestone, idx) => {
             const isCompleted = milestone.status === 'completed';
-            const isDue = milestone.status === 'due';
+            const isDue = milestone.status === 'scheduled' || milestone.status === 'confirmed';
 
             return (
               <div
@@ -275,7 +314,7 @@ export function DigitalYellowCard({ patient, events }: DigitalYellowCardProps) {
         ) : (
           maternalMilestones.map((m, idx) => {
             const isCompleted = m.status === 'completed';
-            const isDue = m.status === 'due';
+            const isDue = m.status === 'scheduled' || m.status === 'confirmed';
 
             return (
               <div

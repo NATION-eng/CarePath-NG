@@ -242,9 +242,9 @@ export default function CarePathApp() {
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
             <button
               type="button"
-              onClick={() => navigateToView('client')}
+              onClick={() => navigateToView('landing')}
               className="p-1.5 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-peach-500 border border-petrol-700 transition-colors"
-              title="Switch to Patient / Family Hub"
+              title="Return to Public Website"
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
@@ -309,16 +309,16 @@ export default function CarePathApp() {
             </button>
           </nav>
 
-          {/* Staff Lock / Switch to Client */}
+          {/* Staff Lock / Return to Public Website */}
           <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => {
                 setIsStaffAuthenticated(false);
-                navigateToView('client');
+                navigateToView('landing');
               }}
               className="px-3 py-1.5 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-petrol-200 hover:text-white text-xs font-bold border border-petrol-700 flex items-center gap-1.5"
-              title="Lock staff portal and switch back to patient view"
+              title="Lock staff portal and return to public website"
             >
               <Lock className="h-3.5 w-3.5 text-peach-500" />
               <span className="hidden sm:inline">Lock Portal</span>
@@ -352,7 +352,6 @@ export default function CarePathApp() {
               onDeleteEvent={store.deleteAppointment}
               onSelectPatient={(id) => {
                 store.handleSelectPatient(id);
-                navigateToView('client');
               }}
               onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
               onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
