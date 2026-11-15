@@ -2,51 +2,73 @@
 
 import React, { useState } from 'react';
 import { useCarePathStore } from '@/lib/store';
-import { PatientCareView } from '@/components/PatientCareView';
-import { AppointmentSheet } from '@/components/AppointmentSheet';
-import { SmsSimulator } from '@/components/SmsSimulator';
+import { LandingPage } from '@/components/landing/LandingPage';
+import { ClientAppShell } from '@/components/client/ClientAppShell';
 import { FacilityPortal } from '@/components/FacilityPortal';
+import { SmsSimulator } from '@/components/SmsSimulator';
 import { LiveEventLog } from '@/components/LiveEventLog';
+import { AppointmentSheet } from '@/components/AppointmentSheet';
 import { NewPatientModal } from '@/components/NewPatientModal';
 import { NewAppointmentModal } from '@/components/NewAppointmentModal';
+import { StaffPinModal } from '@/components/security/StaffPinModal';
 import { 
   Building2, 
   Activity, 
   Smartphone,
   HeartHandshake,
-  UserPlus,
-  Download,
-  Calendar,
-  Layers
+  ArrowLeft,
+  Lock,
+  Unlock,
+  ShieldCheck,
+  Globe
 } from 'lucide-react';
 import { playChime } from '@/lib/audioVoice';
 
-type AppTab = 'patient' | 'portal' | 'sms' | 'logs';
+type ViewMode = 'landing' | 'client' | 'portal' | 'sms' | 'logs';
 
 export default function CarePathApp() {
   const store = useCarePathStore();
-  const [activeTab, setActiveTab] = useState<AppTab>('patient');
+  const [viewMode, setViewMode] = useState<ViewMode>('landing');
+  const [isStaffAuthenticated, setIsStaffAuthenticated] = useState(false);
+  const [isStaffPinModalOpen, setIsStaffPinModalOpen] = useState(false);
 
+  // Loading state
   if (!store.isClient || store.isLoadingBackend) {
     return (
       <div className="flex h-screen w-full items-center justify-center bg-surface-base px-4">
         <div className="flex flex-col items-center gap-3 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-800 text-cream-200 font-black text-lg border-2 border-teal-700 animate-pulse shadow-card">
+          <div className="flex h-14 w-14 items-center justify-center rounded-3xl bg-petrol-900 text-peach-500 font-black text-xl border-2 border-petrol-800 animate-pulse shadow-card">
             CP
           </div>
-          <div className="flex items-center gap-2 text-teal-950 font-black text-sm sm:text-base">
-            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-ping" />
-            <span>Connecting to CarePath Clinical Database...</span>
+          <div className="flex items-center gap-2 text-petrol-950 font-black text-sm sm:text-base">
+            <span className="h-2.5 w-2.5 rounded-full bg-peach-500 animate-ping" />
+            <span>Connecting to CarePath NG Continuity Engine...</span>
           </div>
           <p className="text-xs text-surface-dark/60 font-semibold">
-            Initializing national continuity schedules & SMS engine
+            Loading Garki Primary Healthcare Centre schedules & SMS engine
           </p>
         </div>
       </div>
     );
   }
 
-  // Handle SMS Reply from simulator
+  // Handle staff entry gate
+  const handleOpenStaffWorkspace = () => {
+    if (isStaffAuthenticated) {
+      setViewMode('portal');
+    } else {
+      setIsStaffPinModalOpen(true);
+    }
+  };
+
+  // Handle successful staff authentication
+  const handleStaffAuthSuccess = () => {
+    setIsStaffAuthenticated(true);
+    setIsStaffPinModalOpen(false);
+    setViewMode('portal');
+  };
+
+  // Handle SMS reply simulator
   const handleSmsReply = (replyText: string) => {
     if (replyText === '1') {
       const targetEvent = store.activeEvents.find((e) => e.status === 'scheduled') || store.activeEvents[0];
@@ -63,204 +85,216 @@ export default function CarePathApp() {
     }
   };
 
+  // 1. PUBLIC LANDING PAGE (DEFAULT VIEW)
+  if (viewMode === 'landing') {
+    return (
+      <>
+        <LandingPage
+          onStartPatientApp={() => {
+            playChime('confirm');
+            setViewMode('client');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onOpenNursePortal={() => {
+            handleOpenStaffWorkspace();
+          }}
+          onOpenSmsSimulator={() => {
+            setViewMode('sms');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />
+
+        {/* Staff PIN Gate Modal */}
+        <StaffPinModal
+          isOpen={isStaffPinModalOpen}
+          onClose={() => setIsStaffPinModalOpen(false)}
+          onSuccess={handleStaffAuthSuccess}
+        />
+      </>
+    );
+  }
+
+  // 2. PATIENT & FAMILY APP (CLIENT-SIDE EXPERIENCE)
+  if (viewMode === 'client') {
+    return (
+      <>
+        <ClientAppShell
+          patients={store.patients}
+          activePatient={store.activePatient}
+          events={store.activeEvents}
+          smsLog={store.smsLog}
+          onSelectPatient={store.handleSelectPatient}
+          onConfirmEvent={(id) => store.confirmAppointment(id, 'app')}
+          onOpenEventSheet={store.setSelectedEventForSheet}
+          onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
+          onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
+          onBackToLanding={() => {
+            setViewMode('landing');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          onOpenStaffGate={handleOpenStaffWorkspace}
+        />
+
+        {/* Staff PIN Gate Modal */}
+        <StaffPinModal
+          isOpen={isStaffPinModalOpen}
+          onClose={() => setIsStaffPinModalOpen(false)}
+          onSuccess={handleStaffAuthSuccess}
+        />
+
+        {/* Modals */}
+        {store.selectedEventForSheet && store.activePatient && (
+          <AppointmentSheet
+            event={store.selectedEventForSheet}
+            patient={store.activePatient}
+            isOpen={!!store.selectedEventForSheet}
+            onClose={() => store.setSelectedEventForSheet(null)}
+            onConfirm={(eventId) => {
+              store.confirmAppointment(eventId, 'app');
+              store.setSelectedEventForSheet(null);
+            }}
+            onReschedule={(eventId, newDate) => {
+              store.requestReschedule(eventId, newDate);
+              store.setSelectedEventForSheet(null);
+            }}
+            onDispatchReminder={(eventId) => {
+              store.dispatchManualReminder(eventId);
+            }}
+            onDeleteEvent={(eventId) => {
+              store.deleteAppointment(eventId);
+              store.setSelectedEventForSheet(null);
+            }}
+          />
+        )}
+
+        <NewPatientModal
+          isOpen={store.isNewPatientModalOpen}
+          onClose={() => store.setIsNewPatientModalOpen(false)}
+          onRegisterPatient={store.registerRealPatient}
+        />
+
+        <NewAppointmentModal
+          isOpen={store.isNewAppointmentModalOpen}
+          onClose={() => store.setIsNewAppointmentModalOpen(false)}
+          patients={store.patients}
+          activePatientId={store.activePatientId}
+          onScheduleAppointment={store.scheduleRealAppointment}
+        />
+      </>
+    );
+  }
+
+  // 3. CLINICAL STAFF / HOSPITAL WORKSPACE (PORTAL, SMS SIMULATOR, AUDIT LOGS)
   return (
     <div className="flex flex-col min-h-screen w-full bg-surface-base antialiased">
-      {/* 1. UNIVERSAL RESPONSIVE NAVIGATION BAR */}
-      <header className="sticky top-0 z-40 bg-teal-950 text-white px-3 sm:px-6 py-2.5 border-b-2 border-teal-900 shadow-subtle">
+      
+      {/* Staff Header */}
+      <header className="sticky top-0 z-40 bg-petrol-900 text-white px-3 sm:px-6 py-2.5 border-b-2 border-petrol-800 shadow-card">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
           
-          {/* Brand Identity */}
+          {/* Identity & Return Controls */}
           <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-800 text-cream-200 font-black text-sm border-2 border-teal-700 shadow-xs shrink-0">
-              CP
-            </div>
+            <button
+              type="button"
+              onClick={() => setViewMode('client')}
+              className="p-1.5 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-peach-500 border border-petrol-700 transition-colors"
+              title="Switch to Patient / Family Hub"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 sm:gap-2">
                 <span className="font-black tracking-tight text-base sm:text-lg text-white truncate">
                   CarePath NG
                 </span>
-                <span className="hidden sm:inline-block text-[10px] font-black tracking-wider uppercase px-2 py-0.5 rounded-md bg-teal-800 text-teal-200 border border-teal-700 shrink-0">
-                  Clinical v1.0
+                <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-md bg-petrol-800 text-peach-500 border border-petrol-700 shrink-0">
+                  Staff Workspace
                 </span>
               </div>
-              <p className="hidden xl:block text-[11px] text-teal-300 font-bold leading-none mt-0.5 truncate">
-                Maternal & Child Healthcare Continuity Platform • Nigeria
+              <p className="hidden xl:block text-[11px] text-petrol-200 font-bold leading-none mt-0.5 truncate">
+                Garki Primary Healthcare Centre (FCT-04) • Nurse Blessing Aliyu
               </p>
             </div>
           </div>
 
-          {/* Desktop & Tablet Navigation Tabs (>= md screens) */}
-          <nav className="hidden md:flex items-center bg-teal-900/90 rounded-xl p-1 border border-teal-800 text-xs lg:text-sm">
+          {/* Desktop Navigation Tabs for Clinical Staff */}
+          <nav className="flex items-center bg-petrol-950/80 rounded-xl p-1 border border-petrol-800 text-xs sm:text-sm">
             <button
               type="button"
-              onClick={() => setActiveTab('patient')}
-              className={`btn-tactile flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-3.5 py-1.5 rounded-lg font-black transition-all ${
-                activeTab === 'patient'
-                  ? 'bg-cream-200 text-teal-950 shadow-xs'
-                  : 'text-teal-200 hover:text-white'
-              }`}
-            >
-              <HeartHandshake className="h-4 w-4 shrink-0" />
-              <span className="hidden lg:inline">Family Care Hub</span>
-              <span className="lg:hidden">Care Hub</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('portal')}
-              className={`btn-tactile flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-3.5 py-1.5 rounded-lg font-black transition-all ${
-                activeTab === 'portal'
-                  ? 'bg-cream-200 text-teal-950 shadow-xs'
-                  : 'text-teal-200 hover:text-white'
+              onClick={() => setViewMode('portal')}
+              className={`btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-black transition-all ${
+                viewMode === 'portal'
+                  ? 'bg-peach-500 text-petrol-950 shadow-xs'
+                  : 'text-petrol-200 hover:text-white'
               }`}
             >
               <Building2 className="h-4 w-4 shrink-0" />
-              <span className="hidden lg:inline">PHC Nurse Portal</span>
-              <span className="lg:hidden">PHC Portal</span>
+              <span className="hidden sm:inline">PHC Registry</span>
+              <span className="sm:hidden">Registry</span>
             </button>
 
             <button
               type="button"
-              onClick={() => setActiveTab('sms')}
-              className={`btn-tactile flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-3.5 py-1.5 rounded-lg font-black transition-all ${
-                activeTab === 'sms'
-                  ? 'bg-cream-200 text-teal-950 shadow-xs'
-                  : 'text-teal-200 hover:text-white'
+              onClick={() => setViewMode('sms')}
+              className={`btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-black transition-all ${
+                viewMode === 'sms'
+                  ? 'bg-peach-500 text-petrol-950 shadow-xs'
+                  : 'text-petrol-200 hover:text-white'
               }`}
             >
               <Smartphone className="h-4 w-4 shrink-0" />
-              <span className="hidden lg:inline">SMS Gateway Feed</span>
-              <span className="lg:hidden">SMS Feed</span>
+              <span className="hidden sm:inline">SMS Gateway</span>
+              <span className="sm:hidden">SMS</span>
             </button>
 
             <button
               type="button"
-              onClick={() => setActiveTab('logs')}
-              className={`btn-tactile flex items-center gap-1.5 lg:gap-2 px-2.5 lg:px-3.5 py-1.5 rounded-lg font-black transition-all ${
-                activeTab === 'logs'
-                  ? 'bg-cream-200 text-teal-950 shadow-xs'
-                  : 'text-teal-200 hover:text-white'
+              onClick={() => setViewMode('logs')}
+              className={`btn-tactile flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-black transition-all ${
+                viewMode === 'logs'
+                  ? 'bg-peach-500 text-petrol-950 shadow-xs'
+                  : 'text-petrol-200 hover:text-white'
               }`}
             >
               <Activity className="h-4 w-4 shrink-0" />
-              <span className="hidden lg:inline">Audit Engine</span>
-              <span className="lg:hidden">Audit</span>
+              <span className="hidden sm:inline">NDPA Audit</span>
+              <span className="sm:hidden">Audit</span>
             </button>
           </nav>
 
-          {/* Action Header Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          {/* Staff Lock / Switch to Client */}
+          <div className="flex items-center gap-2 shrink-0">
             <button
               type="button"
               onClick={() => {
-                playChime('reminder');
-                store.setIsNewPatientModalOpen(true);
+                setIsStaffAuthenticated(false);
+                setViewMode('client');
               }}
-              className="btn-tactile flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-cream-200 hover:bg-cream-300 text-teal-950 text-xs sm:text-sm font-black shadow-xs transition-colors shrink-0"
+              className="px-3 py-1.5 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-petrol-200 hover:text-white text-xs font-bold border border-petrol-700 flex items-center gap-1.5"
+              title="Lock staff portal and switch back to patient view"
             >
-              <UserPlus className="h-4 w-4 text-teal-950 shrink-0" />
-              <span className="hidden sm:inline">+ Register Patient</span>
-              <span className="sm:hidden">+ Patient</span>
+              <Lock className="h-3.5 w-3.5 text-peach-500" />
+              <span className="hidden sm:inline">Lock Portal</span>
             </button>
 
             <button
               type="button"
-              onClick={store.exportDataToJson}
-              title="Export all clinical records from database"
-              className="btn-tactile flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-teal-900 hover:bg-teal-800 text-teal-200 text-xs sm:text-sm font-black border border-teal-800 transition-colors shadow-xs shrink-0"
+              onClick={() => setViewMode('landing')}
+              className="p-1.5 rounded-xl bg-petrol-800 hover:bg-petrol-750 text-petrol-200 hover:text-white border border-petrol-700"
+              title="Return to Public Website"
             >
-              <Download className="h-4 w-4 shrink-0" />
-              <span className="hidden xl:inline">Export</span>
+              <Globe className="h-4 w-4 text-peach-500" />
             </button>
           </div>
 
         </div>
       </header>
 
-      {/* MOBILE TOP TAB BAR (< md screens) */}
-      <div className="md:hidden sticky top-[53px] z-30 bg-teal-900 border-b border-teal-800 px-2 py-1.5 flex items-center justify-around text-xs font-black gap-1 shadow-xs">
-        <button
-          type="button"
-          onClick={() => setActiveTab('patient')}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all ${
-            activeTab === 'patient'
-              ? 'bg-cream-200 text-teal-950 shadow-xs'
-              : 'text-teal-200 hover:text-white'
-          }`}
-        >
-          <HeartHandshake className="h-3.5 w-3.5" />
-          <span>Care Hub</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('portal')}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all ${
-            activeTab === 'portal'
-              ? 'bg-cream-200 text-teal-950 shadow-xs'
-              : 'text-teal-200 hover:text-white'
-          }`}
-        >
-          <Building2 className="h-3.5 w-3.5" />
-          <span>Portal</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('sms')}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all ${
-            activeTab === 'sms'
-              ? 'bg-cream-200 text-teal-950 shadow-xs'
-              : 'text-teal-200 hover:text-white'
-          }`}
-        >
-          <Smartphone className="h-3.5 w-3.5" />
-          <span>SMS</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('logs')}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg transition-all ${
-            activeTab === 'logs'
-              ? 'bg-cream-200 text-teal-950 shadow-xs'
-              : 'text-teal-200 hover:text-white'
-          }`}
-        >
-          <Activity className="h-3.5 w-3.5" />
-          <span>Audit</span>
-        </button>
-      </div>
-
-      {/* 2. MAIN APPLICATION WORKSPACE */}
-      <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 py-3.5 sm:py-5 max-w-7xl mx-auto pb-24 md:pb-8">
+      {/* Main Staff Container */}
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 w-full flex-1 pb-16">
         
-        {/* CARE HUB VIEW */}
-        {activeTab === 'patient' && (
-          <div className="w-full">
-            <PatientCareView
-              patients={store.patients}
-              activePatient={store.activePatient}
-              events={store.activeEvents}
-              smsLog={store.smsLog}
-              mobileTab="home"
-              onMobileTabChange={() => {}}
-              onSelectPatient={store.handleSelectPatient}
-              onOpenEventSheet={store.setSelectedEventForSheet}
-              onConfirmEvent={(id) => store.confirmAppointment(id, 'app')}
-              onRescheduleEvent={store.requestReschedule}
-              onReplySms={handleSmsReply}
-              onDispatchReminder={store.dispatchManualReminder}
-              onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
-              onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
-              onDeletePatient={store.deletePatient}
-              onDeleteEvent={store.deleteAppointment}
-            />
-          </div>
-        )}
-
-        {/* PHC NURSE PORTAL VIEW */}
-        {activeTab === 'portal' && (
+        {viewMode === 'portal' && (
           <div className="w-full min-h-[calc(100vh-160px)]">
             <FacilityPortal
               events={store.events}
@@ -272,7 +306,7 @@ export default function CarePathApp() {
               onDeleteEvent={store.deleteAppointment}
               onSelectPatient={(id) => {
                 store.handleSelectPatient(id);
-                setActiveTab('patient');
+                setViewMode('client');
               }}
               onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
               onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
@@ -281,8 +315,7 @@ export default function CarePathApp() {
           </div>
         )}
 
-        {/* SMS TELEPHONY FEED VIEW */}
-        {activeTab === 'sms' && (
+        {viewMode === 'sms' && (
           <div className="max-w-3xl mx-auto min-h-[calc(100vh-160px)]">
             <SmsSimulator
               smsLog={store.smsLog}
@@ -294,8 +327,7 @@ export default function CarePathApp() {
           </div>
         )}
 
-        {/* DATABASE AUDIT LOGS VIEW */}
-        {activeTab === 'logs' && (
+        {viewMode === 'logs' && (
           <div className="max-w-4xl mx-auto min-h-[calc(100vh-160px)]">
             <LiveEventLog logs={store.auditLogs} />
           </div>
@@ -303,66 +335,7 @@ export default function CarePathApp() {
 
       </main>
 
-      {/* 3. UNIVERSAL FIXED BOTTOM THUMB NAVIGATION (MOBILE ONLY: ALWAYS VISIBLE ON ALL PAGES) */}
-      <nav className="fixed md:hidden bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t-2 border-surface-border px-3 py-2 flex items-center justify-around safe-bottom z-40 shadow-subtle">
-        <button
-          type="button"
-          onClick={() => {
-            setActiveTab('patient');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          className={`flex flex-col items-center py-1 px-3 rounded-lg text-xs font-black transition-colors ${
-            activeTab === 'patient' ? 'text-teal-900 font-black' : 'text-surface-dark/60 hover:text-teal-900'
-          }`}
-        >
-          <HeartHandshake className={`h-5 w-5 mb-0.5 ${activeTab === 'patient' ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span>Care Hub</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            setActiveTab('portal');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          className={`flex flex-col items-center py-1 px-3 rounded-lg text-xs font-black transition-colors ${
-            activeTab === 'portal' ? 'text-teal-900 font-black' : 'text-surface-dark/60 hover:text-teal-900'
-          }`}
-        >
-          <Building2 className={`h-5 w-5 mb-0.5 ${activeTab === 'portal' ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span>PHC Portal</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            setActiveTab('sms');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          className={`flex flex-col items-center py-1 px-3 rounded-lg text-xs font-black transition-colors ${
-            activeTab === 'sms' ? 'text-teal-900 font-black' : 'text-surface-dark/60 hover:text-teal-900'
-          }`}
-        >
-          <Smartphone className={`h-5 w-5 mb-0.5 ${activeTab === 'sms' ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span>SMS Feed</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            setActiveTab('logs');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          className={`flex flex-col items-center py-1 px-3 rounded-lg text-xs font-black transition-colors ${
-            activeTab === 'logs' ? 'text-teal-900 font-black' : 'text-surface-dark/60 hover:text-teal-900'
-          }`}
-        >
-          <Activity className={`h-5 w-5 mb-0.5 ${activeTab === 'logs' ? 'stroke-[2.5]' : 'stroke-2'}`} />
-          <span>Audit Log</span>
-        </button>
-      </nav>
-
-      {/* 4. APPOINTMENT DETAIL BOTTOM SHEET MODAL */}
+      {/* Global Modals */}
       {store.selectedEventForSheet && store.activePatient && (
         <AppointmentSheet
           event={store.selectedEventForSheet}
@@ -387,14 +360,12 @@ export default function CarePathApp() {
         />
       )}
 
-      {/* 5. REAL PATIENT REGISTRATION MODAL */}
       <NewPatientModal
         isOpen={store.isNewPatientModalOpen}
         onClose={() => store.setIsNewPatientModalOpen(false)}
         onRegisterPatient={store.registerRealPatient}
       />
 
-      {/* 6. REAL APPOINTMENT BOOKING MODAL */}
       <NewAppointmentModal
         isOpen={store.isNewAppointmentModalOpen}
         onClose={() => store.setIsNewAppointmentModalOpen(false)}
@@ -402,6 +373,13 @@ export default function CarePathApp() {
         activePatientId={store.activePatientId}
         onScheduleAppointment={store.scheduleRealAppointment}
       />
+
+      <StaffPinModal
+        isOpen={isStaffPinModalOpen}
+        onClose={() => setIsStaffPinModalOpen(false)}
+        onSuccess={handleStaffAuthSuccess}
+      />
+
     </div>
   );
 }
