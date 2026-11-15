@@ -167,9 +167,10 @@ export function AppointmentSheet({
               {event.vaccines.map((vax, idx) => (
                 <span
                   key={idx}
-                  className="text-xs sm:text-sm px-3 py-1.5 rounded-xl bg-teal-100 text-teal-950 font-bold border border-teal-300"
+                  className="text-xs sm:text-sm px-3 py-1.5 rounded-xl bg-teal-100 text-teal-950 font-bold border border-teal-300 flex items-center gap-1.5"
                 >
-                  💉 {vax}
+                  <ShieldCheck className="h-3.5 w-3.5 text-teal-700 shrink-0" />
+                  <span>{vax}</span>
                 </span>
               ))}
             </div>

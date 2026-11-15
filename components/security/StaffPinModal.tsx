@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ShieldCheck, Lock, KeyRound, AlertCircle, X, Sparkles, Building2 } from 'lucide-react';
+import { ShieldCheck, Lock, KeyRound, AlertCircle, X, Building2 } from 'lucide-react';
 import { playChime } from '@/lib/audioVoice';
 
 interface StaffPinModalProps {
@@ -128,7 +128,7 @@ export function StaffPinModal({ isOpen, onClose, onSuccess }: StaffPinModalProps
             onClick={handleQuickUnlock}
             className="w-full py-2.5 rounded-xl bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs sm:text-sm shadow-peach flex items-center justify-center gap-2 transition-all transform hover:-translate-y-0.5"
           >
-            <Sparkles className="h-4 w-4" />
+            <ShieldCheck className="h-4 w-4 text-petrol-950 stroke-[2.5]" />
             <span>1-Click Unlock Demo as Nurse Blessing</span>
           </button>
         </div>

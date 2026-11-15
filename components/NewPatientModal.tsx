@@ -63,12 +63,12 @@ export function NewPatientModal({ isOpen, onClose, onRegisterPatient }: NewPatie
         {/* Header */}
         <div className="flex items-center justify-between border-b-2 border-surface-border pb-3 mb-4">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-800 text-cream-200 shrink-0">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-petrol-900 border border-petrol-750 text-peach-500 shrink-0">
               <UserPlus className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-black text-teal-950">Register New Patient</h2>
-              <p className="text-xs text-surface-dark/70 font-semibold">CarePath Healthcare Continuity Registry</p>
+              <h2 className="text-lg sm:text-xl font-black text-petrol-950">Create Family Health Account</h2>
+              <p className="text-xs text-surface-dark/70 font-semibold">National Healthcare Continuity Registry</p>
             </div>
           </div>
           <button
@@ -78,6 +78,17 @@ export function NewPatientModal({ isOpen, onClose, onRegisterPatient }: NewPatie
           >
             <X className="h-6 w-6" />
           </button>
+        </div>
+
+        {/* Notice: Account required before booking */}
+        <div className="mb-4 p-3 rounded-2xl bg-peach-50 border border-peach-200 text-petrol-950 flex items-start gap-2.5">
+          <div className="h-5 w-5 rounded-md bg-peach-500 text-petrol-950 flex items-center justify-center shrink-0 font-black text-xs">
+            1
+          </div>
+          <div className="text-xs">
+            <p className="font-black text-petrol-950">Account Required for Session Booking</p>
+            <p className="text-petrol-800 font-medium">Please create your patient or caregiver profile first. Your clinical milestones and SMS reminders will be coordinated here.</p>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs sm:text-sm">

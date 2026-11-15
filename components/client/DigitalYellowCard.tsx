@@ -131,20 +131,22 @@ export function DigitalYellowCard({ patient, events }: DigitalYellowCardProps) {
               <button
                 type="button"
                 onClick={() => setActiveTab('child')}
-                className={`px-3 py-1.5 rounded-xl transition-all ${
+                className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
                   effectiveTab === 'child' ? 'bg-petrol-900 text-white shadow-xs' : 'text-surface-dark/70'
                 }`}
               >
-                👶 Child Yellow Card
+                <Baby className="h-3.5 w-3.5 text-peach-500" />
+                <span>Child Yellow Card</span>
               </button>
               <button
                 type="button"
                 onClick={() => setActiveTab('maternal')}
-                className={`px-3 py-1.5 rounded-xl transition-all ${
+                className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
                   effectiveTab === 'maternal' ? 'bg-petrol-900 text-white shadow-xs' : 'text-surface-dark/70'
                 }`}
               >
-                🤰 Maternal Passport
+                <Heart className="h-3.5 w-3.5 text-peach-500 fill-peach-500" />
+                <span>Maternal Passport</span>
               </button>
             </div>
           )}
@@ -254,7 +256,7 @@ export function DigitalYellowCard({ patient, events }: DigitalYellowCardProps) {
                   {milestone.antigens.map((antigen, i) => (
                     <span
                       key={i}
-                      className={`text-xs px-2.5 py-1 rounded-lg font-bold ${
+                      className={`text-xs px-2.5 py-1 rounded-lg font-bold inline-flex items-center gap-1.5 ${
                         isCompleted
                           ? 'bg-mint-50 text-mint-900 border border-mint-200'
                           : isDue
@@ -262,7 +264,8 @@ export function DigitalYellowCard({ patient, events }: DigitalYellowCardProps) {
                           : 'bg-surface-base text-surface-dark/80 border border-surface-border'
                       }`}
                     >
-                      💉 {antigen}
+                      <ShieldCheck className="h-3.5 w-3.5 text-mint-600 shrink-0" />
+                      <span>{antigen}</span>
                     </span>
                   ))}
                 </div>

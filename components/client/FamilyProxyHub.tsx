@@ -90,7 +90,7 @@ export function FamilyProxyHub({
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="h-12 w-12 rounded-2xl bg-petrol-900 text-peach-500 font-black text-base flex items-center justify-center shadow-xs">
+                      <div className="h-12 w-12 min-w-[3rem] min-h-[3rem] rounded-2xl bg-petrol-900 border border-petrol-700 text-peach-500 font-black text-base flex items-center justify-center shadow-xs shrink-0">
                         {pat.avatarInitials}
                       </div>
                       <div>

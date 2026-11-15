@@ -95,6 +95,20 @@ export default function CarePathApp() {
             setViewMode('client');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
+          onCreateAccount={() => {
+            playChime('confirm');
+            store.setIsNewPatientModalOpen(true);
+          }}
+          onBookAppointment={() => {
+            playChime('confirm');
+            // Enforce: User MUST create an account first before booking!
+            if (store.patients.length === 0) {
+              store.setIsNewPatientModalOpen(true);
+            } else {
+              setViewMode('client');
+              store.setIsNewAppointmentModalOpen(true);
+            }
+          }}
           onOpenNursePortal={() => {
             handleOpenStaffWorkspace();
           }}
@@ -109,6 +123,26 @@ export default function CarePathApp() {
           isOpen={isStaffPinModalOpen}
           onClose={() => setIsStaffPinModalOpen(false)}
           onSuccess={handleStaffAuthSuccess}
+        />
+
+        {/* Patient / Family Registration Modal (Enforced Before Booking) */}
+        <NewPatientModal
+          isOpen={store.isNewPatientModalOpen}
+          onClose={() => store.setIsNewPatientModalOpen(false)}
+          onRegisterPatient={(data) => {
+            store.registerRealPatient(data);
+            setViewMode('client');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+        />
+
+        {/* New Appointment Modal */}
+        <NewAppointmentModal
+          isOpen={store.isNewAppointmentModalOpen}
+          onClose={() => store.setIsNewAppointmentModalOpen(false)}
+          patients={store.patients}
+          activePatientId={store.activePatientId}
+          onScheduleAppointment={store.scheduleRealAppointment}
         />
       </>
     );
@@ -127,7 +161,13 @@ export default function CarePathApp() {
           onConfirmEvent={(id) => store.confirmAppointment(id, 'app')}
           onOpenEventSheet={store.setSelectedEventForSheet}
           onOpenNewPatientModal={() => store.setIsNewPatientModalOpen(true)}
-          onOpenNewAppointmentModal={() => store.setIsNewAppointmentModalOpen(true)}
+          onOpenNewAppointmentModal={() => {
+            if (store.patients.length === 0) {
+              store.setIsNewPatientModalOpen(true);
+            } else {
+              store.setIsNewAppointmentModalOpen(true);
+            }
+          }}
           onBackToLanding={() => {
             setViewMode('landing');
             window.scrollTo({ top: 0, behavior: 'smooth' });

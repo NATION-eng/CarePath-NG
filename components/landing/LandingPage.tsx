@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { 
-  Heart, 
   Baby, 
   Users, 
   Activity, 
@@ -10,25 +9,31 @@ import {
   ArrowRight, 
   Volume2, 
   MessageSquare, 
-  Sparkles, 
   Calendar, 
   CheckCircle2, 
   Clock, 
-  ChevronRight,
-  PhoneCall,
-  Lock,
-  Building2
+  ChevronRight, 
+  PhoneCall, 
+  Lock, 
+  Building2, 
+  HeartHandshake,
+  UserPlus
 } from 'lucide-react';
+import { BrandLogo } from '../BrandLogo';
 import { AudioVoicePlayer } from '../AudioVoicePlayer';
 
 interface LandingPageProps {
   onStartPatientApp: () => void;
+  onCreateAccount: () => void;
+  onBookAppointment: () => void;
   onOpenNursePortal: () => void;
   onOpenSmsSimulator: () => void;
 }
 
 export function LandingPage({
   onStartPatientApp,
+  onCreateAccount,
+  onBookAppointment,
   onOpenNursePortal,
   onOpenSmsSimulator,
 }: LandingPageProps) {
@@ -92,32 +97,19 @@ export function LandingPage({
   ];
 
   return (
-    <div className="min-h-screen w-full bg-surface-base text-surface-dark flex flex-col font-sans selection:bg-peach-200 selection:text-petrol-950">
+    <div className="min-h-screen w-full bg-surface-base text-surface-dark flex flex-col font-sans selection:bg-peach-200 selection:text-petrol-950 overflow-x-hidden">
       
-      {/* 1. TOP HEADER / NAVBAR (EXACT REFERENCE DESIGN) */}
-      <header className="sticky top-0 z-40 bg-petrol-900 border-b border-petrol-800 text-white shadow-card">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      {/* 1. TOP HEADER / NAVBAR (FROSTED GLASS REFERENCE DESIGN) */}
+      <header className="sticky top-0 z-40 bg-petrol-900/85 backdrop-blur-xl border-b border-white/10 text-white shadow-card transition-all">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3">
           
-          {/* Brand Logo & Emblem */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-petrol-800 border-2 border-mint-500/40 text-peach-500 shadow-sm">
-              <Heart className="h-6 w-6 fill-peach-500 stroke-peach-500" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xl sm:text-2xl font-black tracking-tight text-white">CarePath NG</span>
-                <span className="text-[10px] uppercase font-black px-2 py-0.5 rounded-full bg-mint-900 text-mint-200 border border-mint-700/60 hidden sm:inline-block">
-                  National Health
-                </span>
-              </div>
-              <p className="text-[11px] font-bold text-petrol-200 tracking-wide">
-                Maternal, Child & Family Health Continuity
-              </p>
-            </div>
-          </div>
+          {/* Brand Logo with Two Hands Shaking Heart Emblem */}
+          <BrandLogo 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
+          />
 
           {/* Navigation Links (Desktop) */}
-          <nav className="hidden md:flex items-center gap-8 text-sm font-bold text-petrol-100">
+          <nav className="hidden md:flex items-center gap-7 text-xs lg:text-sm font-bold text-petrol-100">
             <a href="#about" className="hover:text-peach-500 transition-colors">About</a>
             <a href="#services" className="hover:text-peach-500 transition-colors">How We Help</a>
             <a href="#providers" className="hover:text-peach-500 transition-colors">Clinicians</a>
@@ -129,8 +121,17 @@ export function LandingPage({
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               type="button"
+              onClick={onCreateAccount}
+              className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-peach-500/40 bg-peach-500/10 text-peach-300 hover:bg-peach-500/20 text-xs font-black transition-colors"
+            >
+              <UserPlus className="h-3.5 w-3.5 text-peach-500" />
+              <span>Create Account</span>
+            </button>
+
+            <button
+              type="button"
               onClick={onOpenNursePortal}
-              className="hidden lg:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black text-petrol-200 hover:text-white bg-petrol-800/80 border border-petrol-700 hover:bg-petrol-800 transition-colors"
+              className="hidden lg:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-black text-petrol-200 hover:text-white bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
             >
               <Lock className="h-3.5 w-3.5 text-peach-500" />
               <span>PHC Staff Portal</span>
@@ -138,8 +139,8 @@ export function LandingPage({
 
             <button
               type="button"
-              onClick={onStartPatientApp}
-              className="btn-tactile px-5 sm:px-6 py-2.5 rounded-full bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs sm:text-sm shadow-peach transition-all transform hover:-translate-y-0.5 flex items-center gap-1.5"
+              onClick={onBookAppointment}
+              className="btn-tactile px-4 sm:px-6 py-2.5 rounded-full bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-xs sm:text-sm shadow-peach transition-all transform hover:-translate-y-0.5 flex items-center gap-1.5"
             >
               <span>Book Appointment</span>
               <ArrowRight className="h-4 w-4" />
@@ -148,10 +149,14 @@ export function LandingPage({
         </div>
       </header>
 
-      {/* 2. HERO SECTION (EXACT REFERENCE DESIGN: "Modern Care, Local Heart.") */}
+      {/* 2. HERO SECTION (EXACT REFERENCE: "Modern Care, Local Heart.") */}
       <section className="relative bg-petrol-900 text-white overflow-hidden py-20 sm:py-28 lg:py-36 border-b-2 border-petrol-800">
         
-        {/* Subtle Decorative Stethoscope / Medical Line Pattern Overlay */}
+        {/* Floating Radiant Glass Orbs */}
+        <div className="orb-glow bg-mint-500 w-[420px] h-[420px] -top-24 -left-20" />
+        <div className="orb-glow bg-peach-500 w-[380px] h-[380px] top-1/2 -right-24" />
+
+        {/* Subtle Decorative Clinical Motif Overlay */}
         <div className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay">
           <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
             <path d="M0,50 Q25,20 50,50 T100,50" fill="none" stroke="currentColor" strokeWidth="0.8" />
@@ -159,15 +164,15 @@ export function LandingPage({
           </svg>
         </div>
 
-        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center">
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center z-10">
           
-          {/* Eyebrow Pill */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-petrol-800/90 border border-mint-500/30 text-mint-200 text-xs sm:text-sm font-black mb-6 shadow-sm backdrop-blur-xs">
-            <Sparkles className="h-4 w-4 text-peach-500" />
+          {/* Eyebrow Pill with Custom Healthcare Emblem (NO STAR EMOJI) */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass-pill text-mint-200 text-xs sm:text-sm font-black mb-6 shadow-sm">
+            <HeartHandshake className="h-4 w-4 text-peach-500 stroke-[2.5]" />
             <span>Family-Centred Healthcare Continuity for Nigeria</span>
           </div>
 
-          {/* Main Headline (Exact words from image) */}
+          {/* Main Headline (Exact words from reference) */}
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.08] mb-4">
             Modern Care, <br className="hidden sm:inline" />
             <span className="text-white">Local Heart.</span>
@@ -183,11 +188,11 @@ export function LandingPage({
             vaccines, and spoken Pidgin reminders across Nigerian Primary Healthcare Centres.
           </p>
 
-          {/* Center Peach Pill Button (Exact styling from image) */}
+          {/* Center Peach Pill Button & Create Account CTA */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               type="button"
-              onClick={onStartPatientApp}
+              onClick={onBookAppointment}
               className="btn-tactile w-full sm:w-auto px-8 py-4 rounded-full bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-sm sm:text-base shadow-peach transition-all transform hover:-translate-y-0.5 tracking-wider uppercase flex items-center justify-center gap-2"
             >
               <span>Book An Appointment</span>
@@ -196,27 +201,43 @@ export function LandingPage({
 
             <button
               type="button"
-              onClick={onOpenNursePortal}
-              className="w-full sm:w-auto px-6 py-4 rounded-full bg-petrol-800 hover:bg-petrol-750 text-white font-black text-sm border-2 border-petrol-700 transition-colors flex items-center justify-center gap-2"
+              onClick={onCreateAccount}
+              className="w-full sm:w-auto px-6 py-4 rounded-full bg-petrol-800 hover:bg-petrol-750 text-white font-black text-sm border-2 border-petrol-700 transition-colors flex items-center justify-center gap-2 shadow-sm"
             >
-              <Building2 className="h-4 w-4 text-peach-500" />
-              <span>Garki PHC Staff Workspace</span>
+              <UserPlus className="h-4 w-4 text-peach-500" />
+              <span>Create Family Account</span>
             </button>
           </div>
 
           {/* Proof Badges */}
           <div className="mt-14 pt-8 border-t border-petrol-800/80 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-bold text-petrol-200/80">
-            <div>✓ NPHCDA 2024 Protocol</div>
-            <div>✓ Spoken Pidgin Audio</div>
-            <div>✓ Phone-Less Proxy SMS</div>
-            <div>✓ 100% Offline PWA Ready</div>
+            <div className="flex items-center justify-center gap-1.5">
+              <ShieldCheck className="h-4 w-4 text-mint-400" />
+              <span>NPHCDA 2024 Protocol</span>
+            </div>
+            <div className="flex items-center justify-center gap-1.5">
+              <Volume2 className="h-4 w-4 text-peach-500" />
+              <span>Spoken Pidgin Audio</span>
+            </div>
+            <div className="flex items-center justify-center gap-1.5">
+              <Users className="h-4 w-4 text-mint-400" />
+              <span>Phone-Less Proxy SMS</span>
+            </div>
+            <div className="flex items-center justify-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-peach-500" />
+              <span>100% Offline PWA Ready</span>
+            </div>
           </div>
         </div>
       </section>
 
       {/* 3. SECTION 2: "WELCOME TO..." (EXACT REFERENCE DESIGN) */}
-      <section id="about" className="py-20 lg:py-28 bg-surface-base border-b border-surface-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="about" className="relative py-20 lg:py-28 bg-surface-base border-b border-surface-border overflow-hidden">
+        
+        {/* Soft Ambient Light in Background */}
+        <div className="orb-glow bg-mint-500/10 w-[350px] h-[350px] top-10 right-10" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
             {/* Left Content Column */}
@@ -236,9 +257,10 @@ export function LandingPage({
                 Nigeria with both in-person clinic follow-ups and resilient multi-channel reminders.
               </p>
 
-              <div className="bg-white rounded-2xl p-5 border-2 border-surface-border shadow-subtle space-y-3">
+              {/* Frosted Glass Reassurance Cards */}
+              <div className="glass-card rounded-3xl p-5 sm:p-6 space-y-3.5">
                 <div className="flex items-start gap-3">
-                  <div className="h-7 w-7 rounded-lg bg-mint-100 text-mint-800 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="h-8 w-8 min-w-[2rem] rounded-xl bg-mint-100 text-mint-800 flex items-center justify-center shrink-0 mt-0.5">
                     <CheckCircle2 className="h-4 w-4" />
                   </div>
                   <div>
@@ -250,7 +272,7 @@ export function LandingPage({
                 </div>
 
                 <div className="flex items-start gap-3">
-                  <div className="h-7 w-7 rounded-lg bg-peach-100 text-peach-700 flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="h-8 w-8 min-w-[2rem] rounded-xl bg-peach-100 text-peach-700 flex items-center justify-center shrink-0 mt-0.5">
                     <Users className="h-4 w-4" />
                   </div>
                   <div>
@@ -265,7 +287,7 @@ export function LandingPage({
               <div>
                 <button
                   type="button"
-                  onClick={onStartPatientApp}
+                  onClick={onBookAppointment}
                   className="btn-tactile px-7 py-3.5 rounded-xl bg-petrol-900 hover:bg-petrol-950 text-white font-black text-sm shadow-card flex items-center gap-2"
                 >
                   <span>Book An Appointment</span>
@@ -274,16 +296,16 @@ export function LandingPage({
               </div>
             </div>
 
-            {/* Right Image Column (Doctors in coats with chart from reference) */}
+            {/* Right Image Column (Doctors with chart from reference) */}
             <div className="lg:col-span-6">
-              <div className="relative rounded-3xl overflow-hidden shadow-float border-4 border-white bg-petrol-900">
+              <div className="relative rounded-3xl overflow-hidden shadow-float border-4 border-white bg-petrol-900 glass-card">
                 <img
                   src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=1000&q=80"
                   alt="Primary Healthcare Centre Clinicians"
                   className="w-full h-[400px] sm:h-[480px] object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-petrol-950/70 via-transparent to-transparent" />
-                <div className="absolute bottom-5 left-5 right-5 bg-white/95 backdrop-blur-md rounded-2xl p-4 border border-white/60 shadow-card">
+                <div className="absolute bottom-5 left-5 right-5 glass-panel rounded-2xl p-4 shadow-card">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-xs font-bold text-petrol-700 uppercase tracking-wider">Primary Facility Partner</p>
@@ -301,9 +323,12 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* 4. SECTION 3: "HOW WE HELP" (5 CARDS FROM REFERENCE DESIGN) */}
-      <section id="services" className="py-20 lg:py-28 bg-white border-b border-surface-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      {/* 4. SECTION 3: "HOW WE HELP" (5 FROSTED GLASS CARDS FROM REFERENCE) */}
+      <section id="services" className="py-20 lg:py-28 bg-white border-b border-surface-border relative overflow-hidden">
+        
+        <div className="orb-glow bg-peach-500/10 w-[400px] h-[400px] bottom-10 left-10" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center z-10">
           
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-petrol-950 tracking-tight mb-4">
             How We Help
@@ -312,12 +337,12 @@ export function LandingPage({
             Structured, clinician-reviewed care continuity designed for Nigerian mothers, newborns, and family members.
           </p>
 
-          {/* 5-Column Responsive Grid */}
+          {/* 5-Column Responsive Glass Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 text-left mb-12">
             {careServices.map((service, idx) => (
               <div 
                 key={idx}
-                className="bg-surface-base rounded-2xl border-2 border-surface-border overflow-hidden hover:border-petrol-700 transition-all hover:shadow-card flex flex-col justify-between group"
+                className="glass-card rounded-3xl overflow-hidden flex flex-col justify-between group"
               >
                 <div>
                   <div className="relative h-44 overflow-hidden bg-petrol-900">
@@ -350,7 +375,7 @@ export function LandingPage({
                   <button
                     type="button"
                     onClick={onStartPatientApp}
-                    className="w-full py-2 rounded-xl bg-white hover:bg-petrol-900 hover:text-white border border-surface-border text-xs font-black text-petrol-900 transition-all flex items-center justify-center gap-1"
+                    className="w-full py-2.5 rounded-xl bg-surface-base hover:bg-petrol-900 hover:text-white border border-surface-border text-xs font-black text-petrol-900 transition-all flex items-center justify-center gap-1 shadow-xs"
                   >
                     <span>Manage Journey</span>
                     <ChevronRight className="h-3.5 w-3.5" />
@@ -371,27 +396,31 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* 5. SECTION 4: "MEET YOUR PROVIDERS" (DARK NAVY SECTION FROM REFERENCE) */}
-      <section id="providers" className="py-20 lg:py-28 bg-petrol-900 text-white border-b-2 border-petrol-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* 5. SECTION 4: "MEET YOUR PROVIDERS" (FIXED: FEMALE CLINICIAN FOR NURSE BLESSING) */}
+      <section id="providers" className="relative py-20 lg:py-28 bg-petrol-900 text-white border-b-2 border-petrol-800 overflow-hidden">
+        
+        {/* Ambient Glow Orbs */}
+        <div className="orb-glow bg-peach-500/20 w-[450px] h-[450px] top-10 left-10" />
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
             
-            {/* Left Doctor Photo (African healthcare worker at desk) */}
+            {/* Left Doctor Photo: FEMALE CLINICIAN FOR NURSE BLESSING ALIYU */}
             <div className="lg:col-span-6 order-2 lg:order-1">
-              <div className="relative rounded-3xl overflow-hidden shadow-float border-4 border-petrol-700 bg-petrol-950">
+              <div className="relative rounded-3xl overflow-hidden shadow-float border-4 border-white/20 bg-petrol-950 glass-card">
                 <img
-                  src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&w=1000&q=80"
-                  alt="Doctor at Primary Clinic Desk"
+                  src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=1000&q=80"
+                  alt="Nurse Blessing Aliyu - Senior Community Health Officer"
                   className="w-full h-[420px] sm:h-[480px] object-cover object-center"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-petrol-950/80 via-transparent to-transparent" />
-                <div className="absolute bottom-5 left-5 right-5 bg-petrol-900/90 backdrop-blur-md rounded-2xl p-4 border border-petrol-700 shadow-card">
+                <div className="absolute bottom-5 left-5 right-5 glass-dark rounded-2xl p-4 shadow-card">
                   <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-peach-500 text-petrol-950 font-black flex items-center justify-center shrink-0">
+                    <div className="h-10 w-10 min-w-[2.5rem] rounded-xl bg-peach-500 text-petrol-950 font-black flex items-center justify-center shrink-0">
                       CHO
                     </div>
                     <div>
-                      <h4 className="text-sm font-black text-white">Nurse Blessing Aliyu (Senior CHO)</h4>
+                      <h4 className="text-sm sm:text-base font-black text-white">Nurse Blessing Aliyu (Senior CHO)</h4>
                       <p className="text-xs text-petrol-200">Garki Primary Health Centre • FCT Abuja</p>
                     </div>
                   </div>
@@ -402,7 +431,7 @@ export function LandingPage({
             {/* Right Text Column (Why Choose Us) */}
             <div className="lg:col-span-6 space-y-6 order-1 lg:order-2">
               <div>
-                <span className="text-xs font-black tracking-widest uppercase text-peach-500 bg-petrol-800 px-3 py-1 rounded-full border border-petrol-700">
+                <span className="text-xs font-black tracking-widest uppercase text-peach-500 bg-petrol-800/80 px-3 py-1 rounded-full border border-petrol-700">
                   Garki PHC & National Clinics
                 </span>
                 <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight mt-3">
@@ -456,9 +485,12 @@ export function LandingPage({
         </div>
       </section>
 
-      {/* 6. INTERACTIVE COMPETITION DEMO SECTION (AUDIO & SMS PLAYGROUND) */}
-      <section id="interactive-demo" className="py-20 bg-surface-base border-b border-surface-border">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+      {/* 6. INTERACTIVE COMPETITION DEMO (AUDIO & SMS PLAYGROUND) */}
+      <section id="interactive-demo" className="py-20 bg-surface-base border-b border-surface-border relative overflow-hidden">
+        
+        <div className="orb-glow bg-mint-500/10 w-[380px] h-[380px] top-1/2 left-1/2 -translate-x-1/2" />
+
+        <div className="relative max-w-5xl mx-auto px-4 sm:px-6 z-10">
           <div className="text-center mb-10">
             <span className="text-xs font-black uppercase tracking-wider text-petrol-700 bg-mint-100 px-3 py-1 rounded-full border border-mint-200">
               Interactive Competition Demo
@@ -474,7 +506,7 @@ export function LandingPage({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Spoken Voice Note Demo Card */}
-            <div className="bg-white rounded-3xl p-6 border-2 border-surface-border shadow-card flex flex-col justify-between">
+            <div className="glass-card rounded-3xl p-6 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-2 text-petrol-900 font-black text-sm mb-2">
                   <Volume2 className="h-5 w-5 text-peach-500" />
@@ -492,12 +524,15 @@ export function LandingPage({
 
               <div className="mt-4 pt-3 border-t border-surface-border flex items-center justify-between text-xs font-bold text-petrol-700">
                 <span>Language: Nigerian Pidgin / English</span>
-                <span className="text-mint-700 font-black">✓ Offline Cached</span>
+                <span className="text-mint-700 font-black flex items-center gap-1">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <span>Offline Cached</span>
+                </span>
               </div>
             </div>
 
             {/* Discreet SMS Demo Card */}
-            <div className="bg-white rounded-3xl p-6 border-2 border-surface-border shadow-card flex flex-col justify-between">
+            <div className="glass-card rounded-3xl p-6 flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-2 text-petrol-900 font-black text-sm mb-2">
                   <MessageSquare className="h-5 w-5 text-peach-500" />
@@ -507,7 +542,7 @@ export function LandingPage({
                   Protects patient privacy on shared devices by omitting sensitive diagnoses:
                 </p>
 
-                <div className="bg-petrol-950 text-white rounded-2xl p-4 font-mono text-xs space-y-2 border border-petrol-800">
+                <div className="bg-petrol-950 text-white rounded-2xl p-4 font-mono text-xs space-y-2 border border-petrol-800 shadow-card">
                   <div className="flex justify-between text-[11px] text-peach-500 font-bold border-b border-petrol-800 pb-1">
                     <span>CAREPATH-NG</span>
                     <span>MTN DND Whitelisted</span>
@@ -550,7 +585,7 @@ export function LandingPage({
             {faqs.map((faq, idx) => (
               <div 
                 key={idx}
-                className="rounded-2xl border-2 border-surface-border bg-surface-base overflow-hidden transition-all"
+                className="glass-card rounded-2xl overflow-hidden transition-all"
               >
                 <button
                   type="button"
@@ -578,15 +613,7 @@ export function LandingPage({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6 pb-8 border-b border-petrol-900">
             
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-petrol-900 text-peach-500 border border-petrol-800">
-                <Heart className="h-5 w-5 fill-peach-500 stroke-peach-500" />
-              </div>
-              <div>
-                <span className="text-lg font-black text-white">CarePath NG</span>
-                <p className="text-xs text-petrol-200">Nigerian Maternal, Child & Family Healthcare Continuity</p>
-              </div>
-            </div>
+            <BrandLogo subtitle="Nigerian Maternal, Child & Family Healthcare Continuity" />
 
             <div className="flex items-center gap-3">
               <button

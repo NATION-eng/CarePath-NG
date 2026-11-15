@@ -6,6 +6,7 @@ import { DigitalYellowCard } from './DigitalYellowCard';
 import { FamilyProxyHub } from './FamilyProxyHub';
 import { EmergencyHelper } from './EmergencyHelper';
 import { AudioVoicePlayer } from '../AudioVoicePlayer';
+import { BrandLogo } from '../BrandLogo';
 import { playChime } from '@/lib/audioVoice';
 import { 
   Heart, 
@@ -61,10 +62,14 @@ export function ClientAppShell({
   const isConfirmed = nextEvent?.status === 'confirmed';
 
   return (
-    <div className="min-h-screen w-full bg-surface-base text-surface-dark flex flex-col font-sans pb-24 md:pb-12">
+    <div className="min-h-screen w-full bg-surface-base text-surface-dark flex flex-col font-sans pb-24 md:pb-12 relative overflow-x-hidden">
       
-      {/* 1. CLIENT HEADER */}
-      <header className="sticky top-0 z-40 bg-petrol-900 border-b border-petrol-800 text-white shadow-card">
+      {/* Floating Ambient Radiant Light Orbs for Sophisticated Glass Feel */}
+      <div className="orb-glow bg-peach-500/15 w-[400px] h-[400px] top-10 -right-20 pointer-events-none fixed" />
+      <div className="orb-glow bg-mint-500/15 w-[360px] h-[360px] bottom-20 -left-20 pointer-events-none fixed" />
+
+      {/* 1. CLIENT HEADER (FROSTED GLASS) */}
+      <header className="sticky top-0 z-40 bg-petrol-900/85 backdrop-blur-xl border-b border-white/10 text-white shadow-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between gap-3">
           
           {/* Brand & Back Button */}
@@ -78,22 +83,12 @@ export function ClientAppShell({
               <ArrowLeft className="h-4 w-4" />
             </button>
 
-            <div className="flex items-center gap-2 min-w-0">
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-petrol-800 border border-mint-500/40 text-peach-500 shrink-0">
-                <Heart className="h-5 w-5 fill-peach-500 stroke-peach-500" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-black text-base sm:text-lg text-white truncate">CarePath NG</span>
-                  <span className="text-[10px] uppercase font-black px-1.5 py-0.2 rounded bg-peach-500 text-petrol-950 shrink-0">
-                    Family Hub
-                  </span>
-                </div>
-                <p className="text-[11px] font-bold text-petrol-200 truncate">
-                  Personal Care Companion
-                </p>
-              </div>
-            </div>
+            <BrandLogo 
+              size="sm" 
+              subtitle="Personal Care Companion" 
+              badge="Family Hub" 
+              onClick={onBackToLanding} 
+            />
           </div>
 
           {/* Center Family Profile Switcher Pill */}
@@ -199,17 +194,21 @@ export function ClientAppShell({
         {activeTab === 'home' && (
           <div className="space-y-6 animate-in fade-in duration-150">
             
-            {/* Welcoming Patient Banner */}
-            <div className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-surface-border shadow-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3.5">
-                <div className="h-13 w-13 rounded-2xl bg-petrol-900 text-peach-500 font-black text-lg flex items-center justify-center shadow-card shrink-0">
+            {/* Welcoming Patient Banner (Frosted Glass with Non-Squishing Avatar) */}
+            <div className="glass-card rounded-3xl p-5 sm:p-6 border-2 border-surface-border shadow-subtle flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div className="h-14 w-14 min-w-[3.5rem] min-h-[3.5rem] rounded-2xl bg-petrol-900 border-2 border-petrol-700 text-peach-500 font-black text-xl flex items-center justify-center shadow-card shrink-0">
                   {activePatient?.avatarInitials || 'HB'}
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h2 className="text-xl sm:text-2xl font-black text-petrol-950">
-                      Welcome, {activePatient?.name || 'Amina Bello'} 👋
+                      Welcome, {activePatient?.name || 'Amina Bello'}
                     </h2>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full bg-mint-100 text-mint-900 border border-mint-300 shrink-0">
+                      <ShieldCheck className="h-3 w-3 text-mint-600" />
+                      <span>Verified</span>
+                    </span>
                   </div>
                   <p className="text-xs sm:text-sm text-petrol-700 font-bold mt-0.5">
                     {activePatient?.categoryLabel || 'Maternal ANC Pathway'} • Stage: <strong>{activePatient?.stageInfo || 'Active Care'}</strong>
@@ -234,9 +233,9 @@ export function ClientAppShell({
               </div>
             </div>
 
-            {/* HERO "NEXT VISIT" APPOINTMENT CARD (FROM BLUEPRINT SPEC) */}
+            {/* HERO "NEXT VISIT" APPOINTMENT CARD (SOPHISTICATED DARK GLASS) */}
             {nextEvent ? (
-              <div className="bg-petrol-900 text-white rounded-3xl p-6 sm:p-8 border-2 border-petrol-800 shadow-float relative overflow-hidden">
+              <div className="glass-surface-dark text-white rounded-3xl p-6 sm:p-8 border-2 border-white/15 shadow-float relative overflow-hidden">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                   
                   <div className="space-y-3 max-w-2xl">
@@ -294,12 +293,12 @@ export function ClientAppShell({
                         className="btn-tactile w-full py-3.5 px-4 rounded-2xl bg-peach-500 hover:bg-peach-600 text-petrol-950 font-black text-sm shadow-peach flex items-center justify-center gap-2"
                       >
                         <CheckCircle2 className="h-5 w-5" />
-                        <span>✓ I Will Attend</span>
+                        <span>I Will Attend</span>
                       </button>
                     ) : (
                       <div className="w-full py-3 px-4 rounded-2xl bg-mint-800 text-white font-black text-xs text-center border border-mint-600 flex items-center justify-center gap-1.5">
                         <CheckCircle2 className="h-4 w-4 text-mint-200" />
-                        <span>Attendance Confirmed ✓</span>
+                        <span>Attendance Confirmed</span>
                       </div>
                     )}
 
@@ -340,11 +339,11 @@ export function ClientAppShell({
               </div>
             )}
 
-            {/* Quick Navigation Cards */}
+            {/* Quick Navigation Cards (Frosted Glass) */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div 
                 onClick={() => setActiveTab('card')}
-                className="bg-white p-5 rounded-3xl border-2 border-surface-border hover:border-petrol-700 transition-all cursor-pointer shadow-subtle group"
+                className="glass-card p-5 rounded-3xl border-2 border-surface-border hover:border-petrol-700 transition-all cursor-pointer shadow-subtle group"
               >
                 <div className="h-10 w-10 rounded-xl bg-mint-100 text-mint-900 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                   <FileText className="h-5 w-5" />
@@ -357,7 +356,7 @@ export function ClientAppShell({
 
               <div 
                 onClick={() => setActiveTab('family')}
-                className="bg-white p-5 rounded-3xl border-2 border-surface-border hover:border-petrol-700 transition-all cursor-pointer shadow-subtle group"
+                className="glass-card p-5 rounded-3xl border-2 border-surface-border hover:border-petrol-700 transition-all cursor-pointer shadow-subtle group"
               >
                 <div className="h-10 w-10 rounded-xl bg-peach-100 text-peach-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                   <Users className="h-5 w-5" />
@@ -370,7 +369,7 @@ export function ClientAppShell({
 
               <div 
                 onClick={() => setActiveTab('emergency')}
-                className="bg-white p-5 rounded-3xl border-2 border-surface-border hover:border-red-400 transition-all cursor-pointer shadow-subtle group"
+                className="glass-card p-5 rounded-3xl border-2 border-surface-border hover:border-red-400 transition-all cursor-pointer shadow-subtle group"
               >
                 <div className="h-10 w-10 rounded-xl bg-red-100 text-red-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
                   <AlertTriangle className="h-5 w-5" />
@@ -414,12 +413,13 @@ export function ClientAppShell({
       </main>
 
       {/* 3. UNIVERSAL MOBILE BOTTOM THUMB NAVIGATION (CLIENT APP) */}
-      <nav className="fixed md:hidden bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t-2 border-surface-border px-3 py-2 flex items-center justify-around safe-bottom z-40 shadow-subtle">
+      {/* 3. UNIVERSAL MOBILE BOTTOM THUMB NAVIGATION (FROSTED GLASS DOCK) */}
+      <nav className="fixed md:hidden bottom-0 inset-x-0 bg-petrol-900/90 backdrop-blur-xl border-t border-white/10 px-3 py-2 flex items-center justify-around safe-bottom z-40 shadow-2xl text-white">
         <button
           type="button"
           onClick={() => setActiveTab('home')}
-          className={`flex flex-col items-center py-1 px-3 rounded-lg text-xs font-black transition-colors ${
-            activeTab === 'home' ? 'text-petrol-950 font-black' : 'text-surface-dark/60'
+          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-xs font-black transition-all ${
+            activeTab === 'home' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
           <Calendar className={`h-5 w-5 mb-0.5 ${activeTab === 'home' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
@@ -429,8 +429,8 @@ export function ClientAppShell({
         <button
           type="button"
           onClick={() => setActiveTab('card')}
-          className={`flex flex-col items-center py-1 px-3 rounded-lg text-xs font-black transition-colors ${
-            activeTab === 'card' ? 'text-petrol-950 font-black' : 'text-surface-dark/60'
+          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-xs font-black transition-all ${
+            activeTab === 'card' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
           <FileText className={`h-5 w-5 mb-0.5 ${activeTab === 'card' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
@@ -440,8 +440,8 @@ export function ClientAppShell({
         <button
           type="button"
           onClick={() => setActiveTab('family')}
-          className={`flex flex-col items-center py-1 px-3 rounded-lg text-xs font-black transition-colors ${
-            activeTab === 'family' ? 'text-petrol-950 font-black' : 'text-surface-dark/60'
+          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-xs font-black transition-all ${
+            activeTab === 'family' ? 'text-peach-500 bg-white/10 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
           <Users className={`h-5 w-5 mb-0.5 ${activeTab === 'family' ? 'text-peach-500 stroke-[2.5]' : 'stroke-2'}`} />
@@ -451,11 +451,11 @@ export function ClientAppShell({
         <button
           type="button"
           onClick={() => setActiveTab('emergency')}
-          className={`flex flex-col items-center py-1 px-3 rounded-lg text-xs font-black transition-colors ${
-            activeTab === 'emergency' ? 'text-red-700 font-black' : 'text-surface-dark/60'
+          className={`flex flex-col items-center py-1.5 px-3 rounded-xl text-xs font-black transition-all ${
+            activeTab === 'emergency' ? 'text-red-400 bg-red-950/50 shadow-xs' : 'text-petrol-200 hover:text-white'
           }`}
         >
-          <AlertTriangle className={`h-5 w-5 mb-0.5 ${activeTab === 'emergency' ? 'text-red-600 stroke-[2.5]' : 'stroke-2'}`} />
+          <AlertTriangle className={`h-5 w-5 mb-0.5 ${activeTab === 'emergency' ? 'text-red-400 stroke-[2.5]' : 'stroke-2'}`} />
           <span>Emergency</span>
         </button>
       </nav>
